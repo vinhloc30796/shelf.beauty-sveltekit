@@ -31,5 +31,8 @@
 		"vitest": "^0.25.8",
 		"web-vitals": "^3.5.0"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@vercel/analytics": "^1.2.0"
+	}
 }
