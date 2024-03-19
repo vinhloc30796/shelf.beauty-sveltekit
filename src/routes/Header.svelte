@@ -22,13 +22,15 @@
 	import H1 from '$lib/components/typography/h1.svelte';
 </script>
 
-<header class="flex items-center p-4">
+<header class="flex items-center p-4 h-24">
 	<nav class="flex items-center justify-between w-full">
-		<div class="w-24 h-24">
+		<div class="w-20">
 			<a href="https://shelf.beauty" title="Shelf Beauty Studio">
-				<!-- Choose between light & dark logo depending on html dark -->
-				<img src={dark_logo} alt="Shelf Beauty Studio" class="dark:hidden block" />
-				<img src={light_logo} alt="Shelf Beauty Studio" class="hidden dark:block" />
+				<picture>
+					<!-- Choose between light & dark logo depending on html dark -->
+					<img src={dark_logo} alt="Shelf Beauty Studio" class="dark:hidden block" />
+					<img src={light_logo} alt="Shelf Beauty Studio" class="hidden dark:block" />
+				</picture>
 			</a>
 		</div>
 		<Button on:click={toggleMode} variant="outline" size="icon">
@@ -41,6 +43,4 @@
 			<span class="sr-only">Toggle theme</span>
 		</Button>
 	</nav>
-
-	
 </header>
