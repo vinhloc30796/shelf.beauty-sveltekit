@@ -18,14 +18,11 @@
 			</picture>
 		</span>
 
-		to your new<br />SvelteKit app
+		tới tiệm Shelf Beauty Studio ạ 💐
 	</h1>
 
-	<h2>
-		try editing <strong>src/routes/+page.svelte</strong>
-	</h2>
+	<h2>shelf beauty studio cung cấp tổ hợp các dịch vụ làm đẹp: nail, gội đầu, nối mi, spa</h2>
 
-	<Counter />
 </section>
 
 <style>
