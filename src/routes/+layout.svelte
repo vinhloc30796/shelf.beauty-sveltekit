@@ -15,16 +15,18 @@
 	import '../app.css';
 </script>
 
-<div class="app">
+<div class="app flex flex-col min-h-screen">
 	<Header />
 
-	<main>
+	<main class="flex items-center justify-center">
 		<ModeWatcher />
 		<slot />
 	</main>
-
 	<!-- stick to the bottom -->
-	<footer class="flex items-center justify-center absolute bottom-0 w-full h-12">
+	<footer
+		class="flex w-full min-h-16 items-center justify-center bg-gray-100 dark:bg-gray-900 mt-8"
+		id="footer"
+	>
 		<p>
 			Ghé <a
 				href="https://m.me/shelfbeautystudio"
