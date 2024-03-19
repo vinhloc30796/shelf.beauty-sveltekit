@@ -90,7 +90,7 @@
 				<Carousel.Next />
 			</Carousel.Root>
 			<div class="py-2 text-center text-sm text-muted-foreground">
-				Slide {current} of {count}
+				Ảnh {current} trên {count}
 			</div>
 		</section>
 	</div>
