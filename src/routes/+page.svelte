@@ -7,15 +7,29 @@
 	import image_2 from '$lib/images/operations/2.jpg';
 	import image_3 from '$lib/images/operations/3.jpg';
 	import image_4 from '$lib/images/operations/4.jpg';
+	import image_5 from '$lib/images/operations/5.jpg';
 	// Typography
 	import H1 from '$lib/components/typography/h1.svelte';
 	import H2 from '$lib/components/typography/h2.svelte';
 	import P from '$lib/components/typography/p.svelte';
 	// Components
 	import * as Card from '$lib/components/ui/card/index.js';
+	import { type CarouselAPI } from '$lib/components/ui/carousel/context.js';
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
+	import Autoplay from 'embla-carousel-autoplay';
 
-	let images = [image_1, image_2, image_3, image_4];
+	let images = [image_1, image_2, image_3, image_4, image_5];
+	let api: CarouselAPI;
+	let count = 0;
+	let current = 0;
+
+	$: if (api) {
+		count = api.scrollSnapList().length;
+		current = api.selectedScrollSnap() + 1;
+		api.on('select', () => {
+			current = api.selectedScrollSnap() + 1;
+		});
+	}
 </script>
 
 <svelte:head>
@@ -39,10 +53,29 @@
 			</P>
 		</section>
 		<section class="flex flex-col w-5/6 mx-16 items-center justify-center col-span-2">
-			<Carousel.Root opts={{loop: false}}>
+			<Carousel.Root
+				bind:api
+				orientation="horizontal"
+				opts={{
+					align: 'start',
+					dragFree: true,
+					containScroll: 'trimSnaps',
+					skipSnaps: false
+				}}
+				plugins={[
+					Autoplay({
+						delay: 5000,
+						stopOnHover: true,
+						waitForTransition: true
+					})
+				]}
+			>
 				<Carousel.Content class="flex flex-row items-center justify-center">
-					{#each images as image, i}
-						<Carousel.Item>
+					{#each Array(images.length - 1) as _}
+						<Carousel.Item />
+					{/each}
+					{#each images as image, i (image)}
+						<Carousel.Item class="">
 							<div class="p-1">
 								<Card.Root>
 									<Card.Content class="flex aspect-[4/3] items-center justify-center p-6">
@@ -56,6 +89,9 @@
 				<Carousel.Previous />
 				<Carousel.Next />
 			</Carousel.Root>
+			<div class="py-2 text-center text-sm text-muted-foreground">
+				Ảnh {current} trên {count}
+			</div>
 		</section>
 	</div>
 </div>
