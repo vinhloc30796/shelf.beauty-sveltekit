@@ -1,72 +1,37 @@
-<script>
-	import { browser, dev } from '$app/environment';
-	import { page } from '$app/stores';
-	import { webVitals } from '$lib/vitals';
+<script lang="ts">
+	// Vercel Analytics
+	import { dev } from '$app/environment';
 	import { inject } from '@vercel/analytics';
-	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
-	import Header from './Header.svelte';
-	import './styles.css';
-	
+
 	inject({ mode: dev ? 'development' : 'production' });
-	injectSpeedInsights();
 
-	/** @type {import('./$types').LayoutServerData} */
-	export let data;
+	// Dark mode
+	import { ModeWatcher } from 'mode-watcher';
 
-	$: if (browser && data?.analyticsId) {
-		webVitals({
-			path: $page.url.pathname,
-			params: $page.params,
-			analyticsId: data.analyticsId
-		});
-	}
+	// Header component
+	import Header from './Header.svelte';
+
+	// Import the global styles
+	import '../app.css';
 </script>
 
 <div class="app">
 	<Header />
 
 	<main>
+		<ModeWatcher />
 		<slot />
 	</main>
 
-	<footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
+	<!-- stick to the bottom -->
+	<footer class="flex items-center justify-center absolute bottom-0 w-full h-12">
+		<p>
+			Ghé <a
+				href="https://m.me/shelfbeautystudio"
+				title="Shelf Beauty Studio trên Facebook"
+				referrerpolicy="origin"
+				target="_blank">Shelf Beauty Studio trên Facebook Messenger</a
+			> để đặt lịch hẹn
+		</p>
 	</footer>
 </div>
-
-<style>
-	.app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-	}
-
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 64rem;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
-
-	footer a {
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
-	}
-</style>
