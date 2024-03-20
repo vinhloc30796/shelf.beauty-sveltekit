@@ -124,7 +124,7 @@
 					<Button
 						variant="secondary"
 						class="h-12 w-36"
-						href="https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ"
+						href="/fbmessage"
 						title="Shelf Beauty Studio trên Facebook"
 						referrerpolicy="origin"
 						target="_blank"

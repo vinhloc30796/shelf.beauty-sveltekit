@@ -34,7 +34,7 @@
 		<P class="text-center text-sm">
 			Ghé <a
 				class="text-blue-500 hover:underline"
-				href="https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ"
+				href="/fbmessage"
 				title="Shelf Beauty Studio trên Facebook"
 				referrerpolicy="origin"
 				target="_blank">Shelf Beauty Studio trên Facebook Messenger</a
