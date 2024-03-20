@@ -8,11 +8,14 @@
 	import image_3 from '$lib/images/operations/3.jpg';
 	import image_4 from '$lib/images/operations/4.jpg';
 	import image_5 from '$lib/images/operations/5.jpg';
+	// Icons
+	import { Calendar, ThickArrowRight } from 'svelte-radix';
 	// Typography
 	import H1 from '$lib/components/typography/h1.svelte';
 	import H2 from '$lib/components/typography/h2.svelte';
 	import P from '$lib/components/typography/p.svelte';
 	// Components
+	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { type CarouselAPI } from '$lib/components/ui/carousel/context.js';
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
@@ -30,17 +33,36 @@
 			current = api.selectedScrollSnap() + 1;
 		});
 	}
+
+	// Event snippet for Get directions conversion page
+	// In your html page, add the snippet and call gtag_report_conversion
+	// - when someone clicks on the chosen link or button.
+	$: gtag_report_conversion = (url: string) => {
+		// @ts-ignore
+		window.gtag('event', 'conversion', {
+			send_to: 'AW-11464920859/XeK7CPaZ2YUZEJue89oq',
+			event_callback: () => {
+				if (url) {
+					window.location;
+				}
+			}
+		});
+		// console.log('gtag_report_conversion: sent to Google Analytics');
+		return false;
+	};
 </script>
 
 <svelte:head>
 	<title>Shelf Beauty Studio - Trang Chủ</title>
 	<meta name="description" content="Shelf Beauty Studio - Trang Chủ" />
+
 </svelte:head>
 
-<div class="flex flex-col min-h-[calc(100vh-12rem)]">
-	<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 h-auto" id="hero">
-		<section class="flex flex-col mx-16 items-center justify-center col-span-1" id="hero-desc">
-			<span class="w-full flex">
+<div class="flex flex-col min-h-[calc(100vh-12rem)] max-w-1/2">
+	<div class="grid grid-cols-1 xl:grid-cols-3 gap-4 h-auto" id="hero">
+		<section class="flex flex-col mx-16 justify-center items-center col-span-1" id="hero-desc">
+			<!-- Logo -->
+			<span class="flex w-full my-4">
 				<picture>
 					<img src={shelf_dark} alt="Shelf Beauty Studio - Welcome" class="dark:hidden" />
 					<img src={shelf_light} alt="Shelf Beauty Studio - Welcome" class="hidden dark:block" />
