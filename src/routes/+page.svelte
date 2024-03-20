@@ -15,6 +15,7 @@
 	import H2 from '$lib/components/typography/h2.svelte';
 	import P from '$lib/components/typography/p.svelte';
 	// Components
+	import { AspectRatio } from '$lib/components/ui/aspect-ratio';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { type CarouselAPI } from '$lib/components/ui/carousel/context.js';
@@ -133,8 +134,10 @@
 						<Carousel.Item class="">
 							<div class="p-1">
 								<Card.Root>
-									<Card.Content class="flex aspect-[4/3] items-center justify-center p-6">
-										<img src={image} alt="Shelf Beauty Studio - Operations {i}" />
+									<Card.Content class="flex items-center justify-center p-6">
+										<AspectRatio ratio={4 / 3}>
+											<img src={image} alt="Shelf Beauty Studio - Operations {i}" />
+										</AspectRatio>
 									</Card.Content>
 								</Card.Root>
 							</div>
