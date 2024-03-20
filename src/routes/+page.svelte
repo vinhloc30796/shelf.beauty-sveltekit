@@ -58,9 +58,12 @@
 			<div class="flex flex-col sm:flex-row w-full justify-items-center items-center my-4">
 				<div class="flex w-full mx-1 my-4 justify-self-center justify-center items-center">
 					<Button
-						href="https://www.google.com/maps/dir/?api=1&destination=shelf+beauty+studio,+Yersin,+Ph%C6%B0%E1%BB%9Dng+10,+Dalat,+Lam+Dong&destination_place_id=ChIJHydiEXkTcTERBlm-4kPGIWk"
 						variant="default"
 						class="h-12 w-36"
+						href="https://www.google.com/maps/dir/?api=1&destination=shelf+beauty+studio,+Yersin,+Ph%C6%B0%E1%BB%9Dng+10,+Dalat,+Lam+Dong&destination_place_id=ChIJHydiEXkTcTERBlm-4kPGIWk"
+						title="Shelf Beauty Studio trên Google Maps"
+						referrerpolicy="origin"
+						target="_blank"
 						on:click={() => gtag_report_conversion('https://shelf.beauty/directions')}
 					>
 						<ThickArrowRight class="mr-2" />
@@ -68,7 +71,14 @@
 					</Button>
 				</div>
 				<div class="flex w-full mx-1 my-4 justify-self-center justify-center items-center">
-					<Button href="/" variant="secondary" class="h-12 w-36">
+					<Button
+						variant="secondary"
+						class="h-12 w-36"
+						href="https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ"
+						title="Shelf Beauty Studio trên Facebook"
+						referrerpolicy="origin"
+						target="_blank"
+					>
 						<Calendar class="mr-2" />
 						Đặt hẹn
 					</Button>
