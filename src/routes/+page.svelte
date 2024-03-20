@@ -8,6 +8,10 @@
 	import image_3 from '$lib/images/operations/3.jpg';
 	import image_4 from '$lib/images/operations/4.jpg';
 	import image_5 from '$lib/images/operations/5.jpg';
+	import image_6 from '$lib/images/operations/6.jpg';
+	import image_7 from '$lib/images/operations/7.jpg';
+	import image_8 from '$lib/images/operations/8.jpg';
+	import image_9 from '$lib/images/operations/9.jpg';
 	// Icons
 	import { Calendar, ThickArrowRight } from 'svelte-radix';
 	// Typography
@@ -22,7 +26,17 @@
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
 	import Autoplay from 'embla-carousel-autoplay';
 
-	let images = [image_1, image_2, image_3, image_4, image_5];
+	let images = [
+		image_1,
+		image_2,
+		image_3,
+		image_4,
+		image_5,
+		image_6,
+		image_7,
+		image_8,
+		image_9,
+	];
 	let api: CarouselAPI;
 	let count = 0;
 	let current = 0;
