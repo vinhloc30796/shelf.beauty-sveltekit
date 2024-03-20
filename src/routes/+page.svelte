@@ -15,6 +15,7 @@
 	import H2 from '$lib/components/typography/h2.svelte';
 	import P from '$lib/components/typography/p.svelte';
 	// Components
+	import { AspectRatio } from '$lib/components/ui/aspect-ratio';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { type CarouselAPI } from '$lib/components/ui/carousel/context.js';
@@ -37,7 +38,7 @@
 	// Event snippet for Get directions conversion page
 	// In your html page, add the snippet and call gtag_report_conversion
 	// - when someone clicks on the chosen link or button.
-	$: gtag_report_conversion = (url: string) => {
+	$: gtag_report_conversion_direction = (url: string) => {
 		// @ts-ignore
 		window.gtag('event', 'conversion', {
 			send_to: 'AW-11464920859/XeK7CPaZ2YUZEJue89oq',
@@ -47,7 +48,21 @@
 				}
 			}
 		});
-		// console.log('gtag_report_conversion: sent to Google Analytics');
+		// console.log('gtag_report_conversion_direction: sent to Google Analytics');
+		return false;
+	};
+
+	$: gtag_report_conversion_fbmessage = (url: string) => {
+		// @ts-ignore
+		window.gtag('event', 'conversion', {
+			send_to: 'AW-11464920859/mpO0CJ_Jg54ZEJue89oq',
+			event_callback: () => {
+				if (url) {
+					window.location;
+				}
+			}
+		});
+		// console.log('gtag_report_conversion_fbmessage: sent to Google Analytics');
 		return false;
 	};
 </script>
@@ -55,7 +70,6 @@
 <svelte:head>
 	<title>Shelf Beauty Studio - Trang Chủ</title>
 	<meta name="description" content="Shelf Beauty Studio - Trang Chủ" />
-
 </svelte:head>
 
 <div class="flex flex-col min-h-[calc(100vh-12rem)] max-w-1/2">
@@ -86,7 +100,7 @@
 						title="Shelf Beauty Studio trên Google Maps"
 						referrerpolicy="origin"
 						target="_blank"
-						on:click={() => gtag_report_conversion('https://shelf.beauty/directions')}
+						on:click={() => gtag_report_conversion_direction('https://shelf.beauty/directions')}
 					>
 						<ThickArrowRight class="mr-2" />
 						Tìm đường
@@ -100,6 +114,7 @@
 						title="Shelf Beauty Studio trên Facebook"
 						referrerpolicy="origin"
 						target="_blank"
+						on:click={() => gtag_report_conversion_fbmessage('https://shelf.beauty/fbmessage')}
 					>
 						<Calendar class="mr-2" />
 						Đặt hẹn
@@ -133,8 +148,10 @@
 						<Carousel.Item class="">
 							<div class="p-1">
 								<Card.Root>
-									<Card.Content class="flex aspect-[4/3] items-center justify-center p-6">
-										<img src={image} alt="Shelf Beauty Studio - Operations {i}" />
+									<Card.Content class="flex items-center justify-center p-6">
+										<AspectRatio ratio={4 / 3}>
+											<img src={image} alt="Shelf Beauty Studio - Operations {i}" />
+										</AspectRatio>
 									</Card.Content>
 								</Card.Root>
 							</div>
