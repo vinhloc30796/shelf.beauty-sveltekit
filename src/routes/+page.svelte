@@ -46,11 +46,34 @@
 					<img src={shelf_light} alt="Shelf Beauty Studio - Welcome" class="hidden dark:block" />
 				</picture>
 			</span>
-			<H2 class="mt-4">Trải nghiệm làm đẹp tại Đà Lạt</H2>
-			<P>
-				Shelf Beauty Studio là một không gian làm đẹp chuyên nghiệp, nơi bạn có thể tìm thấy sự yên
-				bình và thoải mái.
-			</P>
+			<!-- Description -->
+			<div class="my-4">
+				<H2 class="mt-4">Trải nghiệm làm đẹp tại Đà Lạt</H2>
+				<P>
+					Shelf Beauty Studio là một không gian làm đẹp chuyên nghiệp, nơi bạn có thể tìm thấy sự
+					yên bình và thoải mái.
+				</P>
+			</div>
+			<!-- Buttons -->
+			<div class="flex flex-col sm:flex-row w-full justify-items-center items-center my-4">
+				<div class="flex w-full mx-1 my-4 justify-self-center justify-center items-center">
+					<Button
+						href="https://www.google.com/maps/dir/?api=1&destination=shelf+beauty+studio,+Yersin,+Ph%C6%B0%E1%BB%9Dng+10,+Dalat,+Lam+Dong&destination_place_id=ChIJHydiEXkTcTERBlm-4kPGIWk"
+						variant="default"
+						class="h-12 w-36"
+						on:click={() => gtag_report_conversion('https://shelf.beauty/directions')}
+					>
+						<ThickArrowRight class="mr-2" />
+						Tìm đường
+					</Button>
+				</div>
+				<div class="flex w-full mx-1 my-4 justify-self-center justify-center items-center">
+					<Button href="/" variant="secondary" class="h-12 w-36">
+						<Calendar class="mr-2" />
+						Đặt hẹn
+					</Button>
+				</div>
+			</div>
 		</section>
 		<section class="flex flex-col w-5/6 mx-16 items-center justify-center col-span-2">
 			<Carousel.Root
