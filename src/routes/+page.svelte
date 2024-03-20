@@ -85,14 +85,13 @@
 				</div>
 			</div>
 		</section>
-		<section class="flex flex-col w-5/6 mx-16 items-center justify-center col-span-2">
+		<section class="flex flex-col mx-16 items-center justify-center col-span-1 xl:col-span-2">
 			<Carousel.Root
 				bind:api
 				orientation="horizontal"
 				opts={{
 					align: 'start',
 					dragFree: true,
-					containScroll: 'trimSnaps',
 					skipSnaps: false
 				}}
 				plugins={[
@@ -102,6 +101,7 @@
 						waitForTransition: true
 					})
 				]}
+				class="w-full"
 			>
 				<Carousel.Content class="flex flex-row items-center justify-center">
 					{#each Array(images.length - 1) as _}
