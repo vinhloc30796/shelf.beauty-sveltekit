@@ -8,6 +8,12 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+
+	// Extending Window 
+	interface Window {
+		// for gtag
+		gtag: (command: string, eventName: string, params?: object | undefined) => void;
+	}
 }
 
 export {};
