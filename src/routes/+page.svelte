@@ -124,11 +124,11 @@
 					<Button
 						variant="secondary"
 						class="h-12 w-36"
-						href="/fbmessage"
+						href="https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ"
 						title="Shelf Beauty Studio trên Facebook"
 						referrerpolicy="origin"
 						target="_blank"
-						on:click={() => gtag_report_conversion_fbmessage('https://shelf.beauty/fbmessage')}
+						on:click={() => gtag_report_conversion_fbmessage('https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ')}
 					>
 						<Calendar class="mr-2" />
 						Đặt hẹn
