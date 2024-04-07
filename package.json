@@ -12,7 +12,7 @@
 		"format": "prettier --write .",
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
-		"run-script": "TEST=true pnpm exec vite-node src/routes/api/ggBusiness/api.ts"
+		"run-script": "TEST=true pnpm exec vite-node src/lib/components/server/ggMyBusinessApi.ts"
 	},
 	"devDependencies": {
 		"@fontsource/fira-mono": "^4.5.10",
