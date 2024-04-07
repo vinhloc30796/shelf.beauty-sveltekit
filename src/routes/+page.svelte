@@ -1,6 +1,7 @@
 <script lang="ts">
 	// Environment variables
-	import { GTAG_ID } from '$env/static/private';
+	// https://kit.svelte.dev/docs/modules#$env-dynamic-private
+	import { env } from '$env/dynamic/private';
 	// Images: branding
 	import shelf_dark from '$lib/images/branding/shelf-dark-landscape.png';
 	import shelf_light from '$lib/images/branding/shelf-light-landscape.png';
@@ -57,7 +58,7 @@
 	$: gtag_report_conversion_direction = (url: string) => {
 		// @ts-ignore
 		window.gtag('event', 'conversion', {
-			send_to: GTAG_ID + '/XeK7CPaZ2YUZEJue89oq',
+			send_to: env.GTAG_ID + '/XeK7CPaZ2YUZEJue89oq',
 			event_callback: () => {
 				if (url) {
 					window.location;
@@ -71,7 +72,7 @@
 	$: gtag_report_conversion_fbmessage = (url: string) => {
 		// @ts-ignore
 		window.gtag('event', 'conversion', {
-			send_to: GTAG_ID + '/XeK7CPaZ2YUZEJue89oq',
+			send_to: env.GTAG_ID + '/XeK7CPaZ2YUZEJue89oq',
 			event_callback: () => {
 				if (url) {
 					window.location;
