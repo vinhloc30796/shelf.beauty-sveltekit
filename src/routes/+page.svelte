@@ -1,4 +1,7 @@
 <script lang="ts">
+	// Environment variables
+	// https://kit.svelte.dev/docs/modules#$env-dynamic-private
+	import { env } from '$env/dynamic/public';
 	// Images: branding
 	import shelf_dark from '$lib/images/branding/shelf-dark-landscape.png';
 	import shelf_light from '$lib/images/branding/shelf-light-landscape.png';
@@ -21,22 +24,19 @@
 	// Components
 	import { AspectRatio } from '$lib/components/ui/aspect-ratio';
 	import { Button } from '$lib/components/ui/button/index.js';
+	import { Badge, badgeVariants } from '$lib/components/ui/badge/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { type CarouselAPI } from '$lib/components/ui/carousel/context.js';
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
 	import Autoplay from 'embla-carousel-autoplay';
+	// Data
+	import type { PageData } from './$types';
+	export let data: PageData;
+	export const isOpen = data.isOpen;
+	console.log('Page data:', data);
+	console.log('Store is open?:', isOpen);
 
-	let images = [
-		image_1,
-		image_2,
-		image_3,
-		image_4,
-		image_5,
-		image_6,
-		image_7,
-		image_8,
-		image_9,
-	];
+	let images = [image_1, image_2, image_3, image_4, image_5, image_6, image_7, image_8, image_9];
 	let api: CarouselAPI;
 	let count = 0;
 	let current = 0;
@@ -55,7 +55,7 @@
 	$: gtag_report_conversion_direction = (url: string) => {
 		// @ts-ignore
 		window.gtag('event', 'conversion', {
-			send_to: 'AW-11464920859/XeK7CPaZ2YUZEJue89oq',
+			send_to: env.PUBLIC_GTAG_ID + '/XeK7CPaZ2YUZEJue89oq',
 			event_callback: () => {
 				if (url) {
 					window.location;
@@ -69,7 +69,7 @@
 	$: gtag_report_conversion_fbmessage = (url: string) => {
 		// @ts-ignore
 		window.gtag('event', 'conversion', {
-			send_to: 'AW-11464920859/mpO0CJ_Jg54ZEJue89oq',
+			send_to: env.PUBLIC_GTAG_ID + '/XeK7CPaZ2YUZEJue89oq',
 			event_callback: () => {
 				if (url) {
 					window.location;
@@ -123,15 +123,24 @@
 				<div class="flex w-full mx-1 my-4 justify-self-center justify-center items-center">
 					<Button
 						variant="secondary"
-						class="h-12 w-36"
+						class="h-12 min-w-36"
 						href="https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ"
 						title="Shelf Beauty Studio trên Facebook"
 						referrerpolicy="origin"
 						target="_blank"
-						on:click={() => gtag_report_conversion_fbmessage('https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ')}
+						on:click={() =>
+							gtag_report_conversion_fbmessage(
+								'https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ'
+							)}
 					>
 						<Calendar class="mr-2" />
 						Đặt hẹn
+						<!-- Check if is open, add green open/ redclose accordingly -->
+						{#if isOpen}
+							<Badge class="ml-2 bg-green-500">Mở cửa</Badge>
+						{:else}
+							<Badge variant="destructive" class="ml-2">Chưa mở</Badge>
+						{/if}
 					</Button>
 				</div>
 			</div>
