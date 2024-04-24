@@ -47,6 +47,7 @@ const checkOpenHours = (gmbLocationData: any) => {
 	const currentDay = now.getDay();
 	const currentWeekday = now.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
 	const currentHour = now.getHours();
+	const currentHourUtcPlus7 = now.getUTCHours() + 7;
 	console.log(`currentDay: ${currentDay}; currentWeekday: ${currentWeekday}; currentHour: ${currentHour}`);
 	// Look through the regularHours
 	const regularHourPeriods: regularHoursPeriod[] = gmbLocationData.regularHours.periods;
@@ -56,7 +57,7 @@ const checkOpenHours = (gmbLocationData: any) => {
 		const openTime = period.openTime;
 		const closeTime = period.closeTime;
 		if (currentWeekday == openDay && currentWeekday == closeDay) {
-			if (currentHour >= openTime.hours && currentHour <= closeTime.hours) {
+			if (currentHourUtcPlus7 >= openTime.hours && currentHourUtcPlus7 <= closeTime.hours) {
 				isOpen = true;
 			}
 		}
@@ -77,7 +78,7 @@ const checkOpenHours = (gmbLocationData: any) => {
 			if (isClosed) {
 				isOpen = false;
 			} else {
-				if (currentHour >= openTime.hours && currentHour <= closeTime.hours) {
+				if (currentHourUtcPlus7 >= openTime.hours && currentHourUtcPlus7 <= closeTime.hours) {
 					isOpen = true;
 				}
 			}
@@ -94,8 +95,13 @@ export const load: PageServerLoad = async () => {
 		name: locationId,
 		readMask: locationReadMasks
 	});
+	const now = new Date();
+	const currentHour = now.getHours();
+	const currentHourUtcPlus7 = now.getUTCHours() + 7;
 
 	return {
+		currentHour: currentHour,
+		currentHourUtcPlus7: currentHourUtcPlus7,
 		gmbLocationData: location.data,
 		isOpen: checkOpenHours(location.data),
 		serverMessage: 'hello from server load function'
