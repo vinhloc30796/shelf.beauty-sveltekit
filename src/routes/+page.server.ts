@@ -45,7 +45,9 @@ const checkOpenHours = (gmbLocationData: any) => {
 	// Get current date and time
 	const now = new Date();
 	const currentDay = now.getDay();
+	const currentWeekday = now.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
 	const currentHour = now.getHours();
+	console.log(`currentDay: ${currentDay}; currentWeekday: ${currentWeekday}; currentHour: ${currentHour}`);
 	// Look through the regularHours
 	const regularHourPeriods: regularHoursPeriod[] = gmbLocationData.regularHours.periods;
 	regularHourPeriods.forEach((period) => {
@@ -53,7 +55,7 @@ const checkOpenHours = (gmbLocationData: any) => {
 		const closeDay = period.closeDay;
 		const openTime = period.openTime;
 		const closeTime = period.closeTime;
-		if (currentDay >= openDay && currentDay <= closeDay) {
+		if (currentWeekday == openDay && currentWeekday == closeDay) {
 			if (currentHour >= openTime.hours && currentHour <= closeTime.hours) {
 				isOpen = true;
 			}
