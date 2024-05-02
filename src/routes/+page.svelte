@@ -135,11 +135,15 @@
 					>
 						<Calendar class="mr-2" />
 						Đặt hẹn
-						<!-- Check if is open, add green open/ redclose accordingly -->
+						<!-- Check if isOpen is true, add green open -->
 						{#if isOpen}
 							<Badge class="ml-2 bg-green-500">Mở cửa</Badge>
-						{:else}
+						<!-- Else if false, then red badget -->
+						{:else if isOpen === false}
 							<Badge variant="destructive" class="ml-2">Chưa mở</Badge>
+						<!-- Else if None then show nothing -->
+						{:else}
+							<!-- Do nothing -->
 						{/if}
 					</Button>
 				</div>
