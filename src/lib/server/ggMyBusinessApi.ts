@@ -6,25 +6,66 @@ import {
 	GCP_OAUTH_CLIENT_SECRET,
 	GCP_OAUTH_REDIRECT_URL,
 	GCP_OAUTH_REFRESH_TOKEN,
+	GCP_SERVICE_ACCOUNT_PRIVATE_KEY_ID,
+	GCP_SERVICE_ACCOUNT_PRIVATE_KEY,
+	GCP_SERVICE_ACCOUNT_CLIENT_EMAIL,
+	GCP_SERVICE_ACCOUNT_CLIENT_ID,
 	GMB_LOCATION_ID
 } from '$env/static/private';
-import { google } from 'googleapis';
+import { Auth, google } from 'googleapis';
 
 // const SCOPES = ['https://www.googleapis.com/auth/business.manage'];
-const oauth2Client = new google.auth.OAuth2(
-	GCP_OAUTH_CLIENT_ID,
-	GCP_OAUTH_CLIENT_SECRET,
-	GCP_OAUTH_REDIRECT_URL
-);
-oauth2Client.setCredentials({ refresh_token: GCP_OAUTH_REFRESH_TOKEN });
+function tryAuth(): Auth.GoogleAuth | Auth.OAuth2Client | undefined {
+	// Try first with service account
+	const serviceAcctClient = new google.auth.GoogleAuth({
+		scopes: ['https://www.googleapis.com/auth/business.manage'],
+		credentials: {
+			client_email: GCP_SERVICE_ACCOUNT_CLIENT_EMAIL,
+			client_id: GCP_SERVICE_ACCOUNT_CLIENT_ID,
+			private_key: GCP_SERVICE_ACCOUNT_PRIVATE_KEY,
+			private_key_id: GCP_SERVICE_ACCOUNT_PRIVATE_KEY_ID
+		}
+	});
+	serviceAcctClient
+		.getClient()
+		.then((res) => {
+			console.log(`serviceAcctClient result: success`);
+			google.options({ auth: serviceAcctClient });
+			return serviceAcctClient;
+		})
+		.catch((error) => {
+			console.error(`serviceAcctClient error: `, error);
+		});
+
+	// Try with OAuth2
+	const oauth2Client = new google.auth.OAuth2(
+		GCP_OAUTH_CLIENT_ID,
+		GCP_OAUTH_CLIENT_SECRET,
+		GCP_OAUTH_REDIRECT_URL
+	);
+	oauth2Client.setCredentials({ refresh_token: GCP_OAUTH_REFRESH_TOKEN });
+	oauth2Client
+		.getAccessToken()
+		.then((res) => {
+			console.log(`oauth2Client result: success`);
+			google.options({ auth: oauth2Client });
+			return oauth2Client;
+		})
+		.catch((error) => {
+			console.error(`oauth2Client error: `, error);
+		});
+	return undefined;
+}
+
+const auth = tryAuth();
 
 export const accountManagement = google.mybusinessaccountmanagement({
 	version: 'v1',
-	auth: oauth2Client
+	auth: auth
 });
 export const businessInformation = google.mybusinessbusinessinformation({
 	version: 'v1',
-	auth: oauth2Client
+	auth: auth
 });
 
 export function testGmbApi() {
