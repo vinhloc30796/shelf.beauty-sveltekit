@@ -5,8 +5,8 @@ import type { PageServerLoad } from './$types';
 
 // Make type regularHoursPeriod
 type regularHoursPeriod = {
-	openDay: number;
-	closeDay: number;
+	openDay: string;
+	closeDay: string;
 	openTime: {
 		hours: number;
 		minutes: number;
@@ -48,7 +48,9 @@ const checkOpenHours = (gmbLocationData: any) => {
 	const currentWeekday = now.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
 	const currentHour = now.getHours();
 	const currentHourUtcPlus7 = now.getUTCHours() + 7;
-	console.log(`currentDay: ${currentDay}; currentWeekday: ${currentWeekday}; currentHour: ${currentHour}`);
+	console.log(
+		`currentDay: ${currentDay}; currentWeekday: ${currentWeekday}; currentHour: ${currentHour}`
+	);
 	// Look through the regularHours
 	const regularHourPeriods: regularHoursPeriod[] = gmbLocationData.regularHours.periods;
 	regularHourPeriods.forEach((period) => {
@@ -56,10 +58,13 @@ const checkOpenHours = (gmbLocationData: any) => {
 		const closeDay = period.closeDay;
 		const openTime = period.openTime;
 		const closeTime = period.closeTime;
-		if (currentWeekday == openDay && currentWeekday == closeDay) {
-			if (currentHourUtcPlus7 >= openTime.hours && currentHourUtcPlus7 <= closeTime.hours) {
-				isOpen = true;
-			}
+		if (
+			currentWeekday == openDay &&
+			currentWeekday == closeDay &&
+			currentHourUtcPlus7 >= openTime.hours &&
+			currentHourUtcPlus7 <= closeTime.hours
+		) {
+			isOpen = true;
 		}
 	});
 	// Look through the specialHours to see if it's closed
@@ -85,16 +90,24 @@ const checkOpenHours = (gmbLocationData: any) => {
 		}
 	});
 	return isOpen;
-}
+};
 
 export const load: PageServerLoad = async () => {
 	// Extract the open hours
 	const locationId: string = GMB_LOCATION_ID; // 'locations/1234567890'
 	const locationReadMasks: string = 'name,title,openInfo,regularHours,specialHours,moreHours';
-	const location = await businessInformation.locations.get({
-		name: locationId,
-		readMask: locationReadMasks
-	});
+	const location = await businessInformation.locations
+		.get({
+			name: locationId,
+			readMask: locationReadMasks
+		})
+		.then((res) => {
+			return res.data;
+		})
+		.catch((error) => {
+			console.error(`businessInformation.locations error: ${error}`);
+			return null;
+		});
 	const now = new Date();
 	const currentHour = now.getHours();
 	const currentHourUtcPlus7 = now.getUTCHours() + 7;
@@ -102,8 +115,7 @@ export const load: PageServerLoad = async () => {
 	return {
 		currentHour: currentHour,
 		currentHourUtcPlus7: currentHourUtcPlus7,
-		gmbLocationData: location.data,
-		isOpen: checkOpenHours(location.data),
-		serverMessage: 'hello from server load function'
+		gmbLocationData: location,
+		isOpen: location ? checkOpenHours(location) : null,
 	};
 };
