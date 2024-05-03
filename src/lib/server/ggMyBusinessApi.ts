@@ -15,49 +15,47 @@ import {
 import { Auth, google } from 'googleapis';
 
 // const SCOPES = ['https://www.googleapis.com/auth/business.manage'];
-function tryAuth(): Auth.GoogleAuth | Auth.OAuth2Client | undefined {
-	// Try first with service account
-	const serviceAcctClient = new google.auth.GoogleAuth({
-		scopes: ['https://www.googleapis.com/auth/business.manage'],
-		credentials: {
-			client_email: GCP_SERVICE_ACCOUNT_CLIENT_EMAIL,
-			client_id: GCP_SERVICE_ACCOUNT_CLIENT_ID,
-			private_key: GCP_SERVICE_ACCOUNT_PRIVATE_KEY,
-			private_key_id: GCP_SERVICE_ACCOUNT_PRIVATE_KEY_ID
-		}
-	});
-	serviceAcctClient
-		.getClient()
-		.then((res) => {
-			console.log(`serviceAcctClient result: success`);
-			google.options({ auth: serviceAcctClient });
-			return serviceAcctClient;
-		})
-		.catch((error) => {
-			console.error(`serviceAcctClient error: `, error);
-		});
+async function tryAuth(): Promise<Auth.GoogleAuth | Auth.OAuth2Client | undefined> {
+	// Try with Service Account
+	try {
+        const serviceAcctClient = new google.auth.GoogleAuth({
+            scopes: ['https://www.googleapis.com/auth/business.manage'],
+            credentials: {
+                client_email: GCP_SERVICE_ACCOUNT_CLIENT_EMAIL,
+                client_id: GCP_SERVICE_ACCOUNT_CLIENT_ID,
+                private_key: GCP_SERVICE_ACCOUNT_PRIVATE_KEY,
+                private_key_id: GCP_SERVICE_ACCOUNT_PRIVATE_KEY_ID
+            }
+        });
+        const serviceAuthCientResult = await serviceAcctClient.getClient();
+        console.log(`serviceAcctClient result: success, `, serviceAuthCientResult);
+        google.options({ auth: serviceAcctClient });
+        return serviceAcctClient;
+    } catch (error) {
+        console.error(`serviceAcctClient error: `, error);
+    }
 
 	// Try with OAuth2
-	const oauth2Client = new google.auth.OAuth2(
-		GCP_OAUTH_CLIENT_ID,
-		GCP_OAUTH_CLIENT_SECRET,
-		GCP_OAUTH_REDIRECT_URL
-	);
-	oauth2Client.setCredentials({ refresh_token: GCP_OAUTH_REFRESH_TOKEN });
-	oauth2Client
-		.getAccessToken()
-		.then((res) => {
-			console.log(`oauth2Client result: success`);
-			google.options({ auth: oauth2Client });
-			return oauth2Client;
-		})
-		.catch((error) => {
-			console.error(`oauth2Client error: `, error);
-		});
-	return undefined;
+    try {
+        const oauth2Client = new google.auth.OAuth2(
+            GCP_OAUTH_CLIENT_ID,
+            GCP_OAUTH_CLIENT_SECRET,
+            GCP_OAUTH_REDIRECT_URL
+        );
+        oauth2Client.setCredentials({ refresh_token: GCP_OAUTH_REFRESH_TOKEN });
+        const token = await oauth2Client.getAccessToken();
+        console.log(`oauth2Client result: success, `, token);
+        google.options({ auth: oauth2Client });
+        return oauth2Client;
+    } catch (error) {
+        console.error(`oauth2Client error: `, error);
+    }
+
+	// Return undefined if both methods fail
+    return undefined;
 }
 
-const auth = tryAuth();
+const auth = await tryAuth();
 
 export const accountManagement = google.mybusinessaccountmanagement({
 	version: 'v1',
