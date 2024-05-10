@@ -6,58 +6,33 @@ import {
 	GCP_OAUTH_CLIENT_SECRET,
 	GCP_OAUTH_REDIRECT_URL,
 	GCP_OAUTH_REFRESH_TOKEN,
-	GCP_SERVICE_ACCOUNT_PRIVATE_KEY_ID,
-	GCP_SERVICE_ACCOUNT_PRIVATE_KEY,
-	GCP_SERVICE_ACCOUNT_CLIENT_EMAIL,
-	GCP_SERVICE_ACCOUNT_CLIENT_ID,
 	GMB_LOCATION_ID
 } from '$env/static/private';
 import { Auth, google } from 'googleapis';
 
 // const SCOPES = ['https://www.googleapis.com/auth/business.manage'];
-function tryAuth(): Auth.GoogleAuth | Auth.OAuth2Client | undefined {
-	// Try first with service account
-	const serviceAcctClient = new google.auth.GoogleAuth({
-		scopes: ['https://www.googleapis.com/auth/business.manage'],
-		credentials: {
-			client_email: GCP_SERVICE_ACCOUNT_CLIENT_EMAIL,
-			client_id: GCP_SERVICE_ACCOUNT_CLIENT_ID,
-			private_key: GCP_SERVICE_ACCOUNT_PRIVATE_KEY,
-			private_key_id: GCP_SERVICE_ACCOUNT_PRIVATE_KEY_ID
-		}
-	});
-	serviceAcctClient
-		.getClient()
-		.then((res) => {
-			console.log(`serviceAcctClient result: success`);
-			google.options({ auth: serviceAcctClient });
-			return serviceAcctClient;
-		})
-		.catch((error) => {
-			console.error(`serviceAcctClient error: `, error);
-		});
-
+async function tryAuth(): Promise<Auth.OAuth2Client | undefined> {
 	// Try with OAuth2
-	const oauth2Client = new google.auth.OAuth2(
-		GCP_OAUTH_CLIENT_ID,
-		GCP_OAUTH_CLIENT_SECRET,
-		GCP_OAUTH_REDIRECT_URL
-	);
-	oauth2Client.setCredentials({ refresh_token: GCP_OAUTH_REFRESH_TOKEN });
-	oauth2Client
-		.getAccessToken()
-		.then((res) => {
-			console.log(`oauth2Client result: success`);
-			google.options({ auth: oauth2Client });
-			return oauth2Client;
-		})
-		.catch((error) => {
-			console.error(`oauth2Client error: `, error);
-		});
+	try {
+		const oauth2Client = new google.auth.OAuth2(
+			GCP_OAUTH_CLIENT_ID,
+			GCP_OAUTH_CLIENT_SECRET,
+			GCP_OAUTH_REDIRECT_URL
+		);
+		oauth2Client.setCredentials({ refresh_token: GCP_OAUTH_REFRESH_TOKEN });
+		const token = await oauth2Client.getAccessToken();
+		console.log(`oauth2Client result: success, `, token);
+		google.options({ auth: oauth2Client });
+		return oauth2Client;
+	} catch (error) {
+		console.error(`oauth2Client error: `, error);
+	}
+
+	// Return undefined if auth failed
 	return undefined;
 }
 
-const auth = tryAuth();
+const auth = await tryAuth();
 
 export const accountManagement = google.mybusinessaccountmanagement({
 	version: 'v1',
@@ -68,30 +43,29 @@ export const businessInformation = google.mybusinessbusinessinformation({
 	auth: auth
 });
 
-export function testGmbApi() {
+export async function testGmbApi() {
+	// Get all accounts
 	const locationReadMasks: string = 'name,title,openInfo,regularHours,specialHours,moreHours';
-	accountManagement.accounts.list({}).then((res) => {
-		// Get all accounts
-		const allAccounts = res.data.accounts;
-		console.log(`allAccounts: ${allAccounts}`);
-		// Get all locations for each account
-		(allAccounts as any[]).forEach((account) => {
-			const currentAccountName = account.name;
-			console.log(`currentAccountName: ${currentAccountName}`);
-			//
-			businessInformation.accounts.locations
-				.list({ parent: currentAccountName, readMask: locationReadMasks })
-				.then((res) => {
-					const locations = res.data.locations;
-					console.log(`locations: ${locations}`);
-				});
+	const allAccounts = await accountManagement.accounts.list({});
+	console.log(`allAccounts: `, allAccounts.data.accounts);
+	// Get all locations for each account
+	allAccounts.data.accounts?.forEach(async (account: any) => {
+		console.log(`working on account: `, account.name)
+		const locations = await businessInformation.accounts.locations.list({
+			parent: account.name,
+			readMask: locationReadMasks
 		});
-		// Finally, try getting the main location
-		businessInformation.locations
-			.get({ name: GMB_LOCATION_ID, readMask: locationReadMasks })
-			.then((res) => {
-				const location = res.data;
-				console.log(location);
-			});
+		if (locations.data.locations) {
+			console.log(`locations: `, locations.data.locations);
+		} else {
+			console.log(`locations: none`);
+		}
 	});
+	// Finally, try getting the main location
+	const specifiedLocation = await businessInformation.locations.get({
+		name: GMB_LOCATION_ID,
+		readMask: locationReadMasks
+	});
+
+	console.log(`specifiedLocation: `, specifiedLocation);
 }
