@@ -11,7 +11,7 @@ import {
 import { Auth, google } from 'googleapis';
 
 // const SCOPES = ['https://www.googleapis.com/auth/business.manage'];
-async function tryAuth(): Promise<Auth.GoogleAuth | Auth.OAuth2Client | undefined> {
+async function tryAuth(): Promise<Auth.OAuth2Client | undefined> {
 	// Try with OAuth2
 	try {
 		const oauth2Client = new google.auth.OAuth2(
@@ -28,7 +28,7 @@ async function tryAuth(): Promise<Auth.GoogleAuth | Auth.OAuth2Client | undefine
 		console.error(`oauth2Client error: `, error);
 	}
 
-	// Return undefined if both methods fail
+	// Return undefined if auth failed
 	return undefined;
 }
 
