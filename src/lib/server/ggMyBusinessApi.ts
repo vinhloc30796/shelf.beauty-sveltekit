@@ -43,30 +43,29 @@ export const businessInformation = google.mybusinessbusinessinformation({
 	auth: auth
 });
 
-export function testGmbApi() {
+export async function testGmbApi() {
+	// Get all accounts
 	const locationReadMasks: string = 'name,title,openInfo,regularHours,specialHours,moreHours';
-	accountManagement.accounts.list({}).then((res) => {
-		// Get all accounts
-		const allAccounts = res.data.accounts;
-		console.log(`allAccounts: ${allAccounts}`);
-		// Get all locations for each account
-		(allAccounts as any[]).forEach((account) => {
-			const currentAccountName = account.name;
-			console.log(`currentAccountName: ${currentAccountName}`);
-			//
-			businessInformation.accounts.locations
-				.list({ parent: currentAccountName, readMask: locationReadMasks })
-				.then((res) => {
-					const locations = res.data.locations;
-					console.log(`locations: ${locations}`);
-				});
+	const allAccounts = await accountManagement.accounts.list({});
+	console.log(`allAccounts: `, allAccounts.data.accounts);
+	// Get all locations for each account
+	allAccounts.data.accounts?.forEach(async (account: any) => {
+		console.log(`working on account: `, account.name)
+		const locations = await businessInformation.accounts.locations.list({
+			parent: account.name,
+			readMask: locationReadMasks
 		});
-		// Finally, try getting the main location
-		businessInformation.locations
-			.get({ name: GMB_LOCATION_ID, readMask: locationReadMasks })
-			.then((res) => {
-				const location = res.data;
-				console.log(location);
-			});
+		if (locations.data.locations) {
+			console.log(`locations: `, locations.data.locations);
+		} else {
+			console.log(`locations: none`);
+		}
 	});
+	// Finally, try getting the main location
+	const specifiedLocation = await businessInformation.locations.get({
+		name: GMB_LOCATION_ID,
+		readMask: locationReadMasks
+	});
+
+	console.log(`specifiedLocation: `, specifiedLocation);
 }
