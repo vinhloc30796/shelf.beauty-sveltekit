@@ -36,16 +36,60 @@
 	console.log('Page data:', data);
 	console.log('Store is open?:', isOpen);
 
+	let regularHourPeriodsEN = data.gmbLocationData?.regularHours?.periods || [];
+	let regularHourPeriodsVN = regularHourPeriodsEN.map((period) => {
+		let openDayEN = period.openDay?.toUpperCase();
+		let openDayVN = '';
+		switch (openDayEN) {
+			case 'MONDAY':
+				openDayVN = 'Thứ Hai (Mon)';
+				break;
+			case 'TUESDAY':
+				openDayVN = 'Thứ Ba (Tue)';
+				break;
+			case 'WEDNESDAY':
+				openDayVN = 'Thứ Tư (Wed)';
+				break;
+			case 'THURSDAY':
+				openDayVN = 'Thứ Năm (Thu)';
+				break;
+			case 'FRIDAY':
+				openDayVN = 'Thứ Sáu (Fri)';
+				break;
+			case 'SATURDAY':
+				openDayVN = 'Thứ Bảy (Sat)';
+				break;
+			case 'SUNDAY':
+				openDayVN = 'Chủ Nhật (Sun)';
+				break;
+			default:
+				openDayVN = 'Không xác định';
+				break;
+		}
+		let openTime = period.openTime;
+		let closeTime = period.closeTime;
+		return { openDay: openDayVN, openTime: openTime, closeTime: closeTime };
+	});
+	let periodCarouselApi: CarouselAPI;
+	console.log(`Regular hour periods: `, regularHourPeriodsVN);
 	let images = [image_1, image_2, image_3, image_4, image_5, image_6, image_7, image_8, image_9];
-	let api: CarouselAPI;
+	let imageCarouselApi: CarouselAPI;
 	let count = 0;
 	let current = 0;
 
-	$: if (api) {
-		count = api.scrollSnapList().length;
-		current = api.selectedScrollSnap() + 1;
-		api.on('select', () => {
-			current = api.selectedScrollSnap() + 1;
+	$: if (periodCarouselApi) {
+		count = periodCarouselApi.scrollSnapList().length;
+		current = periodCarouselApi.selectedScrollSnap() + 1;
+		periodCarouselApi.on('select', () => {
+			current = periodCarouselApi.selectedScrollSnap() + 1;
+		});
+	}
+
+	$: if (imageCarouselApi) {
+		count = imageCarouselApi.scrollSnapList().length;
+		current = imageCarouselApi.selectedScrollSnap() + 1;
+		imageCarouselApi.on('select', () => {
+			current = imageCarouselApi.selectedScrollSnap() + 1;
 		});
 	}
 
@@ -138,20 +182,66 @@
 						<!-- Check if isOpen is true, add green open -->
 						{#if isOpen}
 							<Badge class="ml-2 bg-green-500">Mở cửa</Badge>
-						<!-- Else if false, then red badget -->
+							<!-- Else if false, then red badget -->
 						{:else if isOpen === false}
 							<Badge variant="destructive" class="ml-2">Chưa mở</Badge>
-						<!-- Else if None then show nothing -->
+							<!-- Else if None then show nothing -->
 						{:else}
 							<!-- Do nothing -->
 						{/if}
 					</Button>
 				</div>
 			</div>
+			<!-- Details -->
+			<Carousel.Root
+				bind:api={periodCarouselApi}
+				orientation="horizontal"
+				opts={{
+					align: 'start',
+					dragFree: true,
+					skipSnaps: false
+				}}
+				plugins={[
+					Autoplay({
+						delay: 5000,
+						stopOnHover: true,
+						waitForTransition: true
+					})
+				]}
+				class="w-full"
+			>
+				<Carousel.Content class="flex flex-row items-center justify-center">
+					{#each Array(regularHourPeriodsVN.length - 1) as _}
+						<Carousel.Item />
+					{/each}
+					{#each regularHourPeriodsVN as period, i (period)}
+						<Carousel.Item class="">
+							<div class="p-1">
+								<Card.Root>
+									<Card.Header class="items-center justify-center">
+										<Card.Title class="text-lg">
+											{period.openDay}
+										</Card.Title>
+									</Card.Header>
+									<Card.Content class="flex items-center justify-center">
+										<!-- Map from period.openDay to string type, then use it as key to get the value from dayMappingENToVN -->
+										<p class="text-muted-foreground text-sm">
+											{period.openTime?.hours}:{period.openTime?.minutes || '00'} - {period
+												.closeTime?.hours}:{period.closeTime?.minutes || '00'}
+										</p>
+									</Card.Content>
+								</Card.Root>
+							</div>
+						</Carousel.Item>
+					{/each}
+				</Carousel.Content>
+				<Carousel.Previous />
+				<Carousel.Next />
+			</Carousel.Root>
 		</section>
 		<section class="flex flex-col mx-16 items-center justify-center col-span-1 xl:col-span-2">
 			<Carousel.Root
-				bind:api
+				bind:api={imageCarouselApi}
 				orientation="horizontal"
 				opts={{
 					align: 'start',
