@@ -92,6 +92,9 @@ const checkOpenHours = (gmbLocationData: any) => {
 	return isOpen;
 };
 
+// TODO: Move the GMB API call to a server API
+// that can only be called from the client
+// to ensure (a) security of the API key (b) less time to first paint
 export const load: PageServerLoad = async () => {
 	// Extract the open hours
 	const locationId: string = GMB_LOCATION_ID; // 'locations/1234567890'
