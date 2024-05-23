@@ -148,8 +148,55 @@
 					yên bình và thoải mái.
 				</P>
 			</div>
+			<!-- Details -->
+			<Carousel.Root
+				bind:api={periodCarouselApi}
+				orientation="horizontal"
+				opts={{
+					align: 'start',
+					dragFree: true,
+					skipSnaps: false
+				}}
+				plugins={[
+					Autoplay({
+						delay: 5000,
+						stopOnHover: true,
+						waitForTransition: true
+					})
+				]}
+				class="w-full"
+			>
+				<Carousel.Content class="flex flex-row items-center justify-center">
+					{#each Array(regularHourPeriodsVN.length - 1) as _}
+						<Carousel.Item />
+					{/each}
+					{#each regularHourPeriodsVN as period, i (period)}
+						<Carousel.Item class="">
+							<div class="p-1">
+								<Card.Root>
+									<Card.Header class="items-center justify-center">
+										<Card.Title class="text-lg">
+											{period.openDay}
+										</Card.Title>
+									</Card.Header>
+									<Card.Content class="flex items-center justify-center">
+										<!-- Map from period.openDay to string type, then use it as key to get the value from dayMappingENToVN -->
+										<p class="text-muted-foreground text-sm">
+											mở cửa:
+											{period.openTime?.hours}:{period.openTime?.minutes || '00'} - {period
+												.closeTime?.hours}:{period.closeTime?.minutes || '00'}
+										</p>
+									</Card.Content>
+								</Card.Root>
+							</div>
+						</Carousel.Item>
+					{/each}
+				</Carousel.Content>
+				<Carousel.Previous />
+				<Carousel.Next />
+			</Carousel.Root>
 			<!-- Buttons -->
-			<div class="flex flex-col sm:flex-row w-full justify-items-center items-center my-4">
+			<div class="flex flex-col sm:flex-row w-full justify-items-center items-center my-4 mx-4">
 				<div class="flex w-full mx-1 my-4 justify-self-center justify-center items-center">
 					<Button
 						variant="default"
@@ -192,52 +239,6 @@
 					</Button>
 				</div>
 			</div>
-			<!-- Details -->
-			<Carousel.Root
-				bind:api={periodCarouselApi}
-				orientation="horizontal"
-				opts={{
-					align: 'start',
-					dragFree: true,
-					skipSnaps: false
-				}}
-				plugins={[
-					Autoplay({
-						delay: 5000,
-						stopOnHover: true,
-						waitForTransition: true
-					})
-				]}
-				class="w-full"
-			>
-				<Carousel.Content class="flex flex-row items-center justify-center">
-					{#each Array(regularHourPeriodsVN.length - 1) as _}
-						<Carousel.Item />
-					{/each}
-					{#each regularHourPeriodsVN as period, i (period)}
-						<Carousel.Item class="">
-							<div class="p-1">
-								<Card.Root>
-									<Card.Header class="items-center justify-center">
-										<Card.Title class="text-lg">
-											{period.openDay}
-										</Card.Title>
-									</Card.Header>
-									<Card.Content class="flex items-center justify-center">
-										<!-- Map from period.openDay to string type, then use it as key to get the value from dayMappingENToVN -->
-										<p class="text-muted-foreground text-sm">
-											{period.openTime?.hours}:{period.openTime?.minutes || '00'} - {period
-												.closeTime?.hours}:{period.closeTime?.minutes || '00'}
-										</p>
-									</Card.Content>
-								</Card.Root>
-							</div>
-						</Carousel.Item>
-					{/each}
-				</Carousel.Content>
-				<Carousel.Previous />
-				<Carousel.Next />
-			</Carousel.Root>
 		</section>
 		<section class="flex flex-col mx-16 items-center justify-center col-span-1 xl:col-span-2">
 			<Carousel.Root
