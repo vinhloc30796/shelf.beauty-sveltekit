@@ -152,7 +152,7 @@
 				</P>
 				<P>
 					Tụi mình
-					<span class="text-yellow-500"> giảm giá 10% ⭐ </span>
+					<span class="text-amber-600 dark:text-yellow-500"> giảm giá 10% ⭐ </span>
 					vào Thứ Tư & Thứ Năm hàng tuần. Hãy đến và cảm nhận sự khác biệt!
 				</P>
 			</div>
