@@ -20,6 +20,8 @@
 	// Typography
 	import H1 from '$lib/components/typography/h1.svelte';
 	import H2 from '$lib/components/typography/h2.svelte';
+	import H4 from '$lib/components/typography/h4.svelte';
+	import Muted from '$lib/components/typography/muted.svelte';
 	import P from '$lib/components/typography/p.svelte';
 	// Components
 	import { AspectRatio } from '$lib/components/ui/aspect-ratio';
@@ -175,17 +177,17 @@
 							<div class="p-1">
 								<Card.Root>
 									<Card.Header class="items-center justify-center">
-										<Card.Title class="text-lg">
-											{period.openDay}
-										</Card.Title>
+										<Card.Title><H4>{period.openDay}</H4></Card.Title>
 									</Card.Header>
 									<Card.Content class="flex items-center justify-center">
 										<!-- Map from period.openDay to string type, then use it as key to get the value from dayMappingENToVN -->
-										<p class="text-muted-foreground text-sm">
+										<!-- <p class="text-muted-foreground text-sm"> -->
+										<Muted>
 											mở cửa:
 											{period.openTime?.hours}:{period.openTime?.minutes || '00'} - {period
 												.closeTime?.hours}:{period.closeTime?.minutes || '00'}
-										</p>
+										</Muted>
+										<!-- </p> -->
 									</Card.Content>
 								</Card.Root>
 							</div>
