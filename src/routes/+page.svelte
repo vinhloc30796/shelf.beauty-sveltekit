@@ -16,7 +16,7 @@
 	import image_8 from '$lib/images/operations/8.jpg';
 	import image_9 from '$lib/images/operations/9.jpg';
 	// Icons
-	import { Calendar, ThickArrowRight, StarFilled } from 'svelte-radix';
+	import { Calendar, ThickArrowRight } from 'svelte-radix';
 	// Typography
 	import H1 from '$lib/components/typography/h1.svelte';
 	import H2 from '$lib/components/typography/h2.svelte';
@@ -195,8 +195,8 @@
 										<!-- If Wednesday & Thursday, then add a StarFilled -->
 										{#if period.openDay === 'Thứ Tư (Wed)' || period.openDay === 'Thứ Năm (Thu)'}
 											<Tooltip.Root>
-												<Tooltip.Trigger>
-													<StarFilled class="ml-2 text-yellow-500" />
+												<Tooltip.Trigger class="ml-2">
+													⭐
 												</Tooltip.Trigger>
 												<Tooltip.Content>
 													<p>Giảm giá 10%</p>
