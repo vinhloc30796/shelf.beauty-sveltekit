@@ -16,7 +16,7 @@
 	import image_8 from '$lib/images/operations/8.jpg';
 	import image_9 from '$lib/images/operations/9.jpg';
 	// Icons
-	import { Calendar, ThickArrowRight } from 'svelte-radix';
+	import { Calendar, ThickArrowRight, StarFilled } from 'svelte-radix';
 	// Typography
 	import H1 from '$lib/components/typography/h1.svelte';
 	import H2 from '$lib/components/typography/h2.svelte';
@@ -27,6 +27,7 @@
 	import { AspectRatio } from '$lib/components/ui/aspect-ratio';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Badge, badgeVariants } from '$lib/components/ui/badge/index.js';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { type CarouselAPI } from '$lib/components/ui/carousel/context.js';
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
@@ -181,13 +182,22 @@
 									</Card.Header>
 									<Card.Content class="flex items-center justify-center">
 										<!-- Map from period.openDay to string type, then use it as key to get the value from dayMappingENToVN -->
-										<!-- <p class="text-muted-foreground text-sm"> -->
 										<Muted>
 											mở cửa:
 											{period.openTime?.hours}:{period.openTime?.minutes || '00'} - {period
 												.closeTime?.hours}:{period.closeTime?.minutes || '00'}
 										</Muted>
-										<!-- </p> -->
+										<!-- If Wednesday & Thursday, then add a StarFilled -->
+										{#if period.openDay === 'Thứ Tư (Wed)' || period.openDay === 'Thứ Năm (Thu)'}
+											<Tooltip.Root>
+												<Tooltip.Trigger>
+													<StarFilled color="ff4488" class="ml-2"/>
+												</Tooltip.Trigger>
+												<Tooltip.Content>
+													<p>Giảm giá 10%</p>
+												</Tooltip.Content>
+											</Tooltip.Root>
+										{/if}
 									</Card.Content>
 								</Card.Root>
 							</div>
