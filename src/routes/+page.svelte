@@ -150,6 +150,11 @@
 					Shelf Beauty Studio là một không gian làm đẹp chuyên nghiệp, nơi bạn có thể tìm thấy sự
 					yên bình và thoải mái.
 				</P>
+				<P>
+					Tụi mình
+					<span class="text-yellow-500"> giảm giá 10% ⭐ </span>
+					vào Thứ Tư & Thứ Năm hàng tuần. Hãy đến và cảm nhận sự khác biệt!
+				</P>
 			</div>
 			<!-- Details -->
 			<Carousel.Root
@@ -191,7 +196,7 @@
 										{#if period.openDay === 'Thứ Tư (Wed)' || period.openDay === 'Thứ Năm (Thu)'}
 											<Tooltip.Root>
 												<Tooltip.Trigger>
-													<StarFilled color="ff4488" class="ml-2"/>
+													<StarFilled class="ml-2 text-yellow-500" />
 												</Tooltip.Trigger>
 												<Tooltip.Content>
 													<p>Giảm giá 10%</p>
