@@ -116,7 +116,7 @@
 	$: gtag_report_conversion_fbmessage = (url: string) => {
 		// @ts-ignore
 		window.gtag('event', 'conversion', {
-			send_to: env.PUBLIC_GTAG_ID + '/XeK7CPaZ2YUZEJue89oq',
+			send_to: env.PUBLIC_GTAG_ID + '/mpO0CJ_Jg54ZEJue89oq',
 			event_callback: () => {
 				if (url) {
 					window.location;
