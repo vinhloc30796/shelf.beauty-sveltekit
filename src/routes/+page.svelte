@@ -129,8 +129,8 @@
 </script>
 
 <svelte:head>
-	<title>Shelf Beauty Studio - Trang Chủ</title>
-	<meta name="description" content="Shelf Beauty Studio - Trang Chủ" />
+	<title>Shelf Beauty Studio - 🏡 Trang Chủ</title>
+	<meta name="description" content="Shelf Beauty Studio - 🏡 Trang Chủ" />
 </svelte:head>
 
 <div class="flex flex-col min-h-[calc(100vh-12rem)] max-w-1/2">

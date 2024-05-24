@@ -50,6 +50,9 @@ dependencies:
   ky:
     specifier: ^1.2.3
     version: 1.2.3
+  lucide-svelte:
+    specifier: ^0.379.0
+    version: 0.379.0(svelte@4.2.15)
   mode-watcher:
     specifier: ^0.3.0
     version: 0.3.0(svelte@4.2.15)
@@ -2737,6 +2740,14 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yallist: 4.0.0
+
+  /lucide-svelte@0.379.0(svelte@4.2.15):
+    resolution: {integrity: sha512-KnlxrmVJlzFDHNA2oOAvD/g2a5zYMtUsQ7g7A3b5m5Q7prwu+tuVm0MQ6SI7NwPfFZh6bkCnQ0freBOGI/9MiA==}
+    peerDependencies:
+      svelte: ^3 || ^4 || ^5.0.0-next.42
+    dependencies:
+      svelte: 4.2.15
+    dev: false
 
   /magic-string@0.30.10:
     resolution: {integrity: sha512-iIRwTIf0QKV3UAnYK4PU8uiEc4SRh5jX0mwpIwETPpHdhVM4f53RSwS/vXvN1JhGX+Cs7B8qIq3d6AH49O5fAQ==}
