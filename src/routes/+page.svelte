@@ -31,7 +31,6 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { type CarouselAPI } from '$lib/components/ui/carousel/context.js';
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
-	import Autoplay from 'embla-carousel-autoplay';
 	// Data
 	import type { PageData } from './$types';
 	export let data: PageData;
@@ -74,25 +73,27 @@
 		return { openDay: openDayVN, openTime: openTime, closeTime: closeTime };
 	});
 	let periodCarouselApi: CarouselAPI;
+	let periodCount = 0;
+	let periodCurrent = 0;
 	console.log(`Regular hour periods: `, regularHourPeriodsVN);
 	let images = [image_1, image_2, image_3, image_4, image_5, image_6, image_7, image_8, image_9];
 	let imageCarouselApi: CarouselAPI;
-	let count = 0;
-	let current = 0;
+	let imageCount = 0;
+	let imageCurrent = 0;
 
 	$: if (periodCarouselApi) {
-		count = periodCarouselApi.scrollSnapList().length;
-		current = periodCarouselApi.selectedScrollSnap() + 1;
+		periodCount = periodCarouselApi.scrollSnapList().length;
+		periodCurrent = periodCarouselApi.selectedScrollSnap() + 1;
 		periodCarouselApi.on('select', () => {
-			current = periodCarouselApi.selectedScrollSnap() + 1;
+			periodCurrent = periodCarouselApi.selectedScrollSnap() + 1;
 		});
 	}
 
 	$: if (imageCarouselApi) {
-		count = imageCarouselApi.scrollSnapList().length;
-		current = imageCarouselApi.selectedScrollSnap() + 1;
+		imageCount = imageCarouselApi.scrollSnapList().length;
+		imageCurrent = imageCarouselApi.selectedScrollSnap() + 1;
 		imageCarouselApi.on('select', () => {
-			current = imageCarouselApi.selectedScrollSnap() + 1;
+			imageCurrent = imageCarouselApi.selectedScrollSnap() + 1;
 		});
 	}
 
@@ -165,21 +166,11 @@
 					dragFree: true,
 					skipSnaps: false
 				}}
-				plugins={[
-					Autoplay({
-						delay: 5000,
-						stopOnHover: true,
-						waitForTransition: true
-					})
-				]}
 				class="w-full"
 			>
-				<Carousel.Content class="flex flex-row items-center justify-center">
-					{#each Array(regularHourPeriodsVN.length - 1) as _}
-						<Carousel.Item />
-					{/each}
+				<Carousel.Content>
 					{#each regularHourPeriodsVN as period, i (period)}
-						<Carousel.Item class="">
+						<Carousel.Item>
 							<div class="p-1">
 								<Card.Root>
 									<Card.Header class="items-center justify-center">
@@ -195,9 +186,7 @@
 										<!-- If Wednesday & Thursday, then add a StarFilled -->
 										{#if period.openDay === 'Thứ Tư (Wed)' || period.openDay === 'Thứ Năm (Thu)'}
 											<Tooltip.Root>
-												<Tooltip.Trigger class="ml-2">
-													⭐
-												</Tooltip.Trigger>
+												<Tooltip.Trigger class="ml-2">⭐</Tooltip.Trigger>
 												<Tooltip.Content>
 													<p>Giảm giá 10%</p>
 												</Tooltip.Content>
@@ -266,13 +255,6 @@
 					dragFree: true,
 					skipSnaps: false
 				}}
-				plugins={[
-					Autoplay({
-						delay: 5000,
-						stopOnHover: true,
-						waitForTransition: true
-					})
-				]}
 				class="w-full"
 			>
 				<Carousel.Content class="flex flex-row items-center justify-center">
@@ -297,7 +279,7 @@
 				<Carousel.Next />
 			</Carousel.Root>
 			<div class="py-2 text-center text-sm text-muted-foreground">
-				Ảnh {current} trên {count}
+				Ảnh {imageCurrent} trên {imageCount}
 			</div>
 		</section>
 	</div>
