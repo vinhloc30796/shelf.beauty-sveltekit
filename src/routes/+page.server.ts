@@ -1,7 +1,8 @@
 // +page.server.ts
 import { GMB_LOCATION_ID } from '$env/static/private';
-import { businessInformation } from '$lib/server/ggMyBusinessApi';
+import { tryAuth } from '$lib/server/ggMyBusinessApi';
 import type { PageServerLoad } from './$types';
+import { google } from 'googleapis';
 
 // Make type regularHoursPeriod
 type regularHoursPeriod = {
@@ -124,27 +125,47 @@ const convertDaysToVietnamese = (openDayEN: string) => {
 	return openDayVN;
 };
 
-
 // TODO: Move the GMB API call to a server API
 // that can only be called from the client
 // to ensure (a) security of the API key (b) less time to first paint
 export const load: PageServerLoad = async () => {
+	// Auth
+	const authPromise = tryAuth();
 	// Pull data
 	const locationId: string = GMB_LOCATION_ID; // 'locations/1234567890'
 	const locationReadMasks: string = 'name,title,openInfo,regularHours,specialHours,moreHours';
-	const locationPromise = businessInformation.locations.get({
-		name: locationId,
-		readMask: locationReadMasks
-	}).then((res) => res.data).catch((error) => {
-		console.error(`businessInformation.locations error: ${error}`);
-		return null;
+	let startTime = Date.now();
+	const locationPromise = authPromise.then((auth) => {
+		// console.log('load: authPromise took ', Date.now() - startTime, 'ms');
+		// startTime = Date.now();
+		const businessInformation = google.mybusinessbusinessinformation({ version: 'v1', auth });
+		// console.log('load: businessInformation created, took ', Date.now() - startTime, 'ms');
+		// startTime = Date.now();
+		return businessInformation.locations
+			.get({
+				name: locationId,
+				readMask: locationReadMasks
+			})
+			.then((res) => {
+				// console.log('load: businessInformation.locations.get took ', Date.now() - startTime, 'ms');
+				// startTime = Date.now();
+				return res.data;
+			})
+			.catch((error) => {
+				console.error(`businessInformation.locations error: ${error}`);
+				return null;
+			});
 	});
 	// Downstream promises
-	const isOpenPromise = locationPromise.then((location) => location ? checkOpenHours(location) : null);
+	const isOpenPromise = locationPromise.then((location) =>
+		location ? checkOpenHours(location) : null
+	);
 	const regularHourPeriodsPromise = locationPromise.then((location) => {
 		if (!location) return [];
 		return location.regularHours?.periods?.map((period) => {
-			const openDayVN = convertDaysToVietnamese(period.openDay?.toUpperCase());
+			const openDayVN = convertDaysToVietnamese(
+				period.openDay ? period.openDay.toUpperCase() : 'UNKNOWN'
+			);
 			const openTime = period.openTime;
 			const closeTime = period.closeTime;
 			return { openDay: openDayVN, openTime: openTime, closeTime: closeTime };
@@ -154,6 +175,6 @@ export const load: PageServerLoad = async () => {
 	// Return promises for streaming
 	return {
 		isOpenPromise: isOpenPromise,
-		regularHourPeriodsPromise: regularHourPeriodsPromise,
+		regularHourPeriodsPromise: regularHourPeriodsPromise
 	};
 };

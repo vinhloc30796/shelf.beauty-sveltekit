@@ -1,5 +1,6 @@
 <script lang="ts">
 	// Environment variables
+	// https://kit.svelte.dev/docs/modules#$env-dynamic-private
 	import { env } from '$env/dynamic/public';
 	// Images: branding
 	import shelf_dark from '$lib/images/branding/shelf-dark-landscape.png';
@@ -35,7 +36,7 @@
 	export let data: PageData;
 
 	// isOpen
-	let isOpen: boolean | null = null;
+	export let isOpen: boolean | null = null;
 	$: (async () => {
 		if (data.isOpenPromise) {
 			try {
@@ -54,7 +55,7 @@
 		openTime: any;
 		closeTime: any;
 	};
-	
+
 	export let regularHourPeriodsVN: RegularHourPeriod[] = [];
 	let periodCount = 0;
 	let periodCurrent = 0;
@@ -148,19 +149,24 @@
 					Tụi mình
 					<span class="text-amber-600 dark:text-yellow-500"> giảm giá 10% ⭐ </span>
 					vào Thứ Tư & Thứ Năm hàng tuần.
-					{#if isOpen}
-						<!-- Check if isOpen is true, add green, open -->
-						Tụi mình <span class=" text-green-500">đang mở cửa!</span>
-						Hãy đến và cảm nhận sự khác biệt!
-					{:else if isOpen === false}
-						<!-- Else if false, then red, closed -->
-						Tụi mình <span class="text-red-500">chưa mở cửa!</span>
-						Hãy đặt hẹn để trải nghiệm dịch vụ của chúng mình!
-						<!-- Else if None then show nothing -->
-					{:else}
-						<!-- Do nothing -->
-						Hãy đến và cảm nhận sự khác biệt!
-					{/if}
+					{#await data.isOpenPromise}
+						Hãy cảm nhận sự khác biệt!
+					{:then}
+						<!-- Show the status of the store -->
+						{#if isOpen}
+							<!-- Check if isOpen is true, add green, open -->
+							Tụi mình <span class=" text-green-500">đang mở cửa!</span>
+							Hãy đến và cảm nhận sự khác biệt!
+						{:else if isOpen === false}
+							<!-- Else if false, then red, closed -->
+							Tụi mình <span class="text-red-500">chưa mở cửa!</span>
+							Hãy đặt hẹn để trải nghiệm dịch vụ của chúng mình!
+							<!-- Else if None then show nothing -->
+						{:else}
+							<!-- Do nothing -->
+							Hãy đến và cảm nhận sự khác biệt!
+						{/if}
+					{/await}
 				</P>
 			</div>
 			<!-- Details -->
