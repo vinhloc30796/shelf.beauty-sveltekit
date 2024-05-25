@@ -26,7 +26,6 @@
 	// Components
 	import { AspectRatio } from '$lib/components/ui/aspect-ratio';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { Badge, badgeVariants } from '$lib/components/ui/badge/index.js';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { type CarouselAPI } from '$lib/components/ui/carousel/context.js';
@@ -154,7 +153,19 @@
 				<P>
 					Tụi mình
 					<span class="text-amber-600 dark:text-yellow-500"> giảm giá 10% ⭐ </span>
-					vào Thứ Tư & Thứ Năm hàng tuần. Hãy đến và cảm nhận sự khác biệt!
+					vào Thứ Tư & Thứ Năm hàng tuần.
+					{#if isOpen}
+						<!-- Check if isOpen is true, add green, open -->
+						Tụi mình <span class=" text-green-500">đang mở cửa!</span>
+						Hãy đến và cảm nhận sự khác biệt!
+					{:else if isOpen === false}
+						<!-- Else if false, then red, closed -->
+						Tụi mình <span class="text-red-500">chưa mở cửa!</span>
+						Hãy đặt hẹn để trải nghiệm dịch vụ của chúng mình!
+						<!-- Else if None then show nothing -->
+					{:else}
+						<!-- Do nothing -->
+					{/if}
 				</P>
 			</div>
 			<!-- Details -->
@@ -166,7 +177,7 @@
 					dragFree: true,
 					skipSnaps: false
 				}}
-				class="w-full"
+				class="w-3/4 sm:w-full"
 			>
 				<Carousel.Content>
 					{#each regularHourPeriodsVN as period, i (period)}
@@ -206,7 +217,7 @@
 				<div class="flex w-full mx-1 my-4 justify-self-center justify-center items-center">
 					<Button
 						variant="default"
-						class="h-12 w-36"
+						class="h-12 w-3/4 sm:w-36"
 						href="https://www.google.com/maps/dir/?api=1&destination=shelf+beauty+studio,+Yersin,+Ph%C6%B0%E1%BB%9Dng+10,+Dalat,+Lam+Dong&destination_place_id=ChIJHydiEXkTcTERBlm-4kPGIWk"
 						title="Shelf Beauty Studio trên Google Maps"
 						referrerpolicy="origin"
@@ -220,7 +231,7 @@
 				<div class="flex w-full mx-1 my-4 justify-self-center justify-center items-center">
 					<Button
 						variant="secondary"
-						class="h-12 min-w-36"
+						class="h-12 w-3/4 sm:w-36"
 						href="https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ"
 						title="Shelf Beauty Studio trên Facebook"
 						referrerpolicy="origin"
@@ -232,16 +243,6 @@
 					>
 						<Calendar class="mr-2" />
 						Đặt hẹn
-						<!-- Check if isOpen is true, add green open -->
-						{#if isOpen}
-							<Badge class="ml-2 bg-green-500">Mở cửa</Badge>
-							<!-- Else if false, then red badget -->
-						{:else if isOpen === false}
-							<Badge variant="destructive" class="ml-2">Chưa mở</Badge>
-							<!-- Else if None then show nothing -->
-						{:else}
-							<!-- Do nothing -->
-						{/if}
 					</Button>
 				</div>
 			</div>
@@ -255,7 +256,7 @@
 					dragFree: true,
 					skipSnaps: false
 				}}
-				class="w-full"
+				class="w-3/4 sm:w-full"
 			>
 				<Carousel.Content class="flex flex-row items-center justify-center">
 					{#each Array(images.length - 1) as _}
