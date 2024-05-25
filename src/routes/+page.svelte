@@ -1,6 +1,5 @@
 <script lang="ts">
 	// Environment variables
-	// https://kit.svelte.dev/docs/modules#$env-dynamic-private
 	import { env } from '$env/dynamic/public';
 	// Images: branding
 	import shelf_dark from '$lib/images/branding/shelf-dark-landscape.png';
@@ -32,53 +31,44 @@
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
 	// Data
 	import type { PageData } from './$types';
+	import { onMount } from 'svelte';
 	export let data: PageData;
-	export const isOpen = data.isOpen;
-	console.log('Page data:', data);
-	console.log('Store is open?:', isOpen);
 
-	let regularHourPeriodsEN = data.gmbLocationData?.regularHours?.periods || [];
-	let regularHourPeriodsVN = regularHourPeriodsEN.map((period) => {
-		let openDayEN = period.openDay?.toUpperCase();
-		let openDayVN = '';
-		switch (openDayEN) {
-			case 'MONDAY':
-				openDayVN = 'Thứ Hai (Mon)';
-				break;
-			case 'TUESDAY':
-				openDayVN = 'Thứ Ba (Tue)';
-				break;
-			case 'WEDNESDAY':
-				openDayVN = 'Thứ Tư (Wed)';
-				break;
-			case 'THURSDAY':
-				openDayVN = 'Thứ Năm (Thu)';
-				break;
-			case 'FRIDAY':
-				openDayVN = 'Thứ Sáu (Fri)';
-				break;
-			case 'SATURDAY':
-				openDayVN = 'Thứ Bảy (Sat)';
-				break;
-			case 'SUNDAY':
-				openDayVN = 'Chủ Nhật (Sun)';
-				break;
-			default:
-				openDayVN = 'Không xác định';
-				break;
+	// isOpen
+	let isOpen: boolean | null = null;
+	$: (async () => {
+		if (data.isOpenPromise) {
+			try {
+				isOpen = await data.isOpenPromise;
+				console.log('Store is open?:', isOpen);
+			} catch (error) {
+				console.error('Error loading store status:', error);
+			}
 		}
-		let openTime = period.openTime;
-		let closeTime = period.closeTime;
-		return { openDay: openDayVN, openTime: openTime, closeTime: closeTime };
-	});
+	})();
+
+	// regularHourPeriodsVN
 	let periodCarouselApi: CarouselAPI;
+	type RegularHourPeriod = {
+		openDay: string;
+		openTime: any;
+		closeTime: any;
+	};
+	
+	export let regularHourPeriodsVN: RegularHourPeriod[] = [];
 	let periodCount = 0;
 	let periodCurrent = 0;
-	console.log(`Regular hour periods: `, regularHourPeriodsVN);
-	let images = [image_1, image_2, image_3, image_4, image_5, image_6, image_7, image_8, image_9];
-	let imageCarouselApi: CarouselAPI;
-	let imageCount = 0;
-	let imageCurrent = 0;
+
+	$: (async () => {
+		if (data.regularHourPeriodsPromise) {
+			try {
+				const periods = await data.regularHourPeriodsPromise;
+				regularHourPeriodsVN = periods || [];
+			} catch (error) {
+				console.error('Error loading regular hours:', error);
+			}
+		}
+	})();
 
 	$: if (periodCarouselApi) {
 		periodCount = periodCarouselApi.scrollSnapList().length;
@@ -87,6 +77,12 @@
 			periodCurrent = periodCarouselApi.selectedScrollSnap() + 1;
 		});
 	}
+
+	// Images
+	let images = [image_1, image_2, image_3, image_4, image_5, image_6, image_7, image_8, image_9];
+	let imageCarouselApi: CarouselAPI;
+	let imageCount = 0;
+	let imageCurrent = 0;
 
 	$: if (imageCarouselApi) {
 		imageCount = imageCarouselApi.scrollSnapList().length;
@@ -109,7 +105,6 @@
 				}
 			}
 		});
-		// console.log('gtag_report_conversion_direction: sent to Google Analytics');
 		return false;
 	};
 
@@ -123,7 +118,6 @@
 				}
 			}
 		});
-		// console.log('gtag_report_conversion_fbmessage: sent to Google Analytics');
 		return false;
 	};
 </script>
@@ -165,6 +159,7 @@
 						<!-- Else if None then show nothing -->
 					{:else}
 						<!-- Do nothing -->
+						Hãy đến và cảm nhận sự khác biệt!
 					{/if}
 				</P>
 			</div>
@@ -180,34 +175,52 @@
 				class="w-3/4 sm:w-full"
 			>
 				<Carousel.Content>
-					{#each regularHourPeriodsVN as period, i (period)}
+					{#await data.regularHourPeriodsPromise}
+						<!-- Show a single loading card while data is being fetched -->
 						<Carousel.Item>
 							<div class="p-1">
 								<Card.Root>
 									<Card.Header class="items-center justify-center">
-										<Card.Title><H4>{period.openDay}</H4></Card.Title>
+										<Card.Title><H4>Loading...</H4></Card.Title>
 									</Card.Header>
 									<Card.Content class="flex items-center justify-center">
-										<!-- Map from period.openDay to string type, then use it as key to get the value from dayMappingENToVN -->
-										<Muted>
-											mở cửa:
-											{period.openTime?.hours}:{period.openTime?.minutes || '00'} - {period
-												.closeTime?.hours}:{period.closeTime?.minutes || '00'}
-										</Muted>
-										<!-- If Wednesday & Thursday, then add a StarFilled -->
-										{#if period.openDay === 'Thứ Tư (Wed)' || period.openDay === 'Thứ Năm (Thu)'}
-											<Tooltip.Root>
-												<Tooltip.Trigger class="ml-2">⭐</Tooltip.Trigger>
-												<Tooltip.Content>
-													<p>Giảm giá 10%</p>
-												</Tooltip.Content>
-											</Tooltip.Root>
-										{/if}
+										<Muted>Data is being fetched</Muted>
 									</Card.Content>
 								</Card.Root>
 							</div>
 						</Carousel.Item>
-					{/each}
+					{:then periods}
+						<!-- Display fetched periods -->
+						{#each regularHourPeriodsVN as period (period.openDay)}
+							<Carousel.Item>
+								<div class="p-1">
+									<Card.Root>
+										<Card.Header class="items-center justify-center">
+											<Card.Title><H4>{period.openDay}</H4></Card.Title>
+										</Card.Header>
+										<Card.Content class="flex items-center justify-center">
+											<Muted>
+												mở cửa:
+												{period.openTime?.hours}:{period.openTime?.minutes || '00'} - {period
+													.closeTime?.hours}:{period.closeTime?.minutes || '00'}
+											</Muted>
+											<!-- If Wednesday & Thursday, then add a StarFilled -->
+											{#if period.openDay === 'Thứ Tư (Wed)' || period.openDay === 'Thứ Năm (Thu)'}
+												<Tooltip.Root>
+													<Tooltip.Trigger class="ml-2">⭐</Tooltip.Trigger>
+													<Tooltip.Content>
+														<p>Giảm giá 10%</p>
+													</Tooltip.Content>
+												</Tooltip.Root>
+											{/if}
+										</Card.Content>
+									</Card.Root>
+								</div>
+							</Carousel.Item>
+						{/each}
+					{:catch error}
+						<p>Error loading regular hours: {error.message}</p>
+					{/await}
 				</Carousel.Content>
 				<Carousel.Previous />
 				<Carousel.Next />
