@@ -26,7 +26,21 @@
 	import H1 from '$lib/components/typography/h1.svelte';
 
 	// Logic
+	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+
+	let currentPage = '';
+	onMount(() => {
+		const unsubscribe = page.subscribe(($page) => {
+			currentPage = $page.url.pathname;
+			console.log(`currentPage:`, currentPage);
+		});
+
+		return () => {
+			unsubscribe();
+		};
+	});
+
 
 	$: isActive = (page: string) => {
 		return $page.url.pathname === page;
@@ -81,7 +95,7 @@
 					</a>
 					<a
 						href="/"
-						class="{isActive('/') || $page.url.pathname === ''
+						class="{isActive('/')
 							? 'text-foreground'
 							: 'text-muted-foreground'} hover:text-foreground"
 					>
