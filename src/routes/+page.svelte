@@ -140,7 +140,7 @@
 			</span>
 			<!-- Description -->
 			<div class="my-4">
-				<H2 class="mt-4">Trải nghiệm làm đẹp tại Đà Lạt</H2>
+				<H1 class="mt-4">Trải nghiệm làm đẹp tại Đà Lạt</H1>
 				<P>
 					Shelf Beauty Studio là một không gian làm đẹp chuyên nghiệp, nơi bạn có thể tìm thấy sự
 					yên bình và thoải mái.
@@ -278,9 +278,6 @@
 				class="w-3/4 sm:w-full"
 			>
 				<Carousel.Content class="flex flex-row items-center justify-center">
-					{#each Array(images.length - 1) as _}
-						<Carousel.Item />
-					{/each}
 					{#each images as image, i (image)}
 						<Carousel.Item class="">
 							<div class="p-1">
