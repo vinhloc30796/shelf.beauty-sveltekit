@@ -6,15 +6,15 @@
 	import shelf_dark from '$lib/images/branding/shelf-dark-landscape.png';
 	import shelf_light from '$lib/images/branding/shelf-light-landscape.png';
 	// Images: logo
-	import image_1 from '$lib/images/operations/1.jpg';
-	import image_2 from '$lib/images/operations/2.jpg';
-	import image_3 from '$lib/images/operations/3.jpg';
-	import image_4 from '$lib/images/operations/4.jpg';
-	import image_5 from '$lib/images/operations/5.jpg';
-	import image_6 from '$lib/images/operations/6.jpg';
-	import image_7 from '$lib/images/operations/7.jpg';
-	import image_8 from '$lib/images/operations/8.jpg';
-	import image_9 from '$lib/images/operations/9.jpg';
+	import image_1 from '$lib/images/operations/1.jpg?enhanced';
+	import image_2 from '$lib/images/operations/2.jpg?enhanced';
+	import image_3 from '$lib/images/operations/3.jpg?enhanced';
+	import image_4 from '$lib/images/operations/4.jpg?enhanced';
+	import image_5 from '$lib/images/operations/5.jpg?enhanced';
+	import image_6 from '$lib/images/operations/6.jpg?enhanced';
+	import image_7 from '$lib/images/operations/7.jpg?enhanced';
+	import image_8 from '$lib/images/operations/8.jpg?enhanced';
+	import image_9 from '$lib/images/operations/9.jpg?enhanced';
 	// Icons
 	import { Calendar, ThickArrowRight } from 'svelte-radix';
 	// Typography
@@ -80,7 +80,14 @@
 	}
 
 	// Images
-	let images = [image_1, image_2, image_3, image_4, image_5, image_6, image_7, image_8, image_9];
+	let imageModules = import.meta.glob('$lib/images/operations/{1,2,3,4,5,6,7,8,9}.jpg', {
+		eager: true,
+		query: {
+			fetchpriority: 'high',
+			loading: 'eager',
+			enhanced: true
+		}
+	});
 	let imageCarouselApi: CarouselAPI;
 	let imageCount = 0;
 	let imageCurrent = 0;
@@ -277,14 +284,17 @@
 				}}
 				class="w-3/4 sm:w-full"
 			>
-				<Carousel.Content class="flex flex-row items-center justify-center">
-					{#each images as image, i (image)}
+				<Carousel.Content class="flex flex-row">
+					{#each Object.entries(imageModules) as [_path, module], i}
 						<Carousel.Item class="">
 							<div class="p-1">
 								<Card.Root>
 									<Card.Content class="flex items-center justify-center p-6">
 										<AspectRatio ratio={4 / 3}>
-											<img src={image} alt="Shelf Beauty Studio - Operations {i}" />
+											<enhanced:img
+												src={module.default}
+												alt="Shelf Beauty Studio - Operations {i}"
+											/>
 										</AspectRatio>
 									</Card.Content>
 								</Card.Root>
