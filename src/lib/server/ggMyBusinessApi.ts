@@ -14,8 +14,8 @@ import { Auth, google } from 'googleapis';
 export async function tryAuth(): Promise<Auth.OAuth2Client | undefined> {
 	// Try with OAuth2
 	let startTime = Date.now();
-	try {
-		const promise = new Promise<Auth.OAuth2Client>((resolve, reject) => {
+	const promise = new Promise<Auth.OAuth2Client>((resolve, reject) => {
+		try {
 			// console.log('tryAuth: begins');
 			const auth = new google.auth.OAuth2(
 				GCP_OAUTH_CLIENT_ID,
@@ -29,14 +29,12 @@ export async function tryAuth(): Promise<Auth.OAuth2Client | undefined> {
 			// startTime = Date.now();
 			resolve(auth);
 			// console.log('tryAuth: resolve, took ', Date.now() - startTime, 'ms');
-		});
-		return promise;
-	} catch (error) {
-		console.error(`oauth2Client error: `, error);
-	}
-
-	// Return undefined if auth failed
-	return undefined;
+		} catch (error) {
+			console.error(`oauth2Client error: `, error);
+			reject(error);
+		}
+	});
+	return promise;
 }
 
 export async function testGmbApi() {
@@ -49,7 +47,7 @@ export async function testGmbApi() {
 	console.log(`allAccounts: `, allAccounts.data.accounts);
 	// Get all locations for each account
 	allAccounts.data.accounts?.forEach(async (account: any) => {
-		console.log(`working on account: `, account.name)
+		console.log(`working on account: `, account.name);
 		const locations = await businessInformation.accounts.locations.list({
 			parent: account.name,
 			readMask: locationReadMasks
