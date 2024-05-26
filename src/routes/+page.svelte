@@ -26,73 +26,70 @@
 	// Components
 	import { AspectRatio } from '$lib/components/ui/aspect-ratio';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { Badge, badgeVariants } from '$lib/components/ui/badge/index.js';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { type CarouselAPI } from '$lib/components/ui/carousel/context.js';
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
-	import Autoplay from 'embla-carousel-autoplay';
 	// Data
 	import type { PageData } from './$types';
+	import { onMount } from 'svelte';
 	export let data: PageData;
-	export const isOpen = data.isOpen;
-	console.log('Page data:', data);
-	console.log('Store is open?:', isOpen);
 
-	let regularHourPeriodsEN = data.gmbLocationData?.regularHours?.periods || [];
-	let regularHourPeriodsVN = regularHourPeriodsEN.map((period) => {
-		let openDayEN = period.openDay?.toUpperCase();
-		let openDayVN = '';
-		switch (openDayEN) {
-			case 'MONDAY':
-				openDayVN = 'Thứ Hai (Mon)';
-				break;
-			case 'TUESDAY':
-				openDayVN = 'Thứ Ba (Tue)';
-				break;
-			case 'WEDNESDAY':
-				openDayVN = 'Thứ Tư (Wed)';
-				break;
-			case 'THURSDAY':
-				openDayVN = 'Thứ Năm (Thu)';
-				break;
-			case 'FRIDAY':
-				openDayVN = 'Thứ Sáu (Fri)';
-				break;
-			case 'SATURDAY':
-				openDayVN = 'Thứ Bảy (Sat)';
-				break;
-			case 'SUNDAY':
-				openDayVN = 'Chủ Nhật (Sun)';
-				break;
-			default:
-				openDayVN = 'Không xác định';
-				break;
+	// isOpen
+	export let isOpen: boolean | null = null;
+	$: (async () => {
+		if (data.isOpenPromise) {
+			try {
+				isOpen = await data.isOpenPromise;
+				console.log('Store is open?:', isOpen);
+			} catch (error) {
+				console.error('Error loading store status:', error);
+			}
 		}
-		let openTime = period.openTime;
-		let closeTime = period.closeTime;
-		return { openDay: openDayVN, openTime: openTime, closeTime: closeTime };
-	});
+	})();
+
+	// regularHourPeriodsVN
 	let periodCarouselApi: CarouselAPI;
-	console.log(`Regular hour periods: `, regularHourPeriodsVN);
-	let images = [image_1, image_2, image_3, image_4, image_5, image_6, image_7, image_8, image_9];
-	let imageCarouselApi: CarouselAPI;
-	let count = 0;
-	let current = 0;
+	type RegularHourPeriod = {
+		openDay: string;
+		openTime: any;
+		closeTime: any;
+	};
+
+	export let regularHourPeriodsVN: RegularHourPeriod[] = [];
+	let periodCount = 0;
+	let periodCurrent = 0;
+
+	$: (async () => {
+		if (data.regularHourPeriodsPromise) {
+			try {
+				const periods = await data.regularHourPeriodsPromise;
+				regularHourPeriodsVN = periods || [];
+			} catch (error) {
+				console.error('Error loading regular hours:', error);
+			}
+		}
+	})();
 
 	$: if (periodCarouselApi) {
-		count = periodCarouselApi.scrollSnapList().length;
-		current = periodCarouselApi.selectedScrollSnap() + 1;
+		periodCount = periodCarouselApi.scrollSnapList().length;
+		periodCurrent = periodCarouselApi.selectedScrollSnap() + 1;
 		periodCarouselApi.on('select', () => {
-			current = periodCarouselApi.selectedScrollSnap() + 1;
+			periodCurrent = periodCarouselApi.selectedScrollSnap() + 1;
 		});
 	}
 
+	// Images
+	let images = [image_1, image_2, image_3, image_4, image_5, image_6, image_7, image_8, image_9];
+	let imageCarouselApi: CarouselAPI;
+	let imageCount = 0;
+	let imageCurrent = 0;
+
 	$: if (imageCarouselApi) {
-		count = imageCarouselApi.scrollSnapList().length;
-		current = imageCarouselApi.selectedScrollSnap() + 1;
+		imageCount = imageCarouselApi.scrollSnapList().length;
+		imageCurrent = imageCarouselApi.selectedScrollSnap() + 1;
 		imageCarouselApi.on('select', () => {
-			current = imageCarouselApi.selectedScrollSnap() + 1;
+			imageCurrent = imageCarouselApi.selectedScrollSnap() + 1;
 		});
 	}
 
@@ -109,28 +106,26 @@
 				}
 			}
 		});
-		// console.log('gtag_report_conversion_direction: sent to Google Analytics');
 		return false;
 	};
 
 	$: gtag_report_conversion_fbmessage = (url: string) => {
 		// @ts-ignore
 		window.gtag('event', 'conversion', {
-			send_to: env.PUBLIC_GTAG_ID + '/XeK7CPaZ2YUZEJue89oq',
+			send_to: env.PUBLIC_GTAG_ID + '/mpO0CJ_Jg54ZEJue89oq',
 			event_callback: () => {
 				if (url) {
 					window.location;
 				}
 			}
 		});
-		// console.log('gtag_report_conversion_fbmessage: sent to Google Analytics');
 		return false;
 	};
 </script>
 
 <svelte:head>
-	<title>Shelf Beauty Studio - Trang Chủ</title>
-	<meta name="description" content="Shelf Beauty Studio - Trang Chủ" />
+	<title>Shelf Beauty Studio - 🏡 Trang Chủ</title>
+	<meta name="description" content="Shelf Beauty Studio - 🏡 Trang Chủ" />
 </svelte:head>
 
 <div class="flex flex-col min-h-[calc(100vh-12rem)] max-w-1/2">
@@ -145,7 +140,7 @@
 			</span>
 			<!-- Description -->
 			<div class="my-4">
-				<H2 class="mt-4">Trải nghiệm làm đẹp tại Đà Lạt</H2>
+				<H1 class="mt-4">Trải nghiệm làm đẹp tại Đà Lạt</H1>
 				<P>
 					Shelf Beauty Studio là một không gian làm đẹp chuyên nghiệp, nơi bạn có thể tìm thấy sự
 					yên bình và thoải mái.
@@ -153,7 +148,25 @@
 				<P>
 					Tụi mình
 					<span class="text-amber-600 dark:text-yellow-500"> giảm giá 10% ⭐ </span>
-					vào Thứ Tư & Thứ Năm hàng tuần. Hãy đến và cảm nhận sự khác biệt!
+					vào Thứ Tư & Thứ Năm hàng tuần.
+					{#await data.isOpenPromise}
+						Hãy cảm nhận sự khác biệt!
+					{:then}
+						<!-- Show the status of the store -->
+						{#if isOpen}
+							<!-- Check if isOpen is true, add green, open -->
+							Tụi mình <span class=" text-green-500">đang mở cửa!</span>
+							Hãy đến và cảm nhận sự khác biệt!
+						{:else if isOpen === false}
+							<!-- Else if false, then red, closed -->
+							Tụi mình <span class="text-red-500">chưa mở cửa!</span>
+							Hãy đặt hẹn để trải nghiệm dịch vụ của chúng mình!
+							<!-- Else if None then show nothing -->
+						{:else}
+							<!-- Do nothing -->
+							Hãy đến và cảm nhận sự khác biệt!
+						{/if}
+					{/await}
 				</P>
 			</div>
 			<!-- Details -->
@@ -165,49 +178,55 @@
 					dragFree: true,
 					skipSnaps: false
 				}}
-				plugins={[
-					Autoplay({
-						delay: 5000,
-						stopOnHover: true,
-						waitForTransition: true
-					})
-				]}
-				class="w-full"
+				class="w-3/4 sm:w-full"
 			>
-				<Carousel.Content class="flex flex-row items-center justify-center">
-					{#each Array(regularHourPeriodsVN.length - 1) as _}
-						<Carousel.Item />
-					{/each}
-					{#each regularHourPeriodsVN as period, i (period)}
-						<Carousel.Item class="">
+				<Carousel.Content>
+					{#await data.regularHourPeriodsPromise}
+						<!-- Show a single loading card while data is being fetched -->
+						<Carousel.Item>
 							<div class="p-1">
 								<Card.Root>
 									<Card.Header class="items-center justify-center">
-										<Card.Title><H4>{period.openDay}</H4></Card.Title>
+										<Card.Title><H4>Loading...</H4></Card.Title>
 									</Card.Header>
 									<Card.Content class="flex items-center justify-center">
-										<!-- Map from period.openDay to string type, then use it as key to get the value from dayMappingENToVN -->
-										<Muted>
-											mở cửa:
-											{period.openTime?.hours}:{period.openTime?.minutes || '00'} - {period
-												.closeTime?.hours}:{period.closeTime?.minutes || '00'}
-										</Muted>
-										<!-- If Wednesday & Thursday, then add a StarFilled -->
-										{#if period.openDay === 'Thứ Tư (Wed)' || period.openDay === 'Thứ Năm (Thu)'}
-											<Tooltip.Root>
-												<Tooltip.Trigger class="ml-2">
-													⭐
-												</Tooltip.Trigger>
-												<Tooltip.Content>
-													<p>Giảm giá 10%</p>
-												</Tooltip.Content>
-											</Tooltip.Root>
-										{/if}
+										<Muted>Data is being fetched</Muted>
 									</Card.Content>
 								</Card.Root>
 							</div>
 						</Carousel.Item>
-					{/each}
+					{:then periods}
+						<!-- Display fetched periods -->
+						{#each regularHourPeriodsVN as period (period.openDay)}
+							<Carousel.Item>
+								<div class="p-1">
+									<Card.Root>
+										<Card.Header class="items-center justify-center">
+											<Card.Title><H4>{period.openDay}</H4></Card.Title>
+										</Card.Header>
+										<Card.Content class="flex items-center justify-center">
+											<Muted>
+												mở cửa:
+												{period.openTime?.hours}:{period.openTime?.minutes || '00'} - {period
+													.closeTime?.hours}:{period.closeTime?.minutes || '00'}
+											</Muted>
+											<!-- If Wednesday & Thursday, then add a StarFilled -->
+											{#if period.openDay === 'Thứ Tư (Wed)' || period.openDay === 'Thứ Năm (Thu)'}
+												<Tooltip.Root>
+													<Tooltip.Trigger class="ml-2">⭐</Tooltip.Trigger>
+													<Tooltip.Content>
+														<p>Giảm giá 10%</p>
+													</Tooltip.Content>
+												</Tooltip.Root>
+											{/if}
+										</Card.Content>
+									</Card.Root>
+								</div>
+							</Carousel.Item>
+						{/each}
+					{:catch error}
+						<p>Error loading regular hours: {error.message}</p>
+					{/await}
 				</Carousel.Content>
 				<Carousel.Previous />
 				<Carousel.Next />
@@ -217,7 +236,7 @@
 				<div class="flex w-full mx-1 my-4 justify-self-center justify-center items-center">
 					<Button
 						variant="default"
-						class="h-12 w-36"
+						class="h-12 w-3/4 sm:w-36"
 						href="https://www.google.com/maps/dir/?api=1&destination=shelf+beauty+studio,+Yersin,+Ph%C6%B0%E1%BB%9Dng+10,+Dalat,+Lam+Dong&destination_place_id=ChIJHydiEXkTcTERBlm-4kPGIWk"
 						title="Shelf Beauty Studio trên Google Maps"
 						referrerpolicy="origin"
@@ -231,7 +250,7 @@
 				<div class="flex w-full mx-1 my-4 justify-self-center justify-center items-center">
 					<Button
 						variant="secondary"
-						class="h-12 min-w-36"
+						class="h-12 w-3/4 sm:w-36"
 						href="https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ"
 						title="Shelf Beauty Studio trên Facebook"
 						referrerpolicy="origin"
@@ -243,16 +262,6 @@
 					>
 						<Calendar class="mr-2" />
 						Đặt hẹn
-						<!-- Check if isOpen is true, add green open -->
-						{#if isOpen}
-							<Badge class="ml-2 bg-green-500">Mở cửa</Badge>
-							<!-- Else if false, then red badget -->
-						{:else if isOpen === false}
-							<Badge variant="destructive" class="ml-2">Chưa mở</Badge>
-							<!-- Else if None then show nothing -->
-						{:else}
-							<!-- Do nothing -->
-						{/if}
 					</Button>
 				</div>
 			</div>
@@ -266,19 +275,9 @@
 					dragFree: true,
 					skipSnaps: false
 				}}
-				plugins={[
-					Autoplay({
-						delay: 5000,
-						stopOnHover: true,
-						waitForTransition: true
-					})
-				]}
-				class="w-full"
+				class="w-3/4 sm:w-full"
 			>
 				<Carousel.Content class="flex flex-row items-center justify-center">
-					{#each Array(images.length - 1) as _}
-						<Carousel.Item />
-					{/each}
 					{#each images as image, i (image)}
 						<Carousel.Item class="">
 							<div class="p-1">
@@ -297,7 +296,7 @@
 				<Carousel.Next />
 			</Carousel.Root>
 			<div class="py-2 text-center text-sm text-muted-foreground">
-				Ảnh {current} trên {count}
+				Ảnh {imageCurrent} trên {imageCount}
 			</div>
 		</section>
 	</div>
