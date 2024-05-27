@@ -88,7 +88,7 @@
 					<div class="max-w-xl">
 						<H1>Mọi người nói gì về Shelf?</H1>
 						<P>
-							Shelf luôn cố gắng hết sức để chau chuốt & chăm sóc cho trải nghiệm & vẻ đẹp của bạn.
+							Shelf luôn cố gắng hết sức để trau chuốt & chăm sóc cho trải nghiệm & vẻ đẹp của bạn.
 							Nhờ đó, nhà Shelf rất tự hào khi nhận được những phản hồi tích cực từ phía khách hàng.
 						</P>
 					</div>
