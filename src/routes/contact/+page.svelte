@@ -1,24 +1,17 @@
 <script lang="ts">
 	// Environment variables
 	import { env } from '$env/dynamic/public';
-	import { PUBLIC_GTAG_ID } from '$env/static/public';
 	// Images: branding
 	import shelf_dark from '$lib/images/branding/shelf-dark-landscape.png';
 	import shelf_light from '$lib/images/branding/shelf-light-landscape.png';
-	// Icons
-	import { CardStack } from 'svelte-radix';
 	// import { FacebookBrand, InstagramBrand, TiktokBrand } from 'svelte-awesome-icons';
 	import FacebookBrand from 'svelte-awesome-icons/FacebookBrand.svelte';
 	import InstagramBrand from 'svelte-awesome-icons/InstagramBrand.svelte';
 	import TiktokBrand from 'svelte-awesome-icons/TiktokBrand.svelte';
 	// Typography
 	import H1 from '$lib/components/typography/h1.svelte';
-	import H2 from '$lib/components/typography/h2.svelte';
 	import H4 from '$lib/components/typography/h4.svelte';
 	import P from '$lib/components/typography/p.svelte';
-	// Components
-	import * as Card from '$lib/components/ui/card/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
 	// Logic
 	let mapUrl =
 		'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3903.4751651773076!2d108.4492590764347!3d11.941568188287144!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317113791162271f%3A0x6921c643e2be5906!2sshelf%20beauty%20studio!5e0!3m2!1sen!2s!4v1716794660375!5m2!1sen!2s';
@@ -93,7 +86,7 @@
 					<P>35 Yersin, phường 10, Đà Lạt,<br />Lâm Đồng</P>
 				</div>
 				<div class="col-span-1">
-					<H4>Social Media</H4>
+					<H4>Social media</H4>
 					<div class="flex items-center my-4">
 						<a href="https://facebook.com/shelfbeautystudio" class="underline underline-offset-4">
 							<FacebookBrand class="flex mr-4" />
