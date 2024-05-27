@@ -41,7 +41,6 @@
 		};
 	});
 
-
 	$: isActive = (page: string) => {
 		return $page.url.pathname === page;
 	};
@@ -80,6 +79,14 @@
 			>
 				✍️ Reviews
 			</a>
+			<a
+				href="/contact"
+				class="{isActive('/contact')
+					? 'text-foreground'
+					: 'text-muted-foreground'} hover:text-foreground"
+			>
+				📌 Liên hệ
+			</a>
 		</nav>
 		<Sheet.Root>
 			<Sheet.Trigger asChild let:builder>
@@ -108,6 +115,14 @@
 							: 'text-muted-foreground'} hover:text-foreground"
 					>
 						✍️ Reviews
+					</a>
+					<a
+						href="/contact"
+						class="{isActive('/contact')
+							? 'text-foreground'
+							: 'text-muted-foreground'} hover:text-foreground"
+					>
+						📌 Liên hệ
 					</a>
 				</nav>
 			</Sheet.Content>
