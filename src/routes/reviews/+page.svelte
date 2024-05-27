@@ -77,7 +77,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-4 h-auto">
 			<!-- Logo -->
 			<span class="flex w-full my-4 col-span-1">
-				<picture class="my-auto">
+				<picture class="my-auto mx-auto">
 					<img src={shelf_dark} alt="Shelf Beauty Studio - Welcome" class="dark:hidden" />
 					<img src={shelf_light} alt="Shelf Beauty Studio - Welcome" class="hidden dark:block" />
 				</picture>
