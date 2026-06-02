@@ -101,7 +101,7 @@
 						</P>
 					</div>
 					<div class="flex items-center my-4">
-						<a href="https://facebook.com/shelfbeautystudio" class="underline underline-offset-4">
+						<a href="https://instagram.com/shelfbeautystudio" class="underline underline-offset-4">
 							<InstagramBrand class="mr-4" />
 						</a>
 						<P class="!mt-0">
