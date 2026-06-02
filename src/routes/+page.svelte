@@ -5,16 +5,6 @@
 	// Images: branding
 	import shelf_dark from '$lib/images/branding/shelf-dark-landscape.png';
 	import shelf_light from '$lib/images/branding/shelf-light-landscape.png';
-	// Images: logo
-	import image_1 from '$lib/images/operations/1.jpg?enhanced';
-	import image_2 from '$lib/images/operations/2.jpg?enhanced';
-	import image_3 from '$lib/images/operations/3.jpg?enhanced';
-	import image_4 from '$lib/images/operations/4.jpg?enhanced';
-	import image_5 from '$lib/images/operations/5.jpg?enhanced';
-	import image_6 from '$lib/images/operations/6.jpg?enhanced';
-	import image_7 from '$lib/images/operations/7.jpg?enhanced';
-	import image_8 from '$lib/images/operations/8.jpg?enhanced';
-	import image_9 from '$lib/images/operations/9.jpg?enhanced';
 	// Icons
 	import { Calendar, ThickArrowRight } from 'svelte-radix';
 	// Typography
@@ -32,7 +22,6 @@
 	import * as Carousel from '$lib/components/ui/carousel/index.js';
 	// Data
 	import type { PageData } from './$types';
-	import { onMount } from 'svelte';
 	export let data: PageData;
 
 	// isOpen
@@ -80,14 +69,14 @@
 	}
 
 	// Images
-	let imageModules = import.meta.glob('$lib/images/operations/{1,2,3,4,5,6,7,8,9}.jpg', {
+	type EnhancedImageModule = { default: string };
+	const imageModules = import.meta.glob('$lib/images/operations/{1,2,3,4,5,6,7,8,9}.jpg', {
 		eager: true,
 		query: {
-			fetchpriority: 'high',
-			loading: 'eager',
 			enhanced: true
 		}
-	});
+	}) as Record<string, EnhancedImageModule>;
+	const imageEntries = Object.entries(imageModules);
 	let imageCarouselApi: CarouselAPI;
 	let imageCount = 0;
 	let imageCurrent = 0;
@@ -285,7 +274,7 @@
 				class="w-3/4 sm:w-full"
 			>
 				<Carousel.Content class="flex flex-row">
-					{#each Object.entries(imageModules) as [_path, module], i}
+					{#each imageEntries as [_path, module], i}
 						<Carousel.Item class="">
 							<div class="p-1">
 								<Card.Root>
@@ -293,7 +282,11 @@
 										<AspectRatio ratio={4 / 3}>
 											<enhanced:img
 												src={module.default}
-												alt="Shelf Beauty Studio - Operations {i}"
+												alt="Shelf Beauty Studio - Operations {i + 1}"
+												loading={i === 0 ? 'eager' : 'lazy'}
+												fetchpriority={i === 0 ? 'high' : 'low'}
+												decoding="async"
+												sizes="(min-width: 1280px) 58vw, (min-width: 640px) calc(100vw - 8rem), 75vw"
 											/>
 										</AspectRatio>
 									</Card.Content>
