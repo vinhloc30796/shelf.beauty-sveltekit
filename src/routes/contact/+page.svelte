@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
+	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { language, type Language } from '$lib/i18n';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
 	import studioImage from '$lib/images/operations/10.jpg?enhanced';
@@ -71,10 +72,7 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{text.title}</title>
-	<meta name="description" content={text.description} />
-</svelte:head>
+<SeoHead title={text.title} description={text.description} path="/contact" />
 
 <section class="container-shell grid gap-8 py-10 lg:grid-cols-[0.92fr_1.08fr] lg:py-16">
 	<div>
