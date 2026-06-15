@@ -5,10 +5,11 @@
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
 	inject({ mode: dev ? 'development' : 'production' });
-	injectSpeedInsights()
+	injectSpeedInsights();
 
 	// Dark mode
 	import { ModeWatcher } from 'mode-watcher';
+	import { language } from '$lib/i18n';
 
 	// Typography
 	import P from '$lib/components/typography/p.svelte';
@@ -19,26 +20,24 @@
 	import '../app.css';
 </script>
 
-<div class="app flex flex-col min-h-screen">
+<div class="app flex min-h-screen flex-col">
 	<Header />
 
-	<main class="flex items-center justify-center">
+	<main class="flex-1">
 		<ModeWatcher />
 		<slot />
 	</main>
-	<!-- stick to the bottom -->
-	<footer
-		class="flex w-full min-h-16 items-center justify-center bg-gray-100 dark:bg-gray-900 mt-8"
-		id="footer"
-	>
-		<P class="text-center text-sm">
-			Ghé <a
-				class="text-blue-500 hover:underline"
+	<footer class="border-t border-border/70 bg-secondary/45 py-6" id="footer">
+		<P class="container-shell text-center text-sm">
+			{$language === 'vi' ? 'Ghé ' : 'Visit '}
+			<a
+				class="font-medium text-primary underline-offset-4 hover:underline"
 				href="/fbmessage"
 				title="Shelf Beauty Studio trên Facebook"
 				referrerpolicy="origin"
-				target="_blank">Shelf Beauty Studio trên Facebook Messenger</a
-			> để đặt lịch hẹn
+				target="_blank">Shelf Beauty Studio Facebook Messenger</a
+			>
+			{$language === 'vi' ? ' để đặt lịch hẹn' : ' to book an appointment'}
 		</P>
 	</footer>
 </div>
