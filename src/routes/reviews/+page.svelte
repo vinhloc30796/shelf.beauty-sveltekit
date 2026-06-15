@@ -11,7 +11,14 @@
 
 	export let data: PageData;
 
+	type RenderedReviewBatch = {
+		id: string;
+		reviews: PublicGoogleReview[];
+		startIndex: number;
+	};
+
 	const fiveStars = [0, 1, 2, 3, 4];
+	const loadingSkeletons = ['min-h-56', 'min-h-40', 'min-h-48', 'min-h-64', 'min-h-44', 'min-h-52'];
 	const copy = {
 		vi: {
 			title: 'Đánh giá, Shelf Beauty Studio',
@@ -49,7 +56,9 @@
 			ratingSummary: 'Google rating {rating} from {count} reviews'
 		}
 	} satisfies Record<Language, Record<string, string>>;
-	let reviews: PublicGoogleReview[] = data.reviews;
+	let reviewBatches: PublicGoogleReview[][] = [data.reviews];
+	let reviews: PublicGoogleReview[] = [];
+	let renderedReviewBatches: RenderedReviewBatch[] = [];
 	let averageRating = data.averageRating;
 	let totalReviewCount = data.totalReviewCount;
 	let nextPageToken = data.nextPageToken;
@@ -61,17 +70,33 @@
 		template
 			.replace('{rating}', formatRating(averageRating))
 			.replace('{count}', String(totalReviewCount ?? reviews.length));
-	const isFeaturedReview = (index: number) => index % 7 === 0;
+	const isFeaturedReview = (review: PublicGoogleReview, index: number) =>
+		review.stars > 1 && index % 7 === 0;
 	const reviewTimestamp = (review: PublicGoogleReview, lang: Language) =>
 		formatReviewTimestamp(review.updateTime ?? review.createTime, lang);
-	const reviewCardClass = (index: number) =>
-		isFeaturedReview(index)
+	const reviewCardClass = (review: PublicGoogleReview, index: number) =>
+		isFeaturedReview(review, index)
 			? 'mb-5 inline-block w-full break-inside-avoid rounded-xl bg-primary p-6 text-primary-foreground'
 			: 'mb-5 inline-block w-full break-inside-avoid rounded-xl border border-border/80 bg-card p-5 text-card-foreground transition-colors hover:border-primary/40';
+	const buildRenderedReviewBatches = (batches: PublicGoogleReview[][]) => {
+		let startIndex = 0;
+		return batches.map((batch, index) => {
+			const renderedBatch = {
+				id: batch[0]?.id ?? `review-batch-${index}`,
+				reviews: batch,
+				startIndex
+			};
+			startIndex += batch.length;
+			return renderedBatch;
+		});
+	};
 
 	const appendReviews = (page: PublicGoogleReviewsPage) => {
 		const existingIds = new Set(reviews.map((review) => review.id));
-		reviews = [...reviews, ...page.reviews.filter((review) => !existingIds.has(review.id))];
+		const newReviews = page.reviews.filter((review) => !existingIds.has(review.id));
+		if (newReviews.length > 0) {
+			reviewBatches = [...reviewBatches, newReviews];
+		}
 		averageRating = page.averageRating ?? averageRating;
 		totalReviewCount = page.totalReviewCount ?? totalReviewCount;
 		nextPageToken = page.nextPageToken;
@@ -112,6 +137,8 @@
 	};
 
 	$: text = copy[$language];
+	$: reviews = reviewBatches.flat();
+	$: renderedReviewBatches = buildRenderedReviewBatches(reviewBatches);
 
 	$: gtag_report_conversion_reviews = (url: string) => {
 		return reportConversion(env.PUBLIC_GTAG_ID + '/Ww1qCPSC5bMZEJue89oq', url);
@@ -154,46 +181,72 @@
 			{formatRatingSummary(text.ratingSummary)}
 		</p>
 	{/if}
-	<div class="columns-1 gap-5 md:columns-2 xl:columns-3">
-		{#each reviews as review, i (review.id)}
-			<article class={reviewCardClass(i)}>
-				<div
-					class={`mb-5 flex gap-1 ${isFeaturedReview(i) ? 'text-primary-foreground/90' : 'text-primary'}`}
-					aria-label="{review.stars} star review"
-				>
-					{#each fiveStars.slice(0, review.stars) as star (star)}
-						<Star class="h-4 w-4 fill-current" aria-hidden="true" />
-					{/each}
-				</div>
-				<blockquote
-					class={`${isFeaturedReview(i) ? 'text-xl leading-8' : 'text-base leading-7'} text-pretty`}
-				>
-					“{review.quote || text.ratingOnly}”
-				</blockquote>
-				<div
-					class={`mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm ${
-						isFeaturedReview(i) ? 'text-primary-foreground/80' : 'text-muted-foreground'
-					}`}
-				>
-					<p
-						class={`font-semibold ${isFeaturedReview(i) ? 'text-primary-foreground' : 'text-primary'}`}
-					>
-						{review.name}
-					</p>
-					{#if reviewTimestamp(review, $language)}
-						<time datetime={review.updateTime ?? review.createTime}>
-							{reviewTimestamp(review, $language)}
-						</time>
-					{/if}
-				</div>
-			</article>
+	<div class="space-y-5">
+		{#each renderedReviewBatches as batch (batch.id)}
+			<div class="columns-1 gap-5 md:columns-2 xl:columns-3">
+				{#each batch.reviews as review, i (review.id)}
+					{@const globalIndex = batch.startIndex + i}
+					<article class={reviewCardClass(review, globalIndex)}>
+						<div
+							class={`mb-5 flex gap-1 ${isFeaturedReview(review, globalIndex) ? 'text-primary-foreground/90' : 'text-primary'}`}
+							aria-label="{review.stars} star review"
+						>
+							{#each fiveStars.slice(0, review.stars) as star (star)}
+								<Star class="h-4 w-4 fill-current" aria-hidden="true" />
+							{/each}
+						</div>
+						<blockquote
+							class={`${isFeaturedReview(review, globalIndex) ? 'text-xl leading-8' : 'text-base leading-7'} text-pretty`}
+						>
+							“{review.quote || text.ratingOnly}”
+						</blockquote>
+						<div
+							class={`mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm ${
+								isFeaturedReview(review, globalIndex)
+									? 'text-primary-foreground/80'
+									: 'text-muted-foreground'
+							}`}
+						>
+							<p
+								class={`font-semibold ${isFeaturedReview(review, globalIndex) ? 'text-primary-foreground' : 'text-primary'}`}
+							>
+								{review.name}
+							</p>
+							{#if reviewTimestamp(review, $language)}
+								<time datetime={review.updateTime ?? review.createTime}>
+									{reviewTimestamp(review, $language)}
+								</time>
+							{/if}
+						</div>
+					</article>
+				{/each}
+			</div>
 		{/each}
+		{#if isLoadingMore}
+			<div class="columns-1 gap-5 md:columns-2 xl:columns-3" aria-hidden="true">
+				{#each loadingSkeletons as height, i (height)}
+					<div
+						class={`mb-5 inline-block w-full break-inside-avoid rounded-xl border border-border/60 bg-card p-5 ${height}`}
+					>
+						<div
+							class={`h-4 w-24 rounded-full ${i === 0 ? 'bg-primary/25' : 'bg-muted'} animate-pulse`}
+						></div>
+						<div class="mt-8 space-y-3">
+							<div class="h-3 w-full rounded-full bg-muted animate-pulse"></div>
+							<div class="h-3 w-11/12 rounded-full bg-muted animate-pulse"></div>
+							<div class="h-3 w-3/4 rounded-full bg-muted animate-pulse"></div>
+						</div>
+						<div class="mt-8 h-3 w-32 rounded-full bg-muted animate-pulse"></div>
+					</div>
+				{/each}
+			</div>
+		{/if}
 	</div>
 	{#if nextPageToken}
 		<div class="mt-8 flex justify-center">
 			<button
 				type="button"
-				class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/80 disabled:cursor-not-allowed disabled:opacity-70"
+				class="inline-flex min-h-11 min-w-44 items-center justify-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/80 disabled:cursor-not-allowed disabled:opacity-70"
 				disabled={isLoadingMore}
 				on:click={loadMoreReviews}
 			>
