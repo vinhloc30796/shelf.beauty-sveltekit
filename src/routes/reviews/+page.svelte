@@ -3,6 +3,7 @@
 	import { language, type Language } from '$lib/i18n';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
 	import reviewImage from '$lib/images/operations/7.jpg?enhanced';
+	import { formatReviewTimestamp } from '$lib/reviewDates';
 	import type { PublicGoogleReview, PublicGoogleReviewsPage } from '$lib/server/googleReviews';
 	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import Star from 'lucide-svelte/icons/star';
@@ -60,6 +61,13 @@
 		template
 			.replace('{rating}', formatRating(averageRating))
 			.replace('{count}', String(totalReviewCount ?? reviews.length));
+	const isFeaturedReview = (index: number) => index % 7 === 0;
+	const reviewTimestamp = (review: PublicGoogleReview, lang: Language) =>
+		formatReviewTimestamp(review.updateTime ?? review.createTime, lang);
+	const reviewCardClass = (index: number) =>
+		isFeaturedReview(index)
+			? 'mb-5 inline-block w-full break-inside-avoid rounded-xl bg-primary p-6 text-primary-foreground'
+			: 'mb-5 inline-block w-full break-inside-avoid rounded-xl border border-border/80 bg-card p-5 text-card-foreground transition-colors hover:border-primary/40';
 
 	const appendReviews = (page: PublicGoogleReviewsPage) => {
 		const existingIds = new Set(reviews.map((review) => review.id));
@@ -146,47 +154,63 @@
 			{formatRatingSummary(text.ratingSummary)}
 		</p>
 	{/if}
-	<div class="grid gap-5 md:grid-cols-2 lg:gap-6">
+	<div class="columns-1 gap-5 md:columns-2 xl:columns-3">
 		{#each reviews as review, i (review.id)}
-			<article
-				class={`rounded-2xl border border-border/80 bg-card p-6 ${
-					i === 2 ? 'md:row-span-2 md:flex md:flex-col md:justify-center' : ''
-				}`}
-			>
-				<div class="mb-5 flex gap-1 text-primary" aria-label="{review.stars} star review">
+			<article class={reviewCardClass(i)}>
+				<div
+					class={`mb-5 flex gap-1 ${isFeaturedReview(i) ? 'text-primary-foreground/90' : 'text-primary'}`}
+					aria-label="{review.stars} star review"
+				>
 					{#each fiveStars.slice(0, review.stars) as star (star)}
 						<Star class="h-4 w-4 fill-current" aria-hidden="true" />
 					{/each}
 				</div>
-				<blockquote class="text-base leading-7 text-foreground">
+				<blockquote
+					class={`${isFeaturedReview(i) ? 'text-xl leading-8' : 'text-base leading-7'} text-pretty`}
+				>
 					“{review.quote || text.ratingOnly}”
 				</blockquote>
-				<p class="mt-5 text-sm font-semibold text-primary">{review.name}</p>
+				<div
+					class={`mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm ${
+						isFeaturedReview(i) ? 'text-primary-foreground/80' : 'text-muted-foreground'
+					}`}
+				>
+					<p
+						class={`font-semibold ${isFeaturedReview(i) ? 'text-primary-foreground' : 'text-primary'}`}
+					>
+						{review.name}
+					</p>
+					{#if reviewTimestamp(review, $language)}
+						<time datetime={review.updateTime ?? review.createTime}>
+							{reviewTimestamp(review, $language)}
+						</time>
+					{/if}
+				</div>
 			</article>
 		{/each}
-		{#if nextPageToken}
-			<div class="flex justify-center md:col-span-2">
-				<button
-					type="button"
-					class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/80 disabled:cursor-not-allowed disabled:opacity-70"
-					disabled={isLoadingMore}
-					on:click={loadMoreReviews}
-				>
-					{#if isLoadingMore}
-						<LoaderCircle class="h-4 w-4 animate-spin" aria-hidden="true" />
-						{text.loading}
-					{:else}
-						{text.loadMore}
-					{/if}
-				</button>
-			</div>
-		{/if}
-		{#if loadMoreError}
-			<p class="text-center text-sm text-destructive md:col-span-2">{text.reviewsUnavailable}</p>
-		{/if}
-		<div
-			class="rounded-2xl bg-primary p-6 text-primary-foreground md:col-span-2 lg:mx-auto lg:max-w-2xl"
-		>
+	</div>
+	{#if nextPageToken}
+		<div class="mt-8 flex justify-center">
+			<button
+				type="button"
+				class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/80 disabled:cursor-not-allowed disabled:opacity-70"
+				disabled={isLoadingMore}
+				on:click={loadMoreReviews}
+			>
+				{#if isLoadingMore}
+					<LoaderCircle class="h-4 w-4 animate-spin" aria-hidden="true" />
+					{text.loading}
+				{:else}
+					{text.loadMore}
+				{/if}
+			</button>
+		</div>
+	{/if}
+	{#if loadMoreError}
+		<p class="mt-4 text-center text-sm text-destructive">{text.reviewsUnavailable}</p>
+	{/if}
+	<div class="mt-8 grid">
+		<div class="rounded-xl bg-primary p-6 text-primary-foreground md:mx-auto md:max-w-2xl">
 			<p class="text-2xl font-semibold tracking-tight">{text.googleTitle}</p>
 			<p class="mt-4 text-sm leading-6 text-primary-foreground/85">{text.googleBody}</p>
 			<a
