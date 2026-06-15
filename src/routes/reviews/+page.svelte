@@ -4,9 +4,22 @@
 	import { language, type Language } from '$lib/i18n';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
 	import reviewImage from '$lib/images/operations/7.jpg?enhanced';
+	import { formatReviewTimestamp } from '$lib/reviewDates';
+	import type { PublicGoogleReview, PublicGoogleReviewsPage } from '$lib/server/googleReviews';
+	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import Star from 'lucide-svelte/icons/star';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+
+	type RenderedReviewBatch = {
+		id: string;
+		reviews: PublicGoogleReview[];
+		startIndex: number;
+	};
 
 	const fiveStars = [0, 1, 2, 3, 4];
+	const loadingSkeletons = ['min-h-56', 'min-h-40', 'min-h-48', 'min-h-64', 'min-h-44', 'min-h-52'];
 	const copy = {
 		vi: {
 			title: 'Đánh giá, Shelf Beauty Studio',
@@ -19,7 +32,12 @@
 			googleBody:
 				'Xem thêm đánh giá mới nhất, hình ảnh thực tế, và cảm nhận từ khách đã ghé Shelf.',
 			googleCta: 'Xem tất cả đánh giá Google',
-			googleLinkTitle: 'Xem tất cả đánh giá Shelf Beauty Studio trên Google Maps'
+			googleLinkTitle: 'Xem tất cả đánh giá Shelf Beauty Studio trên Google Maps',
+			loadMore: 'Tải thêm đánh giá',
+			loading: 'Đang tải...',
+			reviewsUnavailable: 'Chưa tải được thêm đánh giá Google. Vui lòng thử lại sau.',
+			ratingOnly: 'Khách để lại đánh giá sao trên Google.',
+			ratingSummary: 'Điểm Google {rating} từ {count} đánh giá'
 		},
 		en: {
 			title: 'Guest notes, Shelf Beauty Studio reviews',
@@ -31,41 +49,80 @@
 			googleTitle: 'More guest notes live on Google Maps.',
 			googleBody: 'See newer reviews, real photos, and notes from guests who have visited Shelf.',
 			googleCta: 'View all Google reviews',
-			googleLinkTitle: 'View all Shelf Beauty Studio reviews on Google Maps'
+			googleLinkTitle: 'View all Shelf Beauty Studio reviews on Google Maps',
+			loadMore: 'Load more reviews',
+			loading: 'Loading...',
+			reviewsUnavailable: 'More Google reviews are unavailable right now. Please try again later.',
+			ratingOnly: 'Guest left a star rating on Google.',
+			ratingSummary: 'Google rating {rating} from {count} reviews'
 		}
 	} satisfies Record<Language, Record<string, string>>;
-	const reviews = [
-		{
-			stars: 5,
-			name: 'Nguyen Ngoc Tu Tu',
-			quote:
-				'Mình đi du lịch tiện ghé vào làm, mà tiệm nail rất xinh nha mụi ngừ, có 2 em cún cũng thân thiện lứm. Giá cả ok, dịch vụ ok lun. Highly recommended.'
-		},
-		{
-			stars: 5,
-			name: 'Thư Nguyễn',
-			quote:
-				'Mấy bạn nhân viên rất dễ thương, nhiệt tình lắm ạ. Mình làm ở đây 2 lần rồi, lần sau sẽ ủng hộ lại nè. Mấy bạn làm rất kỹ luôn ạ.'
-		},
-		{
-			stars: 5,
-			name: 'Julia Larson',
-			quote:
-				'Fabulous attention to detail and service from my nail tech. They made sure to ask questions and make sure you are getting exactly the nails you would like.'
-		},
-		{
-			stars: 5,
-			name: 'Bryan Tan',
-			quote:
-				'Shelf Beauty Studio was absolutely amazing. The staff were skilled, meticulous, accommodating, and patient even with elaborate designs.'
-		},
-		{
-			stars: 5,
-			name: 'Tam Mii따미',
-			quote:
-				'Tiệm gội đầu nhỏ nhỏ xinh xinh, giá siêu bình dân, các bạn nhân viên rất nhiệt tình dễ thương. Nhất định sẽ quay lại mỗi dịp lên Đà Lạt chơi.'
+	let reviewBatches: PublicGoogleReview[][] = [data.reviews];
+	let reviews: PublicGoogleReview[] = [];
+	let renderedReviewBatches: RenderedReviewBatch[] = [];
+	let averageRating = data.averageRating;
+	let totalReviewCount = data.totalReviewCount;
+	let nextPageToken = data.nextPageToken;
+	let isLoadingMore = false;
+	let loadMoreError = false;
+
+	const formatRating = (rating?: number) => (rating ? rating.toFixed(1) : '');
+	const formatRatingSummary = (template: string) =>
+		template
+			.replace('{rating}', formatRating(averageRating))
+			.replace('{count}', String(totalReviewCount ?? reviews.length));
+	const isFeaturedReview = (review: PublicGoogleReview, index: number) =>
+		review.stars > 1 && index % 7 === 0;
+	const reviewTimestamp = (review: PublicGoogleReview, lang: Language) =>
+		formatReviewTimestamp(review.updateTime ?? review.createTime, lang);
+	const reviewCardClass = (review: PublicGoogleReview, index: number) =>
+		isFeaturedReview(review, index)
+			? 'mb-5 inline-block w-full break-inside-avoid rounded-xl bg-primary p-6 text-primary-foreground'
+			: 'mb-5 inline-block w-full break-inside-avoid rounded-xl border border-border/80 bg-card p-5 text-card-foreground transition-colors hover:border-primary/40';
+	const buildRenderedReviewBatches = (batches: PublicGoogleReview[][]) => {
+		let startIndex = 0;
+		return batches.map((batch, index) => {
+			const renderedBatch = {
+				id: batch[0]?.id ?? `review-batch-${index}`,
+				reviews: batch,
+				startIndex
+			};
+			startIndex += batch.length;
+			return renderedBatch;
+		});
+	};
+
+	const appendReviews = (page: PublicGoogleReviewsPage) => {
+		const existingIds = new Set(reviews.map((review) => review.id));
+		const newReviews = page.reviews.filter((review) => !existingIds.has(review.id));
+		if (newReviews.length > 0) {
+			reviewBatches = [...reviewBatches, newReviews];
 		}
-	];
+		averageRating = page.averageRating ?? averageRating;
+		totalReviewCount = page.totalReviewCount ?? totalReviewCount;
+		nextPageToken = page.nextPageToken;
+	};
+
+	const loadMoreReviews = async () => {
+		if (!nextPageToken || isLoadingMore) return;
+
+		isLoadingMore = true;
+		loadMoreError = false;
+		try {
+			const response = await fetch(
+				`/api/google-reviews?pageToken=${encodeURIComponent(nextPageToken)}`
+			);
+			if (!response.ok) {
+				throw new Error('Failed to load more Google reviews');
+			}
+			appendReviews((await response.json()) as PublicGoogleReviewsPage);
+		} catch (error) {
+			console.error(error);
+			loadMoreError = true;
+		} finally {
+			isLoadingMore = false;
+		}
+	};
 	const reportConversion = (sendTo: string, url: string) => {
 		if (typeof window !== 'undefined' && 'gtag' in window) {
 			(window as Window & { gtag: (...args: unknown[]) => void }).gtag('event', 'conversion', {
@@ -81,6 +138,8 @@
 	};
 
 	$: text = copy[$language];
+	$: reviews = reviewBatches.flat();
+	$: renderedReviewBatches = buildRenderedReviewBatches(reviewBatches);
 
 	$: gtag_report_conversion_reviews = (url: string) => {
 		return reportConversion(env.PUBLIC_GTAG_ID + '/Ww1qCPSC5bMZEJue89oq', url);
@@ -115,25 +174,94 @@
 </section>
 
 <section class="container-shell pb-16">
-	<div class="grid gap-5 md:grid-cols-2 lg:gap-6">
-		{#each reviews as review, i (review.name)}
-			<article
-				class={`rounded-2xl border border-border/80 bg-card p-6 ${
-					i === 2 ? 'md:row-span-2 md:flex md:flex-col md:justify-center' : ''
-				}`}
-			>
-				<div class="mb-5 flex gap-1 text-primary" aria-label="{review.stars} star review">
-					{#each fiveStars.slice(0, review.stars) as star (star)}
-						<Star class="h-4 w-4 fill-current" aria-hidden="true" />
-					{/each}
-				</div>
-				<blockquote class="text-base leading-7 text-foreground">“{review.quote}”</blockquote>
-				<p class="mt-5 text-sm font-semibold text-primary">{review.name}</p>
-			</article>
+	{#if averageRating && totalReviewCount}
+		<p class="mb-5 text-sm font-semibold text-primary">
+			{formatRatingSummary(text.ratingSummary)}
+		</p>
+	{/if}
+	<div class="space-y-5">
+		{#each renderedReviewBatches as batch (batch.id)}
+			<div class="columns-1 gap-5 md:columns-2 xl:columns-3">
+				{#each batch.reviews as review, i (review.id)}
+					{@const globalIndex = batch.startIndex + i}
+					<article class={reviewCardClass(review, globalIndex)}>
+						<div
+							class={`mb-5 flex gap-1 ${isFeaturedReview(review, globalIndex) ? 'text-primary-foreground/90' : 'text-primary'}`}
+							aria-label="{review.stars} star review"
+						>
+							{#each fiveStars.slice(0, review.stars) as star (star)}
+								<Star class="h-4 w-4 fill-current" aria-hidden="true" />
+							{/each}
+						</div>
+						<blockquote
+							class={`${isFeaturedReview(review, globalIndex) ? 'text-xl leading-8' : 'text-base leading-7'} text-pretty`}
+						>
+							“{review.quote || text.ratingOnly}”
+						</blockquote>
+						<div
+							class={`mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm ${
+								isFeaturedReview(review, globalIndex)
+									? 'text-primary-foreground/80'
+									: 'text-muted-foreground'
+							}`}
+						>
+							<p
+								class={`font-semibold ${isFeaturedReview(review, globalIndex) ? 'text-primary-foreground' : 'text-primary'}`}
+							>
+								{review.name}
+							</p>
+							{#if reviewTimestamp(review, $language)}
+								<time datetime={review.updateTime ?? review.createTime}>
+									{reviewTimestamp(review, $language)}
+								</time>
+							{/if}
+						</div>
+					</article>
+				{/each}
+			</div>
 		{/each}
-		<div
-			class="rounded-2xl bg-primary p-6 text-primary-foreground md:col-span-2 lg:mx-auto lg:max-w-2xl"
-		>
+		{#if isLoadingMore}
+			<div class="columns-1 gap-5 md:columns-2 xl:columns-3" aria-hidden="true">
+				{#each loadingSkeletons as height, i (height)}
+					<div
+						class={`mb-5 inline-block w-full break-inside-avoid rounded-xl border border-border/60 bg-card p-5 ${height}`}
+					>
+						<div
+							class={`h-4 w-24 rounded-full ${i === 0 ? 'bg-primary/25' : 'bg-muted'} animate-pulse`}
+						></div>
+						<div class="mt-8 space-y-3">
+							<div class="h-3 w-full rounded-full bg-muted animate-pulse"></div>
+							<div class="h-3 w-11/12 rounded-full bg-muted animate-pulse"></div>
+							<div class="h-3 w-3/4 rounded-full bg-muted animate-pulse"></div>
+						</div>
+						<div class="mt-8 h-3 w-32 rounded-full bg-muted animate-pulse"></div>
+					</div>
+				{/each}
+			</div>
+		{/if}
+	</div>
+	{#if nextPageToken}
+		<div class="mt-8 flex justify-center">
+			<button
+				type="button"
+				class="inline-flex min-h-11 min-w-44 items-center justify-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/80 disabled:cursor-not-allowed disabled:opacity-70"
+				disabled={isLoadingMore}
+				on:click={loadMoreReviews}
+			>
+				{#if isLoadingMore}
+					<LoaderCircle class="h-4 w-4 animate-spin" aria-hidden="true" />
+					{text.loading}
+				{:else}
+					{text.loadMore}
+				{/if}
+			</button>
+		</div>
+	{/if}
+	{#if loadMoreError}
+		<p class="mt-4 text-center text-sm text-destructive">{text.reviewsUnavailable}</p>
+	{/if}
+	<div class="mt-8 grid">
+		<div class="rounded-xl bg-primary p-6 text-primary-foreground md:mx-auto md:max-w-2xl">
 			<p class="text-2xl font-semibold tracking-tight">{text.googleTitle}</p>
 			<p class="mt-4 text-sm leading-6 text-primary-foreground/85">{text.googleBody}</p>
 			<a
