@@ -1,0 +1,28 @@
+{
+	"worktree": {
+		"setup": [
+			"corepack enable pnpm",
+			"corepack pnpm@8.15.9 install --frozen-lockfile",
+			"[ -f \"$PASEO_SOURCE_CHECKOUT_PATH/.env\" ] && cp \"$PASEO_SOURCE_CHECKOUT_PATH/.env\" .env || true"
+		]
+	},
+	"scripts": {
+		"dev": {
+			"type": "service",
+			"command": "corepack pnpm@8.15.9 dev -- --host \"$HOST\" --port \"$PASEO_PORT\"",
+			"port": 5173
+		},
+		"check": {
+			"command": "corepack pnpm@8.15.9 check"
+		},
+		"lint": {
+			"command": "corepack pnpm@8.15.9 lint"
+		},
+		"test": {
+			"command": "corepack pnpm@8.15.9 test"
+		},
+		"build": {
+			"command": "corepack pnpm@8.15.9 build"
+		}
+	}
+}
