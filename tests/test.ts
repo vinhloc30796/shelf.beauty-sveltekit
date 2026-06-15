@@ -40,11 +40,15 @@ test('homepage renders canonical, Open Graph, and Twitter metadata', async ({ pa
 	);
 	await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
 		'content',
-		/^https:\/\/shelf\.beauty\/_app\/immutable\/assets\/shelf-dark-landscape\..+\.png$/
+		'https://shelf.beauty/og/home.jpg'
 	);
 	await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
 		'content',
 		'summary_large_image'
+	);
+	await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
+		'content',
+		'https://shelf.beauty/og/home.jpg'
 	);
 });
 
@@ -80,11 +84,15 @@ test('reviews page renders canonical, Open Graph, and Twitter metadata', async (
 	);
 	await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
 		'content',
-		/^https:\/\/shelf\.beauty\/_app\/immutable\/assets\/shelf-dark-landscape\..+\.png$/
+		'https://shelf.beauty/og/reviews.jpg'
 	);
 	await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
 		'content',
 		'summary_large_image'
+	);
+	await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
+		'content',
+		'https://shelf.beauty/og/reviews.jpg'
 	);
 });
 
@@ -126,10 +134,14 @@ test('contact page renders canonical, Open Graph, and Twitter metadata', async (
 	);
 	await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
 		'content',
-		/^https:\/\/shelf\.beauty\/_app\/immutable\/assets\/shelf-dark-landscape\..+\.png$/
+		'https://shelf.beauty/og/contact.jpg'
 	);
 	await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
 		'content',
 		'summary_large_image'
+	);
+	await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
+		'content',
+		'https://shelf.beauty/og/contact.jpg'
 	);
 });

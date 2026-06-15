@@ -2,6 +2,7 @@
 	import { env } from '$env/dynamic/public';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { language, type Language } from '$lib/i18n';
+	import { socialImages } from '$lib/seo';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
 	import studioImage from '$lib/images/operations/10.jpg?enhanced';
 	import Clock from 'lucide-svelte/icons/clock';
@@ -72,7 +73,12 @@
 	};
 </script>
 
-<SeoHead title={text.title} description={text.description} path="/contact" />
+<SeoHead
+	title={text.title}
+	description={text.description}
+	path="/contact"
+	image={socialImages.contact}
+/>
 
 <section class="container-shell grid gap-8 py-10 lg:grid-cols-[0.92fr_1.08fr] lg:py-16">
 	<div>
