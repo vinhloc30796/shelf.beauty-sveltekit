@@ -7,45 +7,57 @@ import sharp from 'sharp';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const outputDir = path.join(root, 'static', 'og');
-const logoPath = path.join(root, 'src/lib/images/branding/shelf-light-landscape.png');
+const logoPath = path.join(root, 'src/lib/images/branding/shelf-dark-landscape.png');
 
 const width = 1200;
 const height = 630;
+const panelWidth = 470;
+const dividerWidth = 12;
+const photoX = panelWidth + dividerWidth;
+const photoWidth = width - photoX;
+
 const colors = {
 	cream: '#EAE1C9',
 	ink: '#1F120E',
 	rust: '#8B3C22',
 	turquoise: '#51BCBF',
-	white: '#FFF8EE'
+	white: '#FFF8EE',
+	softCream: '#F6EEDB'
+};
+
+const textStyles = {
+	title: { size: 52, lineHeight: 58, weight: 800 },
+	subtitle: { size: 25, lineHeight: 33, weight: 650 }
+};
+
+const logo = {
+	width: 280,
+	height: 140,
+	x: 58,
+	y: 58
 };
 
 const pages = [
 	{
 		source: 'src/lib/images/operations/4.jpg',
 		output: 'home.jpg',
-		title: 'Shelf Beauty Studio',
-		subtitle: 'Warm nail and beauty care in Da Lat',
-		label: 'Da Lat beauty studio',
-		position: 'center',
-		plaque: { x: 64, y: 300, width: 560, titleMaxChars: 24 }
+		position: 'south',
+		titleLines: ['Shelf Beauty', 'Studio'],
+		subtitleLines: ['Nail and beauty care', 'in Da Lat']
 	},
 	{
 		source: 'src/lib/images/operations/9.jpg',
 		output: 'reviews.jpg',
-		title: 'Khách nói gì về Shelf',
-		subtitle: 'Real notes from careful appointments',
-		label: 'Guest notes',
 		position: 'center',
-		plaque: { x: 64, y: 48, width: 570, titleMaxChars: 20 }
+		titleLines: ['Khách nói gì', 'về Shelf'],
+		subtitleLines: ['Cảm nhận thật từ', 'khách ghé studio']
 	},
 	{
 		source: 'src/lib/images/operations/3.jpg',
 		output: 'contact.jpg',
-		title: 'Ghé Shelf tại Đà Lạt',
-		subtitle: '35 Yersin, phường 10',
-		label: 'Visit Shelf',
-		position: 'center',
-		plaque: { x: 654, y: 288, width: 482, titleMaxChars: 16 }
+		position: 'north',
+		titleLines: ['Ghé Shelf tại', 'Đà Lạt'],
+		subtitleLines: ['35 Yersin, phường 10']
 	}
 ];
 
@@ -56,84 +68,52 @@ const escapeXml = (value) =>
 		.replaceAll('>', '&gt;')
 		.replaceAll('"', '&quot;');
 
-const wrapText = (text, maxChars) => {
-	const words = text.split(' ');
-	const lines = [];
-	let line = '';
-
-	for (const word of words) {
-		const next = line ? `${line} ${word}` : word;
-		if (next.length > maxChars && line) {
-			lines.push(line);
-			line = word;
-		} else {
-			line = next;
-		}
-	}
-
-	if (line) lines.push(line);
-	return lines;
-};
-
 const renderTextLines = (
 	lines,
 	x,
 	y,
-	size,
-	lineHeight,
-	weight = 700,
+	{ size, lineHeight, weight },
+	fill,
 	opacity = 1,
-	fill = colors.white
+	extraAttributes = ''
 ) =>
 	lines
 		.map(
 			(line, index) =>
-				`<text x="${x}" y="${y + index * lineHeight}" font-size="${size}" font-weight="${weight}" opacity="${opacity}" fill="${fill}">${escapeXml(
+				`<text x="${x}" y="${
+					y + index * lineHeight
+				}" font-size="${size}" font-weight="${weight}" opacity="${opacity}" fill="${fill}" ${extraAttributes}>${escapeXml(
 					line
 				)}</text>`
 		)
 		.join('');
 
-const getPlaqueMetrics = ({ title, subtitle, plaque }) => {
-	const titleLines = wrapText(title, plaque.titleMaxChars ?? 22);
-	const subtitleLines = wrapText(subtitle, 34);
-	const titleHeight = titleLines.length * 52;
-	const subtitleHeight = subtitleLines.length * 32;
-	const plaqueHeight = 225 + titleHeight + subtitleHeight;
-
-	return { titleLines, subtitleLines, titleHeight, subtitleHeight, plaqueHeight, plaque };
-};
-
 const overlaySvg = (page) => {
-	const { title, subtitle, label } = page;
-	const { titleLines, subtitleLines, titleHeight, subtitleHeight, plaqueHeight, plaque } =
-		getPlaqueMetrics(page);
-	const contentX = plaque.x + 34;
-	const labelY = plaque.y + 48;
-	const titleY = plaque.y + 112;
-	const subtitleY = titleY + titleHeight + 18;
-	const ruleY = subtitleY + subtitleHeight + 26;
+	const contentX = 58;
+	const titleY = 320;
+	const subtitleY = titleY + page.titleLines.length * textStyles.title.lineHeight + 22;
 
 	return Buffer.from(`
 		<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
 			<defs>
-				<linearGradient id="edge-wash" x1="0" x2="1" y1="0" y2="1">
-					<stop offset="0%" stop-color="${colors.ink}" stop-opacity="0.24"/>
-					<stop offset="54%" stop-color="${colors.ink}" stop-opacity="0.1"/>
-					<stop offset="100%" stop-color="${colors.ink}" stop-opacity="0.34"/>
+				<linearGradient id="photo-tone" x1="0" x2="1" y1="0" y2="1">
+					<stop offset="0%" stop-color="${colors.ink}" stop-opacity="0.12"/>
+					<stop offset="54%" stop-color="${colors.rust}" stop-opacity="0.03"/>
+					<stop offset="100%" stop-color="${colors.ink}" stop-opacity="0.2"/>
 				</linearGradient>
 			</defs>
-			<rect width="${width}" height="${height}" fill="url(#edge-wash)"/>
-			<rect x="${plaque.x}" y="${plaque.y}" width="${plaque.width}" height="${plaqueHeight}" rx="18" fill="${colors.ink}" opacity="0.78"/>
-			<rect x="${plaque.x}" y="${plaque.y}" width="6" height="${plaqueHeight}" rx="3" fill="${colors.rust}"/>
+			<rect x="0" y="0" width="${panelWidth}" height="${height}" fill="${colors.cream}"/>
+			<path d="M0 0H${panelWidth}V${height}H0Z" fill="${colors.white}" opacity="0.22"/>
+			<circle cx="386" cy="88" r="132" fill="${colors.rust}" opacity="0.08"/>
+			<circle cx="74" cy="560" r="180" fill="${colors.turquoise}" opacity="0.1"/>
+			<rect x="${photoX}" y="0" width="${photoWidth}" height="${height}" fill="url(#photo-tone)"/>
+			<rect x="${panelWidth}" y="0" width="${dividerWidth}" height="${height}" fill="${colors.rust}"/>
+			<rect x="${panelWidth + dividerWidth - 3}" y="0" width="3" height="${height}" fill="${colors.turquoise}"/>
+			<line x1="${contentX}" y1="238" x2="${contentX + 198}" y2="238" stroke="${colors.turquoise}" stroke-width="5" stroke-linecap="round"/>
 			<g font-family="Arial, Helvetica, 'DejaVu Sans', sans-serif">
-				<text x="${contentX}" y="${labelY}" font-size="24" font-weight="700" fill="${colors.cream}" opacity="0.86">${escapeXml(
-					label
-				)}</text>
-				${renderTextLines(titleLines, contentX, titleY, 46, 52, 800)}
-				${renderTextLines(subtitleLines, contentX, subtitleY, 24, 32, 650, 0.9, colors.cream)}
+				${renderTextLines(page.titleLines, contentX, titleY, textStyles.title, colors.ink)}
+				${renderTextLines(page.subtitleLines, contentX, subtitleY, textStyles.subtitle, colors.rust, 0.92)}
 			</g>
-			<line x1="${contentX}" y1="${ruleY}" x2="${contentX + 176}" y2="${ruleY}" stroke="${colors.turquoise}" stroke-width="4" stroke-linecap="round" opacity="0.86"/>
 		</svg>
 	`);
 };
@@ -143,19 +123,28 @@ await mkdir(outputDir, { recursive: true });
 for (const page of pages) {
 	const input = path.join(root, page.source);
 	const output = path.join(outputDir, page.output);
-	const logo = await sharp(logoPath)
-		.resize({ width: 126, withoutEnlargement: true })
+	const logoImage = await sharp(logoPath)
+		.resize({ width: logo.width, withoutEnlargement: true })
 		.png()
 		.toBuffer();
+	const photo = await sharp(input)
+		.resize(photoWidth, height, { fit: 'cover', position: page.position })
+		.jpeg({ quality: 94, mozjpeg: true })
+		.toBuffer();
 	const overlay = overlaySvg(page);
-	const { plaqueHeight } = getPlaqueMetrics(page);
-	const logoTop = page.plaque.y + plaqueHeight - 84;
 
-	await sharp(input)
-		.resize(width, height, { fit: 'cover', position: page.position ?? 'center' })
+	await sharp({
+		create: {
+			width,
+			height,
+			channels: 4,
+			background: colors.cream
+		}
+	})
 		.composite([
+			{ input: photo, top: 0, left: photoX },
 			{ input: overlay, top: 0, left: 0 },
-			{ input: logo, top: logoTop, left: page.plaque.x + 34 }
+			{ input: logoImage, top: logo.y, left: logo.x }
 		])
 		.jpeg({ quality: 88, mozjpeg: true })
 		.toFile(output);
