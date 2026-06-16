@@ -2,6 +2,7 @@
 	import { env } from '$env/dynamic/public';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { language, type Language } from '$lib/i18n';
+	import { socialImages } from '$lib/seo';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
 	import reviewImage from '$lib/images/operations/7.jpg?enhanced';
 	import { formatReviewTimestamp } from '$lib/reviewDates';
@@ -146,7 +147,12 @@
 	};
 </script>
 
-<SeoHead title={text.title} description={text.description} path="/reviews" />
+<SeoHead
+	title={text.title}
+	description={text.description}
+	path="/reviews"
+	image={socialImages.reviews}
+/>
 
 <section class="container-shell grid gap-8 py-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end lg:py-16">
 	<div>
