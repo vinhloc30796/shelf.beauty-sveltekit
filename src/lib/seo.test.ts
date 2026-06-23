@@ -1,6 +1,12 @@
 import { describe, expect, test } from 'vitest';
 
-import { defaultSocialImage, socialImages, toAbsoluteUrl } from './seo';
+import {
+	buildJsonLdScript,
+	defaultSocialImage,
+	localBusinessJsonLd,
+	socialImages,
+	toAbsoluteUrl
+} from './seo';
 
 describe('SEO URL helpers', () => {
 	test('resolves the root path to the production origin with a trailing slash', () => {
@@ -32,5 +38,57 @@ describe('SEO URL helpers', () => {
 			reviews: 'https://shelf.beauty/og/reviews.jpg',
 			contact: 'https://shelf.beauty/og/contact.jpg'
 		});
+	});
+});
+
+describe('LocalBusiness JSON-LD', () => {
+	test('describes Shelf as a BeautySalon with verified local business fields', () => {
+		expect(localBusinessJsonLd).toMatchObject({
+			'@context': 'https://schema.org',
+			'@type': 'BeautySalon',
+			'@id': 'https://shelf.beauty/#localbusiness',
+			name: 'Shelf Beauty Studio',
+			url: 'https://shelf.beauty/',
+			image: 'https://shelf.beauty/og/home.jpg',
+			address: {
+				'@type': 'PostalAddress',
+				streetAddress: '35 Yersin',
+				addressLocality: 'Đà Lạt',
+				addressRegion: 'Lâm Đồng',
+				addressCountry: 'VN'
+			},
+			geo: {
+				'@type': 'GeoCoordinates',
+				latitude: 11.9415682,
+				longitude: 108.451834
+			}
+		});
+		expect(localBusinessJsonLd.sameAs).toEqual([
+			'https://facebook.com/shelfbeautystudio',
+			'https://instagram.com/shelfbeautystudio',
+			'https://tiktok.com/@shelfbeautystudio'
+		]);
+	});
+
+	test('builds one parseable JSON-LD script tag', () => {
+		const script = buildJsonLdScript(localBusinessJsonLd);
+		const openingTag = '<script type="application/ld+json">';
+		const closingTag = '</script>';
+
+		expect(script.startsWith(openingTag)).toBe(true);
+		expect(script.endsWith(closingTag)).toBe(true);
+		expect(script.match(/<script type="application\/ld\+json">/g)).toHaveLength(1);
+		expect(script.match(/<\/script>/g)).toHaveLength(1);
+
+		const json = script.slice(openingTag.length, -closingTag.length);
+		expect(JSON.parse(json)).toEqual(localBusinessJsonLd);
+	});
+
+	test('escapes less-than characters inside JSON-LD data', () => {
+		const script = buildJsonLdScript({ name: '</script><script>alert("x")</script>' });
+
+		expect(script).not.toContain('</script><script>');
+		expect(script).toContain('\\u003c/script>');
+		expect(script.match(/<\/script>/g)).toHaveLength(1);
 	});
 });
