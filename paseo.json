@@ -1,28 +1,28 @@
 {
 	"worktree": {
 		"setup": [
-			"PATH=/home/vinhloc30796/.nvm/versions/node/v24.5.0/bin:$PATH corepack enable pnpm",
-			"PATH=/home/vinhloc30796/.nvm/versions/node/v24.5.0/bin:$PATH corepack pnpm@10.21.0 install --frozen-lockfile",
+			"corepack enable pnpm",
+			"corepack pnpm@10.21.0 install --frozen-lockfile",
 			"[ -f \"$PASEO_SOURCE_CHECKOUT_PATH/.env\" ] && cp \"$PASEO_SOURCE_CHECKOUT_PATH/.env\" .env || true"
 		]
 	},
 	"scripts": {
 		"dev": {
 			"type": "service",
-			"command": "PATH=/home/vinhloc30796/.nvm/versions/node/v24.5.0/bin:$PATH corepack pnpm@10.21.0 dev -- --host \"$HOST\" --port \"$PASEO_PORT\"",
+			"command": "corepack pnpm@10.21.0 dev -- --host \"$HOST\" --port \"$PASEO_PORT\"",
 			"port": 5173
 		},
 		"check": {
-			"command": "PATH=/home/vinhloc30796/.nvm/versions/node/v24.5.0/bin:$PATH corepack pnpm@10.21.0 check"
+			"command": "corepack pnpm@10.21.0 check"
 		},
 		"lint": {
-			"command": "PATH=/home/vinhloc30796/.nvm/versions/node/v24.5.0/bin:$PATH corepack pnpm@10.21.0 lint"
+			"command": "corepack pnpm@10.21.0 lint"
 		},
 		"test": {
-			"command": "PATH=/home/vinhloc30796/.nvm/versions/node/v24.5.0/bin:$PATH corepack pnpm@10.21.0 test"
+			"command": "corepack pnpm@10.21.0 test"
 		},
 		"build": {
-			"command": "PATH=/home/vinhloc30796/.nvm/versions/node/v24.5.0/bin:$PATH corepack pnpm@10.21.0 build"
+			"command": "corepack pnpm@10.21.0 build"
 		}
 	}
 }
