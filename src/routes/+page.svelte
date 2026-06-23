@@ -2,7 +2,7 @@
 	import { env } from '$env/dynamic/public';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { language, type Language } from '$lib/i18n';
-	import { socialImages } from '$lib/seo';
+	import { buildJsonLdScript, localBusinessJsonLd, socialImages } from '$lib/seo';
 	import heroImage from '$lib/images/operations/4.jpg?enhanced';
 	import detailImage from '$lib/images/operations/1.jpg?enhanced';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
@@ -115,6 +115,7 @@
 </script>
 
 <SeoHead title={text.title} description={text.description} path="/" image={socialImages.home} />
+<svelte:head>{@html buildJsonLdScript(localBusinessJsonLd)}</svelte:head>
 
 <section
 	class="container-shell grid gap-8 py-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:py-16"
