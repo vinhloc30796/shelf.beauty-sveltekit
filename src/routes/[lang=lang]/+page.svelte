@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
+	import { page } from '$app/stores';
 	import SeoHead from '$lib/components/SeoHead.svelte';
-	import { language, type Language } from '$lib/i18n';
+	import { type Language } from '$lib/i18n';
 	import { buildJsonLdScript, localBusinessJsonLd, socialImages } from '$lib/seo';
 	import heroImage from '$lib/images/operations/4.jpg?enhanced';
 	import detailImage from '$lib/images/operations/1.jpg?enhanced';
@@ -98,12 +99,13 @@
 	};
 
 	const formatTime = (time: RegularHourPeriod['openTime'] | undefined) => {
-		if (!time?.hours) return $language === 'vi' ? 'Đang cập nhật' : 'Updating';
+		if (!time?.hours) return currentLanguage === 'vi' ? 'Đang cập nhật' : 'Updating';
 		const minutes = String(time.minutes ?? 0).padStart(2, '0');
 		return `${time.hours}:${minutes}`;
 	};
 
-	$: text = copy[$language];
+	$: currentLanguage = $page.params.lang as Language;
+	$: text = copy[currentLanguage];
 
 	$: gtag_report_conversion_direction = (url: string) => {
 		return reportConversion(env.PUBLIC_GTAG_ID + '/XeK7CPaZ2YUZEJue89oq', url);
@@ -114,7 +116,12 @@
 	};
 </script>
 
-<SeoHead title={text.title} description={text.description} path="/" image={socialImages.home} />
+<SeoHead
+	title={text.title}
+	description={text.description}
+	path={`/${currentLanguage}`}
+	image={socialImages.home}
+/>
 <svelte:head>{@html buildJsonLdScript(localBusinessJsonLd)}</svelte:head>
 
 <section

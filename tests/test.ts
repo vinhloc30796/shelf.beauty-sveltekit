@@ -1,46 +1,39 @@
 import { expect, test } from '@playwright/test';
 
-test('homepage defaults to Vietnamese and switches actions and status to English', async ({
-	page
-}) => {
-	await page.goto('/');
+const expectSeoUrls = async (
+	page: import('@playwright/test').Page,
+	path: string,
+	expectedTitle: string,
+	expectedDescription: string,
+	expectedImage: string
+) => {
+	const absoluteUrl = `https://shelf.beauty${path}`;
+	const unprefixedPath = path.replace(/^\/(vi|en)(?=\/|$)/, '') || '/';
+	const viPath = unprefixedPath === '/' ? '/vi' : `/vi${unprefixedPath}`;
+	const enPath = unprefixedPath === '/' ? '/en' : `/en${unprefixedPath}`;
 
-	await expect(page.getByRole('heading', { name: /Chăm sóc sắc đẹp tại Đà Lạt/i })).toBeVisible();
-	await expect(page.getByRole('link', { name: /Đặt hẹn/i })).toBeVisible();
-	await expect(page.getByRole('link', { name: /Tìm đường/i })).toBeVisible();
-	await expect(page.getByText(/Trạng thái/i)).toBeVisible();
-
-	await page.getByRole('button', { name: 'English' }).click();
-
-	await expect(page.getByRole('heading', { name: /Beauty care in Da Lat/i })).toBeVisible();
-	await expect(page.getByRole('link', { name: /Book appointment/i })).toBeVisible();
-	await expect(page.getByRole('link', { name: /Get directions/i })).toBeVisible();
-	await expect(page.getByText(/Status/i)).toBeVisible();
-	await expect(page.getByText(/Opening hours/i)).toBeVisible();
-});
-
-test('homepage renders canonical, Open Graph, and Twitter metadata', async ({ page }) => {
-	await page.goto('/');
-
-	await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-		'href',
-		'https://shelf.beauty/'
-	);
-	await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
-		'content',
-		'Shelf Beauty Studio, chăm sóc sắc đẹp tại Đà Lạt'
-	);
+	await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', absoluteUrl);
+	await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', expectedTitle);
 	await expect(page.locator('meta[property="og:description"]')).toHaveAttribute(
 		'content',
-		'Shelf Beauty Studio tại Đà Lạt. Đặt lịch làm nail, xem giờ mở cửa, đọc đánh giá, và tìm đường đến studio.'
+		expectedDescription
 	);
-	await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
-		'content',
-		'https://shelf.beauty/'
-	);
+	await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', absoluteUrl);
 	await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
 		'content',
-		'https://shelf.beauty/og/home.jpg'
+		expectedImage
+	);
+	await expect(page.locator('link[rel="alternate"][hreflang="vi"]')).toHaveAttribute(
+		'href',
+		`https://shelf.beauty${viPath}`
+	);
+	await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute(
+		'href',
+		`https://shelf.beauty${enPath}`
+	);
+	await expect(page.locator('link[rel="alternate"][hreflang="x-default"]')).toHaveAttribute(
+		'href',
+		`https://shelf.beauty${viPath}`
 	);
 	await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
 		'content',
@@ -48,100 +41,184 @@ test('homepage renders canonical, Open Graph, and Twitter metadata', async ({ pa
 	);
 	await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
 		'content',
-		'https://shelf.beauty/og/home.jpg'
+		expectedImage
 	);
+};
+
+test('legacy public page URLs redirect permanently to Vietnamese URLs', async ({ request }) => {
+	const home = await request.get('/', { maxRedirects: 0 });
+	const reviews = await request.get('/reviews', { maxRedirects: 0 });
+	const contact = await request.get('/contact', { maxRedirects: 0 });
+
+	expect(home.status()).toBe(308);
+	expect(home.headers().location).toBe('/vi');
+	expect(reviews.status()).toBe(308);
+	expect(reviews.headers().location).toBe('/vi/reviews');
+	expect(contact.status()).toBe(308);
+	expect(contact.headers().location).toBe('/vi/contact');
 });
 
-test('reviews page switches page copy without duplicating both languages', async ({ page }) => {
-	await page.goto('/reviews');
+test('localized public page URLs render directly in their URL language', async ({ page }) => {
+	await page.goto('/vi');
+	await expect(page.getByRole('heading', { name: /Chăm sóc sắc đẹp tại Đà Lạt/i })).toBeVisible();
+
+	await page.goto('/en');
+	await expect(page.getByRole('heading', { name: /Beauty care in Da Lat/i })).toBeVisible();
+
+	await page.goto('/vi/reviews');
+	await expect(page.getByRole('heading', { name: /Lời nhắn từ khách của Shelf/i })).toBeVisible();
+
+	await page.goto('/en/reviews');
+	await expect(page.getByRole('heading', { name: /Guest notes/i })).toBeVisible();
+
+	await page.goto('/vi/contact');
+	await expect(page.getByRole('heading', { name: /Ghé Shelf/i })).toBeVisible();
+
+	await page.goto('/en/contact');
+	await expect(page.getByRole('heading', { name: /Visit Shelf/i })).toBeVisible();
+});
+
+test('localized homepage renders actions and status in its route language', async ({ page }) => {
+	await page.goto('/vi');
+
+	await expect(page.getByRole('heading', { name: /Chăm sóc sắc đẹp tại Đà Lạt/i })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Đặt hẹn', exact: true })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Tìm đường', exact: true })).toBeVisible();
+	await expect(page.getByText('Trạng thái', { exact: true })).toBeVisible();
+
+	await page.goto('/en');
+
+	await expect(page.getByRole('heading', { name: /Beauty care in Da Lat/i })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Book appointment', exact: true })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Get directions', exact: true })).toBeVisible();
+	await expect(page.getByText('Status', { exact: true })).toBeVisible();
+	await expect(page.getByText('Opening hours', { exact: true })).toBeVisible();
+});
+
+test('localized reviews render route-language content and Google reviews action', async ({ page }) => {
+	await page.goto('/vi/reviews');
 
 	await expect(page.getByRole('heading', { name: /Lời nhắn từ khách của Shelf/i })).toBeVisible();
 
-	await page.getByRole('button', { name: 'English' }).click();
+	await page.goto('/en/reviews');
 
 	await expect(page.getByRole('heading', { name: /Guest notes/i })).toBeVisible();
-	await expect(page.getByRole('link', { name: /View all Google reviews/i })).toBeVisible();
+	await expect(
+		page.getByRole('link', { name: 'View all Google reviews', exact: true })
+	).toBeVisible();
 });
 
-test('reviews page renders canonical, Open Graph, and Twitter metadata', async ({ page }) => {
-	await page.goto('/reviews');
-
-	await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-		'href',
-		'https://shelf.beauty/reviews'
-	);
-	await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
-		'content',
-		'Đánh giá, Shelf Beauty Studio'
-	);
-	await expect(page.locator('meta[property="og:description"]')).toHaveAttribute(
-		'content',
-		'Đọc cảm nhận của khách và đánh giá Google của Shelf Beauty Studio tại Đà Lạt.'
-	);
-	await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
-		'content',
-		'https://shelf.beauty/reviews'
-	);
-	await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
-		'content',
-		'https://shelf.beauty/og/reviews.jpg'
-	);
-	await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
-		'content',
-		'summary_large_image'
-	);
-	await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
-		'content',
-		'https://shelf.beauty/og/reviews.jpg'
-	);
-});
-
-test('contact page presents visit details, map, social links, and directions', async ({ page }) => {
-	await page.goto('/contact');
+test('localized contact renders visit details, map, social links, and directions', async ({ page }) => {
+	await page.goto('/vi/contact');
 
 	await expect(page.getByRole('heading', { name: /Ghé Shelf/i })).toBeVisible();
 	await expect(page.getByText('35 Yersin, phường 10, Đà Lạt, Lâm Đồng')).toBeVisible();
 	await expect(page.getByTitle('Bản đồ vị trí Shelf Beauty Studio')).toBeVisible();
-	await expect(page.getByRole('link', { name: /Tìm đường/i })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Tìm đường', exact: true })).toBeVisible();
 
-	await page.getByRole('button', { name: 'English' }).click();
+	await page.goto('/en/contact');
 
 	await expect(page.getByRole('heading', { name: /Visit Shelf/i })).toBeVisible();
-	await expect(page.getByRole('link', { name: /Get directions/i })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Get directions', exact: true })).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Facebook, shelfbeautystudio' })).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Instagram, shelfbeautystudio' })).toBeVisible();
 	await expect(page.getByRole('link', { name: 'TikTok, shelfbeautystudio' })).toBeVisible();
 });
 
-test('contact page renders canonical, Open Graph, and Twitter metadata', async ({ page }) => {
-	await page.goto('/contact');
+test('language switcher and navigation use real localized links', async ({ page }) => {
+	await page.goto('/vi/reviews');
 
-	await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+	await expect(page.locator('html')).toHaveAttribute('lang', 'vi');
+	await expect(page.getByRole('link', { name: 'Trang chủ', exact: true })).toHaveAttribute(
 		'href',
-		'https://shelf.beauty/contact'
+		'/vi'
 	);
-	await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
-		'content',
-		'Ghé Shelf Beauty Studio tại Đà Lạt'
+	await expect(page.getByRole('link', { name: 'Đánh giá', exact: true })).toHaveAttribute(
+		'href',
+		'/vi/reviews'
 	);
-	await expect(page.locator('meta[property="og:description"]')).toHaveAttribute(
-		'content',
-		'Tìm Shelf Beauty Studio tại 35 Yersin, phường 10, Đà Lạt. Tìm đường, nhắn tin đặt lịch, và theo dõi Shelf trên mạng xã hội.'
+	await expect(page.getByRole('link', { name: 'Liên hệ', exact: true })).toHaveAttribute(
+		'href',
+		'/vi/contact'
 	);
-	await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
-		'content',
-		'https://shelf.beauty/contact'
+	await expect(page.getByRole('link', { name: 'English' }).first()).toHaveAttribute(
+		'href',
+		'/en/reviews'
 	);
-	await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
-		'content',
+
+	await page.goto('/en/contact');
+
+	await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+	await expect(page.getByRole('link', { name: 'Home', exact: true })).toHaveAttribute(
+		'href',
+		'/en'
+	);
+	await expect(page.getByRole('link', { name: 'Reviews', exact: true })).toHaveAttribute(
+		'href',
+		'/en/reviews'
+	);
+	await expect(page.getByRole('link', { name: 'Contact', exact: true })).toHaveAttribute(
+		'href',
+		'/en/contact'
+	);
+	await expect(page.getByRole('link', { name: 'Tiếng Việt' }).first()).toHaveAttribute(
+		'href',
+		'/vi/contact'
+	);
+});
+
+test('localized pages render self-canonical SEO metadata and hreflang alternates', async ({ page }) => {
+	await page.goto('/vi');
+	await expectSeoUrls(
+		page,
+		'/vi',
+		'Shelf Beauty Studio, chăm sóc sắc đẹp tại Đà Lạt',
+		'Shelf Beauty Studio tại Đà Lạt. Đặt lịch làm nail, xem giờ mở cửa, đọc đánh giá, và tìm đường đến studio.',
+		'https://shelf.beauty/og/home.jpg'
+	);
+
+	await page.goto('/en');
+	await expectSeoUrls(
+		page,
+		'/en',
+		'Shelf Beauty Studio, Da Lat beauty care',
+		'Shelf Beauty Studio in Da Lat. Book nail and beauty care, check opening hours, read guest notes, and get directions.',
+		'https://shelf.beauty/og/home.jpg'
+	);
+
+	await page.goto('/vi/reviews');
+	await expectSeoUrls(
+		page,
+		'/vi/reviews',
+		'Đánh giá, Shelf Beauty Studio',
+		'Đọc cảm nhận của khách và đánh giá Google của Shelf Beauty Studio tại Đà Lạt.',
+		'https://shelf.beauty/og/reviews.jpg'
+	);
+
+	await page.goto('/en/reviews');
+	await expectSeoUrls(
+		page,
+		'/en/reviews',
+		'Guest notes, Shelf Beauty Studio reviews',
+		'Read guest notes and Google reviews for Shelf Beauty Studio in Da Lat.',
+		'https://shelf.beauty/og/reviews.jpg'
+	);
+
+	await page.goto('/vi/contact');
+	await expectSeoUrls(
+		page,
+		'/vi/contact',
+		'Ghé Shelf Beauty Studio tại Đà Lạt',
+		'Tìm Shelf Beauty Studio tại 35 Yersin, phường 10, Đà Lạt. Tìm đường, nhắn tin đặt lịch, và theo dõi Shelf trên mạng xã hội.',
 		'https://shelf.beauty/og/contact.jpg'
 	);
-	await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
-		'content',
-		'summary_large_image'
-	);
-	await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
-		'content',
+
+	await page.goto('/en/contact');
+	await expectSeoUrls(
+		page,
+		'/en/contact',
+		'Visit Shelf Beauty Studio in Da Lat',
+		'Find Shelf Beauty Studio at 35 Yersin, phường 10, Da Lat. Get directions, message to book, and follow Shelf on social media.',
 		'https://shelf.beauty/og/contact.jpg'
 	);
 });

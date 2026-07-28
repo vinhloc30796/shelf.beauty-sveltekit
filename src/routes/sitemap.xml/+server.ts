@@ -1,8 +1,8 @@
+import { localizedPath, languages } from '$lib/i18n';
 import { toAbsoluteUrl } from '$lib/seo';
 import type { RequestHandler } from './$types';
 
-const pageRoutes = import.meta.glob('/src/routes/**/+page.svelte');
-const excludedPaths = new Set(['/fbmessage']);
+const pagePaths = ['/', '/reviews', '/contact'];
 
 const escapeXml = (value: string) =>
 	value
@@ -12,22 +12,9 @@ const escapeXml = (value: string) =>
 		.replace(/"/g, '&quot;')
 		.replace(/'/g, '&apos;');
 
-const toRoutePath = (filePath: string) => {
-	const routePath = filePath
-		.replace('/src/routes', '')
-		.replace('/+page.svelte', '')
-		.split('/')
-		.filter((segment) => segment && !segment.startsWith('('))
-		.join('/');
-
-	return routePath ? `/${routePath}` : '/';
-};
-
-const sitemapPaths = Object.keys(pageRoutes)
-	.map(toRoutePath)
-	.filter((path) => !path.includes('['))
-	.filter((path) => !excludedPaths.has(path))
-	.sort((a, b) => (a === '/' ? -1 : b === '/' ? 1 : a.localeCompare(b)));
+const sitemapPaths = pagePaths.flatMap((path) =>
+	languages.map((language) => localizedPath(language, path))
+);
 
 export const GET: RequestHandler = () => {
 	const urls = sitemapPaths

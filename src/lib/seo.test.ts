@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
 import {
+	buildHreflangAlternates,
 	buildJsonLdScript,
 	defaultSocialImage,
 	localBusinessJsonLd,
@@ -39,6 +40,14 @@ describe('SEO URL helpers', () => {
 			contact: 'https://shelf.beauty/og/contact.jpg'
 		});
 	});
+
+	test('builds absolute hreflang alternates for localized pages', () => {
+		expect(buildHreflangAlternates('/en/reviews')).toEqual([
+			{ hreflang: 'vi', href: 'https://shelf.beauty/vi/reviews' },
+			{ hreflang: 'en', href: 'https://shelf.beauty/en/reviews' },
+			{ hreflang: 'x-default', href: 'https://shelf.beauty/vi/reviews' }
+		]);
+	});
 });
 
 describe('LocalBusiness JSON-LD', () => {
@@ -48,7 +57,7 @@ describe('LocalBusiness JSON-LD', () => {
 			'@type': 'BeautySalon',
 			'@id': 'https://shelf.beauty/#localbusiness',
 			name: 'Shelf Beauty Studio',
-			url: 'https://shelf.beauty/',
+			url: 'https://shelf.beauty/vi',
 			image: 'https://shelf.beauty/og/home.jpg',
 			address: {
 				'@type': 'PostalAddress',
