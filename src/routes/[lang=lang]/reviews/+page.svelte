@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
+	import { page } from '$app/stores';
 	import SeoHead from '$lib/components/SeoHead.svelte';
-	import { language, type Language } from '$lib/i18n';
+	import { type Language } from '$lib/i18n';
 	import { socialImages } from '$lib/seo';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
 	import reviewImage from '$lib/images/operations/7.jpg?enhanced';
@@ -138,7 +139,8 @@
 		return false;
 	};
 
-	$: text = copy[$language];
+	$: currentLanguage = $page.params.lang as Language;
+	$: text = copy[currentLanguage];
 	$: reviews = reviewBatches.flat();
 	$: renderedReviewBatches = buildRenderedReviewBatches(reviewBatches);
 
@@ -150,7 +152,7 @@
 <SeoHead
 	title={text.title}
 	description={text.description}
-	path="/reviews"
+	path={`/${currentLanguage}/reviews`}
 	image={socialImages.reviews}
 />
 
@@ -216,9 +218,9 @@
 							>
 								{review.name}
 							</p>
-							{#if reviewTimestamp(review, $language)}
+							{#if reviewTimestamp(review, currentLanguage)}
 								<time datetime={review.updateTime ?? review.createTime}>
-									{reviewTimestamp(review, $language)}
+									{reviewTimestamp(review, currentLanguage)}
 								</time>
 							{/if}
 						</div>

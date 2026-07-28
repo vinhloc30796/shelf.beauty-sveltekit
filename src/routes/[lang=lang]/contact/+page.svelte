@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
+	import { page } from '$app/stores';
 	import SeoHead from '$lib/components/SeoHead.svelte';
-	import { language, type Language } from '$lib/i18n';
+	import { type Language } from '$lib/i18n';
 	import { socialImages } from '$lib/seo';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
 	import studioImage from '$lib/images/operations/10.jpg?enhanced';
@@ -66,7 +67,8 @@
 		return false;
 	};
 
-	$: text = copy[$language];
+	$: currentLanguage = $page.params.lang as Language;
+	$: text = copy[currentLanguage];
 
 	$: gtag_report_conversion_direction = (url: string) => {
 		return reportConversion(env.PUBLIC_GTAG_ID + '/XeK7CPaZ2YUZEJue89oq', url);
@@ -76,7 +78,7 @@
 <SeoHead
 	title={text.title}
 	description={text.description}
-	path="/contact"
+	path={`/${currentLanguage}/contact`}
 	image={socialImages.contact}
 />
 

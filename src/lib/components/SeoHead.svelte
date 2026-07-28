@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { defaultSocialImage, siteName, toAbsoluteUrl } from '$lib/seo';
+	import { buildHreflangAlternates, defaultSocialImage, siteName, toAbsoluteUrl } from '$lib/seo';
 
 	export let title: string;
 	export let description: string;
@@ -8,6 +8,7 @@
 	export let type: 'website' | 'article' = 'website';
 
 	$: canonicalUrl = toAbsoluteUrl(path);
+	$: hreflangAlternates = buildHreflangAlternates(path);
 	$: imageUrl = toAbsoluteUrl(image);
 </script>
 
@@ -16,6 +17,9 @@
 	<meta name="description" content={description} />
 
 	<link rel="canonical" href={canonicalUrl} />
+	{#each hreflangAlternates as alternate}
+		<link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+	{/each}
 
 	<meta property="og:type" content={type} />
 	<meta property="og:site_name" content={siteName} />

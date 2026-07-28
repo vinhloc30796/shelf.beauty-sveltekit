@@ -1,3 +1,5 @@
+import { localizedPath, type Language } from './i18n';
+
 export const siteOrigin = 'https://shelf.beauty';
 export const siteName = 'Shelf Beauty Studio';
 
@@ -14,6 +16,22 @@ export const toAbsoluteUrl = (path: string) => {
 	return new URL(normalizedPath, siteOrigin).toString();
 };
 
+export type HreflangAlternate = {
+	hreflang: Language | 'x-default';
+	href: string;
+};
+
+export const buildHreflangAlternates = (pathname: string): HreflangAlternate[] => {
+	const viPath = localizedPath('vi', pathname);
+	const enPath = localizedPath('en', pathname);
+
+	return [
+		{ hreflang: 'vi', href: toAbsoluteUrl(viPath) },
+		{ hreflang: 'en', href: toAbsoluteUrl(enPath) },
+		{ hreflang: 'x-default', href: toAbsoluteUrl(viPath) }
+	];
+};
+
 export const socialImages = {
 	home: toAbsoluteUrl('/og/home.jpg'),
 	reviews: toAbsoluteUrl('/og/reviews.jpg'),
@@ -27,7 +45,7 @@ export const localBusinessJsonLd = {
 	'@type': 'BeautySalon',
 	'@id': `${siteOrigin}/#localbusiness`,
 	name: siteName,
-	url: toAbsoluteUrl('/'),
+	url: toAbsoluteUrl('/vi'),
 	image: socialImages.home,
 	description:
 		'Shelf Beauty Studio is a nail and beauty care studio in Da Lat, Vietnam, offering detailed nail care, hair washing, and beauty appointments.',
