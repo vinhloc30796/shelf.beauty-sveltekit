@@ -125,6 +125,54 @@ test('localized contact renders visit details, map, social links, and directions
 	await expect(page.getByRole('link', { name: 'TikTok, shelfbeautystudio' })).toBeVisible();
 });
 
+test('localized service menu renders audited services, prices, packages, and booking action', async ({
+	page
+}) => {
+	await page.goto('/vi/services');
+
+	await expect(page.getByRole('heading', { name: 'Dịch vụ và bảng giá' })).toBeVisible();
+	const vietnameseGeneralNails = page.getByRole('region', { name: 'Nail cơ bản' });
+	await expect(vietnameseGeneralNails).toBeVisible();
+	await expect(vietnameseGeneralNails.getByText('Sơn gel', { exact: true })).toBeVisible();
+	await expect(vietnameseGeneralNails.getByText('100.000₫ / bộ', { exact: true })).toBeVisible();
+	const vietnameseSkinCare = page.getByRole('region', { name: 'Dịch vụ chăm sóc da' });
+	await expect(vietnameseSkinCare).toBeVisible();
+	await expect(vietnameseSkinCare.getByText(/^Điện di tinh chất/)).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Đặt hẹn với Shelf' })).toBeVisible();
+
+	await page.goto('/en/services');
+
+	await expect(page.getByRole('heading', { name: 'Services and prices' })).toBeVisible();
+	const englishGeneralNails = page.getByRole('region', { name: 'General nail services' });
+	await expect(englishGeneralNails).toBeVisible();
+	await expect(englishGeneralNails.getByText('Gel polish', { exact: true })).toBeVisible();
+	await expect(englishGeneralNails.getByText('100,000₫ / set', { exact: true })).toBeVisible();
+	await expect(
+		page.getByRole('region', { name: 'Skin care services' }).getByText(/^Essence infusion/)
+	).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Book with Shelf' })).toBeVisible();
+});
+
+test('service menu stays within a mobile viewport while category links remain scrollable', async ({
+	page
+}) => {
+	await page.setViewportSize({ width: 375, height: 812 });
+	await page.goto('/vi/services');
+
+	const pageOverflows = await page.evaluate(
+		() => document.documentElement.scrollWidth > document.documentElement.clientWidth
+	);
+	expect(pageOverflows).toBe(false);
+
+	const categoryLinks = page
+		.getByRole('navigation', { name: 'Xem nhanh theo dịch vụ' })
+		.locator('div');
+	await expect(categoryLinks).toBeVisible();
+	expect(await categoryLinks.evaluate((element) => element.scrollWidth > element.clientWidth)).toBe(
+		true
+	);
+});
+
 test('language switcher and navigation use real localized links', async ({ page }) => {
 	await page.goto('/vi/reviews');
 
