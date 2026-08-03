@@ -20,4 +20,6 @@ When an audit is rerun:
 3. Add one concise entry to `changelog.md` describing the audit date, score, verification scope, and material changes.
 4. Commit the report, action plan, and changelog together.
 
+When a pull request contains more than one version of an audit, merge it with a merge commit or rebase merge. Do not squash it, because squashing removes the intermediate report versions that this convention relies on.
+
 Supporting screenshots, generated test results, and `.seo-cache/` data are local evidence only and should remain uncommitted unless the project explicitly changes that policy.
