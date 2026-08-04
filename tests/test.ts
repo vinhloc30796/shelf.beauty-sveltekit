@@ -49,6 +49,7 @@ test('legacy public page URLs redirect permanently to Vietnamese URLs', async ({
 	const home = await request.get('/', { maxRedirects: 0 });
 	const reviews = await request.get('/reviews', { maxRedirects: 0 });
 	const contact = await request.get('/contact', { maxRedirects: 0 });
+	const services = await request.get('/services', { maxRedirects: 0 });
 
 	expect(home.status()).toBe(308);
 	expect(home.headers().location).toBe('/vi');
@@ -56,6 +57,8 @@ test('legacy public page URLs redirect permanently to Vietnamese URLs', async ({
 	expect(reviews.headers().location).toBe('/vi/reviews');
 	expect(contact.status()).toBe(308);
 	expect(contact.headers().location).toBe('/vi/contact');
+	expect(services.status()).toBe(308);
+	expect(services.headers().location).toBe('/vi/services');
 });
 
 test('localized public page URLs render directly in their URL language', async ({ page }) => {
@@ -185,6 +188,10 @@ test('language switcher and navigation use real localized links', async ({ page 
 		'href',
 		'/vi/reviews'
 	);
+	await expect(page.getByRole('link', { name: 'Dịch vụ', exact: true })).toHaveAttribute(
+		'href',
+		'/vi/services'
+	);
 	await expect(page.getByRole('link', { name: 'Liên hệ', exact: true })).toHaveAttribute(
 		'href',
 		'/vi/contact'
@@ -204,6 +211,10 @@ test('language switcher and navigation use real localized links', async ({ page 
 	await expect(page.getByRole('link', { name: 'Reviews', exact: true })).toHaveAttribute(
 		'href',
 		'/en/reviews'
+	);
+	await expect(page.getByRole('link', { name: 'Services', exact: true })).toHaveAttribute(
+		'href',
+		'/en/services'
 	);
 	await expect(page.getByRole('link', { name: 'Contact', exact: true })).toHaveAttribute(
 		'href',
@@ -269,4 +280,33 @@ test('localized pages render self-canonical SEO metadata and hreflang alternates
 		'Find Shelf Beauty Studio at 35 Yersin, phường 10, Da Lat. Get directions, message to book, and follow Shelf on social media.',
 		'https://shelf.beauty/og/contact.jpg'
 	);
+
+	await page.goto('/vi/services');
+	await expectSeoUrls(
+		page,
+		'/vi/services',
+		'Bảng giá dịch vụ nail và làm đẹp tại Đà Lạt | Shelf',
+		'Xem dịch vụ và bảng giá nail, nối mi, chăm sóc da, gội đầu tại Shelf Beauty Studio, Đà Lạt.',
+		'https://shelf.beauty/og/home.jpg'
+	);
+
+	await page.goto('/en/services');
+	await expectSeoUrls(
+		page,
+		'/en/services',
+		'Nail and beauty service prices in Da Lat | Shelf',
+		'Explore nail, eyelash, skin care, and shampoo services and prices at Shelf Beauty Studio in Da Lat.',
+		'https://shelf.beauty/og/home.jpg'
+	);
+
+	const structuredData = await page.locator('script[type="application/ld+json"]').allTextContents();
+	const serviceCatalog = structuredData
+		.map((value) => JSON.parse(value))
+		.find((value) => value['@type'] === 'Service');
+	expect(serviceCatalog.hasOfferCatalog.itemListElement).toHaveLength(7);
+	expect(
+		serviceCatalog.hasOfferCatalog.itemListElement.flatMap(
+			(category: { itemListElement: unknown[] }) => category.itemListElement
+		)
+	).toHaveLength(63);
 });

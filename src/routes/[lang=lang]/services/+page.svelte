@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { type Language } from '$lib/i18n';
 	import menuImage from '$lib/images/operations/8.jpg?enhanced';
 	import { formatMenuPrice, serviceMenu } from '$lib/menu/menu';
+	import { buildServiceMenuJsonLd } from '$lib/menu/seo';
+	import { buildJsonLdScript, socialImages } from '$lib/seo';
 	import Calendar from 'lucide-svelte/icons/calendar';
 	import Sparkles from 'lucide-svelte/icons/sparkles';
 
@@ -10,6 +13,9 @@
 	const copy = {
 		vi: {
 			title: 'Dịch vụ và bảng giá',
+			seoTitle: 'Bảng giá dịch vụ nail và làm đẹp tại Đà Lạt | Shelf',
+			seoDescription:
+				'Xem dịch vụ và bảng giá nail, nối mi, chăm sóc da, gội đầu tại Shelf Beauty Studio, Đà Lạt.',
 			intro:
 				'Từ chăm sóc móng tỉ mỉ đến nối mi, chăm sóc da và gội đầu thư giãn, chọn dịch vụ phù hợp cho lần ghé Shelf tiếp theo.',
 			note: 'Giá cuối cùng có thể thay đổi theo độ dài, mẫu thiết kế và tình trạng thực tế. Tụi mình sẽ xác nhận trước khi làm.',
@@ -21,6 +27,9 @@
 		},
 		en: {
 			title: 'Services and prices',
+			seoTitle: 'Nail and beauty service prices in Da Lat | Shelf',
+			seoDescription:
+				'Explore nail, eyelash, skin care, and shampoo services and prices at Shelf Beauty Studio in Da Lat.',
 			intro:
 				'From careful nail work to eyelashes, skin care, and relaxing shampoo services, find the right treatment for your next visit to Shelf.',
 			note: 'Final prices may vary with length, design complexity, and current condition. We will confirm the price before starting.',
@@ -35,7 +44,19 @@
 
 	$: currentLanguage = $page.params.lang as Language;
 	$: text = copy[currentLanguage];
+	$: serviceMenuJsonLd = buildServiceMenuJsonLd(serviceMenu, currentLanguage);
 </script>
+
+<SeoHead
+	title={text.seoTitle}
+	description={text.seoDescription}
+	path={`/${currentLanguage}/services`}
+	image={socialImages.home}
+/>
+<svelte:head>
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -- JSON-LD is escaped by buildJsonLdScript -->
+	{@html buildJsonLdScript(serviceMenuJsonLd)}
+</svelte:head>
 
 <section
 	class="container-shell grid gap-8 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-16"
