@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { type Language } from '$lib/i18n';
-	import { buildJsonLdScript, localBusinessJsonLd, socialImages, toAbsoluteUrl } from '$lib/seo';
+	import { buildJsonLdScript, localBusinessJsonLd, socialImages } from '$lib/seo';
 	import heroImage from '$lib/images/operations/4.jpg?enhanced';
 	import detailImage from '$lib/images/operations/1.jpg?enhanced';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
@@ -20,8 +20,6 @@
 		closeTime: { hours?: number | null; minutes?: number | null } | null;
 	};
 
-	const directionsUrl =
-		'https://www.google.com/maps/dir/?api=1&destination=shelf+beauty+studio,+Yersin,+Ph%C6%B0%E1%BB%9Dng+10,+Dalat,+Lam+Dong&destination_place_id=ChIJHydiEXkTcTERBlm-4kPGIWk';
 	const bookingUrl = 'https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ';
 	const copy = {
 		vi: {
@@ -107,8 +105,13 @@
 	$: currentLanguage = $page.params.lang as Language;
 	$: text = copy[currentLanguage];
 
-	$: gtag_report_conversion_direction = (url: string) => {
-		return reportConversion(env.PUBLIC_GTAG_ID + '/XeK7CPaZ2YUZEJue89oq', url);
+	$: gtag_report_conversion_direction = () => {
+		if (typeof window !== 'undefined' && 'gtag' in window) {
+			(window as Window & { gtag: (...args: unknown[]) => void }).gtag('event', 'conversion', {
+				send_to: env.PUBLIC_GTAG_ID + '/XeK7CPaZ2YUZEJue89oq'
+			});
+		}
+		return false;
 	};
 
 	$: gtag_report_conversion_fbmessage = (url: string) => {
@@ -122,6 +125,7 @@
 	path={`/${currentLanguage}`}
 	image={socialImages.home}
 />
+<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 <svelte:head>{@html buildJsonLdScript(localBusinessJsonLd)}</svelte:head>
 
 <section
@@ -152,12 +156,12 @@
 				{text.book}
 			</a>
 			<a
-				href={directionsUrl}
+				href="/directions"
 				class="inline-flex min-h-12 items-center justify-center rounded-md border border-primary/35 bg-background px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-secondary"
 				title={text.directionsTitle}
 				referrerpolicy="origin"
 				target="_blank"
-				on:click={() => gtag_report_conversion_direction(toAbsoluteUrl('/directions'))}
+				on:click={gtag_report_conversion_direction}
 			>
 				<MapPin class="mr-2 h-5 w-5" aria-hidden="true" />
 				{text.directions}
