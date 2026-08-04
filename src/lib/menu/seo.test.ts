@@ -24,7 +24,7 @@ describe('service menu JSON-LD', () => {
 		expect(catalogs[0]).toMatchObject({ '@type': 'OfferCatalog', name: 'Design móng' });
 	});
 
-	test('publishes exact fixed prices but does not flatten ranges or variants', () => {
+	test('publishes whole-service fixed prices without flattening partial or variable prices', () => {
 		const jsonLd = buildServiceMenuJsonLd(serviceMenu, 'en');
 		const offers = jsonLd.hasOfferCatalog.itemListElement.flatMap(
 			({ itemListElement }) => itemListElement
@@ -40,6 +40,15 @@ describe('service menu JSON-LD', () => {
 		expect(offers.find(({ identifier }) => identifier === 'glitter-designs')).not.toHaveProperty(
 			'price'
 		);
+		expect(offers.find(({ identifier }) => identifier === 'sprinkling-stones')).not.toHaveProperty(
+			'price'
+		);
+		expect(offers.find(({ identifier }) => identifier === 'mixed-color-gel')).not.toHaveProperty(
+			'price'
+		);
+		expect(
+			offers.find(({ identifier }) => identifier === 'hair-extension-shampoo-fee')
+		).not.toHaveProperty('price');
 		expect(
 			offers.find(({ identifier }) => identifier === 'hand-feet-nurturing-mask')
 		).not.toHaveProperty('price');

@@ -14,12 +14,19 @@ const catalogCopy = {
 	}
 } as const;
 
+const isWholeServiceFixedPrice = (service: MenuService) =>
+	service.price.kind === 'fixed' &&
+	service.price.modifier !== 'add' &&
+	(service.price.unit === undefined ||
+		service.price.unit === 'service' ||
+		service.price.unit === 'set');
+
 const buildOffer = (service: MenuService, language: Language) => {
 	const description =
 		service.description?.[language] ??
 		service.inclusions?.map((inclusion) => inclusion[language]).join(', ');
 	const fixedPrice =
-		service.price.kind === 'fixed'
+		isWholeServiceFixedPrice(service) && service.price.kind === 'fixed'
 			? { price: service.price.amount, priceCurrency: 'VND' as const }
 			: {};
 
