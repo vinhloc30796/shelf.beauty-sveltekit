@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { type Language } from '$lib/i18n';
+	import { getMessengerBookingUrl } from '$lib/messenger';
 	import menuImage from '$lib/images/operations/8.jpg?enhanced';
 	import { formatMenuPrice, serviceMenu } from '$lib/menu/menu';
 	import { buildServiceMenuJsonLd } from '$lib/menu/seo';
@@ -9,7 +10,6 @@
 	import Calendar from 'lucide-svelte/icons/calendar';
 	import Sparkles from 'lucide-svelte/icons/sparkles';
 
-	const bookingUrl = 'https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+với+ạ';
 	const copy = {
 		vi: {
 			title: 'Dịch vụ và bảng giá',
@@ -44,6 +44,7 @@
 
 	$: currentLanguage = $page.params.lang as Language;
 	$: text = copy[currentLanguage];
+	$: bookingUrl = getMessengerBookingUrl(currentLanguage);
 	$: serviceMenuJsonLd = buildServiceMenuJsonLd(serviceMenu, currentLanguage);
 </script>
 

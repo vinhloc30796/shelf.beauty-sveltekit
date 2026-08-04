@@ -1,5 +1,10 @@
 import { expect, test } from '@playwright/test';
 
+const messengerBookingUrls = {
+	vi: 'https://m.me/shelfbeautystudio?text=Cho+m%C3%ACnh+xin+%C4%91%E1%BA%B7t+l%E1%BB%8Bch+t%E1%BA%A1i+Shelf+Beauty+Studio+v%E1%BB%9Bi+%E1%BA%A1.',
+	en: 'https://m.me/shelfbeautystudio?text=Hi%2C+I%E2%80%99d+like+to+book+an+appointment+at+Shelf+Beauty+Studio.'
+} as const;
+
 const directionsUrl =
 	'https://www.google.com/maps/dir/?api=1&destination=shelf+beauty+studio,+Yersin,+Ph%C6%B0%E1%BB%9Dng+10,+Dalat,+Lam+Dong&destination_place_id=ChIJHydiEXkTcTERBlm-4kPGIWk';
 
@@ -109,6 +114,75 @@ test('legacy public page URLs redirect permanently to Vietnamese URLs', async ({
 	expect(contact.headers().location).toBe('/vi/contact');
 	expect(services.status()).toBe(308);
 	expect(services.headers().location).toBe('/vi/services');
+});
+
+test('the legacy Messenger bridge redirects once while localized bridge routes remain absent', async ({
+	request
+}) => {
+	const legacyBridge = await request.get('/fbmessage', { maxRedirects: 0 });
+	const vietnameseBridge = await request.get('/vi/fbmessage', { maxRedirects: 0 });
+	const englishBridge = await request.get('/en/fbmessage', { maxRedirects: 0 });
+
+	expect(legacyBridge.status()).toBe(308);
+	expect(legacyBridge.headers().location).toBe(messengerBookingUrls.vi);
+	expect(vietnameseBridge.status()).toBe(404);
+	expect(englishBridge.status()).toBe(404);
+});
+
+test('localized booking actions and footer expose direct route-language Messenger URLs', async ({
+	page
+}) => {
+	for (const language of ['vi', 'en'] as const) {
+		await page.goto(`/${language}`);
+		await expect(
+			page.getByRole('link', {
+				name: language === 'vi' ? 'Đặt hẹn' : 'Book appointment',
+				exact: true
+			})
+		).toHaveAttribute('href', messengerBookingUrls[language]);
+		await expect(
+			page.getByRole('link', { name: 'Shelf Beauty Studio Facebook Messenger', exact: true })
+		).toHaveAttribute('href', messengerBookingUrls[language]);
+
+		await page.goto(`/${language}/contact`);
+		await expect(
+			page.getByRole('link', {
+				name: language === 'vi' ? 'Nhắn tin đặt lịch' : 'Message to book',
+				exact: true
+			})
+		).toHaveAttribute('href', messengerBookingUrls[language]);
+		await expect(
+			page.getByRole('link', { name: 'Shelf Beauty Studio Facebook Messenger', exact: true })
+		).toHaveAttribute('href', messengerBookingUrls[language]);
+
+		await page.goto(`/${language}/services`);
+		await expect(
+			page.getByRole('link', {
+				name: language === 'vi' ? 'Đặt hẹn với Shelf' : 'Book with Shelf',
+				exact: true
+			})
+		).toHaveAttribute('href', messengerBookingUrls[language]);
+	}
+});
+
+test('localized pages never generate legacy or localized Messenger bridge links', async ({
+	page
+}) => {
+	for (const language of ['vi', 'en'] as const) {
+		for (const path of ['', '/services', '/reviews', '/contact']) {
+			await page.goto(`/${language}${path}`);
+			const hrefs = await page
+				.locator('a')
+				.evaluateAll((links) =>
+					links
+						.map((link) => link.getAttribute('href'))
+						.filter((href): href is string => href !== null)
+				);
+
+			expect(hrefs).not.toContain('/fbmessage');
+			expect(hrefs).not.toContain(`/${language}/fbmessage`);
+		}
+	}
 });
 
 test('localized public page URLs render directly in their URL language', async ({ page }) => {

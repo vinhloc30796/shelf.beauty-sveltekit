@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
 	import { page } from '$app/stores';
+	import { trackConversion } from '$lib/analytics';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { type Language } from '$lib/i18n';
+	import { getMessengerBookingUrl } from '$lib/messenger';
 	import { socialImages } from '$lib/seo';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
 	import studioImage from '$lib/images/operations/10.jpg?enhanced';
@@ -14,7 +16,6 @@
 
 	const mapUrl =
 		'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3903.4751651773076!2d108.4492590764347!3d11.941568188287144!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317113791162271f%3A0x6921c643e2be5906!2sshelf%20beauty%20studio!5e0!3m2!1sen!2s!4v1716794660375!5m2!1sen!2s';
-	const bookingUrl = 'https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ';
 	const copy = {
 		vi: {
 			title: 'Ghé Shelf Beauty Studio tại Đà Lạt',
@@ -51,21 +52,9 @@
 			mapTitle: 'Shelf Beauty Studio location map'
 		}
 	} satisfies Record<Language, Record<string, string>>;
-	const reportConversion = (sendTo: string) => {
-		if (typeof window !== 'undefined' && 'gtag' in window) {
-			(window as Window & { gtag: (...args: unknown[]) => void }).gtag('event', 'conversion', {
-				send_to: sendTo
-			});
-		}
-		return false;
-	};
-
 	$: currentLanguage = $page.params.lang as Language;
 	$: text = copy[currentLanguage];
-
-	$: gtag_report_conversion_direction = () => {
-		return reportConversion(env.PUBLIC_GTAG_ID + '/XeK7CPaZ2YUZEJue89oq');
-	};
+	$: bookingUrl = getMessengerBookingUrl(currentLanguage);
 </script>
 
 <SeoHead
@@ -95,7 +84,7 @@
 				title={text.directionsTitle}
 				referrerpolicy="origin"
 				target="_blank"
-				on:click={gtag_report_conversion_direction}
+				on:click={() => trackConversion(env.PUBLIC_GTAG_ID, 'directions')}
 			>
 				<MapPin class="mr-2 h-5 w-5" aria-hidden="true" />
 				{text.directions}
@@ -106,6 +95,7 @@
 				title={text.bookTitle}
 				referrerpolicy="origin"
 				target="_blank"
+				on:click={() => trackConversion(env.PUBLIC_GTAG_ID, 'booking')}
 			>
 				<MessageCircle class="mr-2 h-5 w-5" aria-hidden="true" />
 				{text.book}

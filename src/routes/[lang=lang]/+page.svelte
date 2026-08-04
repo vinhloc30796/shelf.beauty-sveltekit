@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
 	import { page } from '$app/stores';
+	import { trackConversion } from '$lib/analytics';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { type Language } from '$lib/i18n';
+	import { getMessengerBookingUrl } from '$lib/messenger';
 	import { buildJsonLdScript, localBusinessJsonLd, socialImages } from '$lib/seo';
 	import heroImage from '$lib/images/operations/4.jpg?enhanced';
 	import detailImage from '$lib/images/operations/1.jpg?enhanced';
@@ -19,8 +21,6 @@
 		openTime: { hours?: number | null; minutes?: number | null } | null;
 		closeTime: { hours?: number | null; minutes?: number | null } | null;
 	};
-
-	const bookingUrl = 'https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ';
 	const copy = {
 		vi: {
 			title: 'Shelf Beauty Studio, chăm sóc sắc đẹp tại Đà Lạt',
@@ -82,20 +82,6 @@
 		}
 	} satisfies Record<Language, Record<string, string>>;
 
-	const reportConversion = (sendTo: string, url: string) => {
-		if (typeof window !== 'undefined' && 'gtag' in window) {
-			(window as Window & { gtag: (...args: unknown[]) => void }).gtag('event', 'conversion', {
-				send_to: sendTo,
-				event_callback: () => {
-					if (url) {
-						window.location.href = url;
-					}
-				}
-			});
-		}
-		return false;
-	};
-
 	const formatTime = (time: RegularHourPeriod['openTime'] | undefined) => {
 		if (!time?.hours) return currentLanguage === 'vi' ? 'Đang cập nhật' : 'Updating';
 		const minutes = String(time.minutes ?? 0).padStart(2, '0');
@@ -104,19 +90,7 @@
 
 	$: currentLanguage = $page.params.lang as Language;
 	$: text = copy[currentLanguage];
-
-	$: gtag_report_conversion_direction = () => {
-		if (typeof window !== 'undefined' && 'gtag' in window) {
-			(window as Window & { gtag: (...args: unknown[]) => void }).gtag('event', 'conversion', {
-				send_to: env.PUBLIC_GTAG_ID + '/XeK7CPaZ2YUZEJue89oq'
-			});
-		}
-		return false;
-	};
-
-	$: gtag_report_conversion_fbmessage = (url: string) => {
-		return reportConversion(env.PUBLIC_GTAG_ID + '/mpO0CJ_Jg54ZEJue89oq', url);
-	};
+	$: bookingUrl = getMessengerBookingUrl(currentLanguage);
 </script>
 
 <SeoHead
@@ -150,7 +124,7 @@
 				title={text.bookTitle}
 				referrerpolicy="origin"
 				target="_blank"
-				on:click={() => gtag_report_conversion_fbmessage(bookingUrl)}
+				on:click={() => trackConversion(env.PUBLIC_GTAG_ID, 'booking')}
 			>
 				<Calendar class="mr-2 h-5 w-5" aria-hidden="true" />
 				{text.book}
@@ -161,7 +135,7 @@
 				title={text.directionsTitle}
 				referrerpolicy="origin"
 				target="_blank"
-				on:click={gtag_report_conversion_direction}
+				on:click={() => trackConversion(env.PUBLIC_GTAG_ID, 'directions')}
 			>
 				<MapPin class="mr-2 h-5 w-5" aria-hidden="true" />
 				{text.directions}

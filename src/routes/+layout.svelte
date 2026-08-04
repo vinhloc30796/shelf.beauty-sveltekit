@@ -1,6 +1,8 @@
 <script lang="ts">
 	// Vercel Analytics
 	import { dev } from '$app/environment';
+	import { env } from '$env/dynamic/public';
+	import { trackConversion } from '$lib/analytics';
 	import { inject } from '@vercel/analytics';
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
@@ -11,6 +13,7 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import { page } from '$app/stores';
 	import { languageFromPath } from '$lib/i18n';
+	import { getMessengerBookingUrl } from '$lib/messenger';
 
 	// Typography
 	import P from '$lib/components/typography/p.svelte';
@@ -21,6 +24,7 @@
 	import '../app.css';
 
 	$: currentLanguage = languageFromPath($page.url.pathname);
+	$: bookingUrl = getMessengerBookingUrl(currentLanguage);
 </script>
 
 <div class="app flex min-h-screen flex-col">
@@ -35,9 +39,10 @@
 			{currentLanguage === 'vi' ? 'Ghé ' : 'Visit '}
 			<a
 				class="font-medium text-primary underline-offset-4 hover:underline"
-				href="/fbmessage"
+				href={bookingUrl}
 				title="Shelf Beauty Studio trên Facebook"
 				referrerpolicy="origin"
+				on:click={() => trackConversion(env.PUBLIC_GTAG_ID, 'booking')}
 				target="_blank">Shelf Beauty Studio Facebook Messenger</a
 			>
 			{currentLanguage === 'vi' ? ' để đặt lịch hẹn' : ' to book an appointment'}
