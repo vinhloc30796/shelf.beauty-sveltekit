@@ -1,0 +1,17 @@
+{
+	"$schema": "https://openapi.vercel.sh/vercel.json",
+	"redirects": [
+		{
+			"source": "/",
+			"has": [{ "type": "host", "value": "shelf.beauty" }],
+			"destination": "https://www.shelf.beauty/vi",
+			"permanent": true
+		},
+		{
+			"source": "/:path*",
+			"has": [{ "type": "host", "value": "shelf.beauty" }],
+			"destination": "https://www.shelf.beauty/:path*",
+			"permanent": true
+		}
+	]
+}

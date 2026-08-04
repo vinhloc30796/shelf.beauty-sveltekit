@@ -3,6 +3,7 @@ import { describe, expect, test } from 'vitest';
 import {
 	buildHreflangAlternates,
 	buildJsonLdScript,
+	canonicalRedirectUrl,
 	defaultSocialImage,
 	localBusinessJsonLd,
 	socialImages,
@@ -11,42 +12,84 @@ import {
 
 describe('SEO URL helpers', () => {
 	test('resolves the root path to the production origin with a trailing slash', () => {
-		expect(toAbsoluteUrl('/')).toBe('https://shelf.beauty/');
+		expect(toAbsoluteUrl('/')).toBe('https://www.shelf.beauty/');
 	});
 
 	test('resolves nested paths without duplicate slashes', () => {
-		expect(toAbsoluteUrl('/reviews')).toBe('https://shelf.beauty/reviews');
-		expect(toAbsoluteUrl('contact')).toBe('https://shelf.beauty/contact');
+		expect(toAbsoluteUrl('/reviews')).toBe('https://www.shelf.beauty/reviews');
+		expect(toAbsoluteUrl('contact')).toBe('https://www.shelf.beauty/contact');
 	});
 
 	test('resolves static Open Graph images to the production origin', () => {
-		expect(toAbsoluteUrl('/og/home.jpg')).toBe('https://shelf.beauty/og/home.jpg');
+		expect(toAbsoluteUrl('/og/home.jpg')).toBe('https://www.shelf.beauty/og/home.jpg');
 	});
 
 	test('normalizes local preview asset URLs to the production origin', () => {
 		expect(toAbsoluteUrl('http://localhost:4174/_app/immutable/assets/shelf.png')).toBe(
-			'https://shelf.beauty/_app/immutable/assets/shelf.png'
+			'https://www.shelf.beauty/_app/immutable/assets/shelf.png'
 		);
 	});
 
+	test('normalizes legacy apex URLs to the canonical production origin', () => {
+		expect(toAbsoluteUrl('https://shelf.beauty/en/reviews?source=legacy#guest-notes')).toBe(
+			'https://www.shelf.beauty/en/reviews?source=legacy#guest-notes'
+		);
+	});
+
+	test('keeps authority-like legacy paths on the canonical host', () => {
+		expect(toAbsoluteUrl('https://shelf.beauty//evil.example/phish')).toBe(
+			'https://www.shelf.beauty//evil.example/phish'
+		);
+	});
+
+	test('leaves external absolute URLs unchanged', () => {
+		expect(toAbsoluteUrl('https://m.me/shelfbeautystudio')).toBe('https://m.me/shelfbeautystudio');
+	});
+
 	test('exposes an absolute default social image URL', () => {
-		expect(defaultSocialImage).toBe('https://shelf.beauty/og/home.jpg');
+		expect(defaultSocialImage).toBe('https://www.shelf.beauty/og/home.jpg');
 	});
 
 	test('exposes absolute page social image URLs', () => {
 		expect(socialImages).toEqual({
-			home: 'https://shelf.beauty/og/home.jpg',
-			reviews: 'https://shelf.beauty/og/reviews.jpg',
-			contact: 'https://shelf.beauty/og/contact.jpg'
+			home: 'https://www.shelf.beauty/og/home.jpg',
+			reviews: 'https://www.shelf.beauty/og/reviews.jpg',
+			contact: 'https://www.shelf.beauty/og/contact.jpg'
 		});
 	});
 
 	test('builds absolute hreflang alternates for localized pages', () => {
 		expect(buildHreflangAlternates('/en/reviews')).toEqual([
-			{ hreflang: 'vi', href: 'https://shelf.beauty/vi/reviews' },
-			{ hreflang: 'en', href: 'https://shelf.beauty/en/reviews' },
-			{ hreflang: 'x-default', href: 'https://shelf.beauty/vi/reviews' }
+			{ hreflang: 'vi', href: 'https://www.shelf.beauty/vi/reviews' },
+			{ hreflang: 'en', href: 'https://www.shelf.beauty/en/reviews' },
+			{ hreflang: 'x-default', href: 'https://www.shelf.beauty/vi/reviews' }
 		]);
+	});
+});
+
+describe('canonical host redirects', () => {
+	test('redirects the apex root directly to the Vietnamese www URL', () => {
+		expect(canonicalRedirectUrl(new URL('https://shelf.beauty/?source=apex'))).toBe(
+			'https://www.shelf.beauty/vi?source=apex'
+		);
+	});
+
+	test('preserves the path and query when redirecting an apex URL', () => {
+		expect(canonicalRedirectUrl(new URL('https://shelf.beauty/en/reviews?page=2'))).toBe(
+			'https://www.shelf.beauty/en/reviews?page=2'
+		);
+	});
+
+	test('keeps authority-like paths on the canonical host', () => {
+		expect(canonicalRedirectUrl(new URL('https://shelf.beauty//evil.example/phish'))).toBe(
+			'https://www.shelf.beauty//evil.example/phish'
+		);
+	});
+
+	test('does not redirect canonical, preview, or local hosts', () => {
+		expect(canonicalRedirectUrl(new URL('https://www.shelf.beauty/en'))).toBeNull();
+		expect(canonicalRedirectUrl(new URL('https://shelf-beauty-git-main.vercel.app/en'))).toBeNull();
+		expect(canonicalRedirectUrl(new URL('http://localhost:4174/en'))).toBeNull();
 	});
 });
 
@@ -55,10 +98,10 @@ describe('LocalBusiness JSON-LD', () => {
 		expect(localBusinessJsonLd).toMatchObject({
 			'@context': 'https://schema.org',
 			'@type': 'BeautySalon',
-			'@id': 'https://shelf.beauty/#localbusiness',
+			'@id': 'https://www.shelf.beauty/#localbusiness',
 			name: 'Shelf Beauty Studio',
-			url: 'https://shelf.beauty/vi',
-			image: 'https://shelf.beauty/og/home.jpg',
+			url: 'https://www.shelf.beauty/vi',
+			image: 'https://www.shelf.beauty/og/home.jpg',
 			address: {
 				'@type': 'PostalAddress',
 				streetAddress: '35 Yersin',
