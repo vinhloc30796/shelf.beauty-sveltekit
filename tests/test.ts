@@ -19,10 +19,7 @@ const expectSeoUrls = async (
 		expectedDescription
 	);
 	await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', absoluteUrl);
-	await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
-		'content',
-		expectedImage
-	);
+	await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', expectedImage);
 	await expect(page.locator('link[rel="alternate"][hreflang="vi"]')).toHaveAttribute(
 		'href',
 		`https://www.shelf.beauty${viPath}`
@@ -49,6 +46,7 @@ test('legacy public page URLs redirect permanently to Vietnamese URLs', async ({
 	const home = await request.get('/', { maxRedirects: 0 });
 	const reviews = await request.get('/reviews', { maxRedirects: 0 });
 	const contact = await request.get('/contact', { maxRedirects: 0 });
+	const services = await request.get('/services', { maxRedirects: 0 });
 
 	expect(home.status()).toBe(308);
 	expect(home.headers().location).toBe('/vi');
@@ -56,6 +54,8 @@ test('legacy public page URLs redirect permanently to Vietnamese URLs', async ({
 	expect(reviews.headers().location).toBe('/vi/reviews');
 	expect(contact.status()).toBe(308);
 	expect(contact.headers().location).toBe('/vi/contact');
+	expect(services.status()).toBe(308);
+	expect(services.headers().location).toBe('/vi/services');
 });
 
 test('localized public page URLs render directly in their URL language', async ({ page }) => {
@@ -95,7 +95,9 @@ test('localized homepage renders actions and status in its route language', asyn
 	await expect(page.getByText('Opening hours', { exact: true })).toBeVisible();
 });
 
-test('localized reviews render route-language content and Google reviews action', async ({ page }) => {
+test('localized reviews render route-language content and Google reviews action', async ({
+	page
+}) => {
 	await page.goto('/vi/reviews');
 
 	await expect(page.getByRole('heading', { name: /Lời nhắn từ khách của Shelf/i })).toBeVisible();
@@ -108,7 +110,9 @@ test('localized reviews render route-language content and Google reviews action'
 	).toBeVisible();
 });
 
-test('localized contact renders visit details, map, social links, and directions', async ({ page }) => {
+test('localized contact renders visit details, map, social links, and directions', async ({
+	page
+}) => {
 	await page.goto('/vi/contact');
 
 	await expect(page.getByRole('heading', { name: /Ghé Shelf/i })).toBeVisible();
@@ -125,6 +129,54 @@ test('localized contact renders visit details, map, social links, and directions
 	await expect(page.getByRole('link', { name: 'TikTok, shelfbeautystudio' })).toBeVisible();
 });
 
+test('localized service menu renders audited services, prices, packages, and booking action', async ({
+	page
+}) => {
+	await page.goto('/vi/services');
+
+	await expect(page.getByRole('heading', { name: 'Dịch vụ và bảng giá' })).toBeVisible();
+	const vietnameseGeneralNails = page.getByRole('region', { name: 'Nail cơ bản' });
+	await expect(vietnameseGeneralNails).toBeVisible();
+	await expect(vietnameseGeneralNails.getByText('Sơn gel', { exact: true })).toBeVisible();
+	await expect(vietnameseGeneralNails.getByText('100.000₫ / bộ', { exact: true })).toBeVisible();
+	const vietnameseSkinCare = page.getByRole('region', { name: 'Dịch vụ chăm sóc da' });
+	await expect(vietnameseSkinCare).toBeVisible();
+	await expect(vietnameseSkinCare.getByText(/^Điện di tinh chất/)).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Đặt hẹn với Shelf' })).toBeVisible();
+
+	await page.goto('/en/services');
+
+	await expect(page.getByRole('heading', { name: 'Services and prices' })).toBeVisible();
+	const englishGeneralNails = page.getByRole('region', { name: 'General nail services' });
+	await expect(englishGeneralNails).toBeVisible();
+	await expect(englishGeneralNails.getByText('Gel polish', { exact: true })).toBeVisible();
+	await expect(englishGeneralNails.getByText('100,000₫ / set', { exact: true })).toBeVisible();
+	await expect(
+		page.getByRole('region', { name: 'Skin care services' }).getByText(/^Essence infusion/)
+	).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Book with Shelf' })).toBeVisible();
+});
+
+test('service menu stays within a mobile viewport while category links remain scrollable', async ({
+	page
+}) => {
+	await page.setViewportSize({ width: 375, height: 812 });
+	await page.goto('/vi/services');
+
+	const pageOverflows = await page.evaluate(
+		() => document.documentElement.scrollWidth > document.documentElement.clientWidth
+	);
+	expect(pageOverflows).toBe(false);
+
+	const categoryLinks = page
+		.getByRole('navigation', { name: 'Xem nhanh theo dịch vụ' })
+		.locator('div');
+	await expect(categoryLinks).toBeVisible();
+	expect(await categoryLinks.evaluate((element) => element.scrollWidth > element.clientWidth)).toBe(
+		true
+	);
+});
+
 test('language switcher and navigation use real localized links', async ({ page }) => {
 	await page.goto('/vi/reviews');
 
@@ -136,6 +188,10 @@ test('language switcher and navigation use real localized links', async ({ page 
 	await expect(page.getByRole('link', { name: 'Đánh giá', exact: true })).toHaveAttribute(
 		'href',
 		'/vi/reviews'
+	);
+	await expect(page.getByRole('link', { name: 'Dịch vụ', exact: true })).toHaveAttribute(
+		'href',
+		'/vi/services'
 	);
 	await expect(page.getByRole('link', { name: 'Liên hệ', exact: true })).toHaveAttribute(
 		'href',
@@ -157,6 +213,10 @@ test('language switcher and navigation use real localized links', async ({ page 
 		'href',
 		'/en/reviews'
 	);
+	await expect(page.getByRole('link', { name: 'Services', exact: true })).toHaveAttribute(
+		'href',
+		'/en/services'
+	);
 	await expect(page.getByRole('link', { name: 'Contact', exact: true })).toHaveAttribute(
 		'href',
 		'/en/contact'
@@ -167,7 +227,9 @@ test('language switcher and navigation use real localized links', async ({ page 
 	);
 });
 
-test('localized pages render self-canonical SEO metadata and hreflang alternates', async ({ page }) => {
+test('localized pages render self-canonical SEO metadata and hreflang alternates', async ({
+	page
+}) => {
 	await page.goto('/vi');
 	await expectSeoUrls(
 		page,
@@ -221,4 +283,33 @@ test('localized pages render self-canonical SEO metadata and hreflang alternates
 		'Find Shelf Beauty Studio at 35 Yersin, phường 10, Da Lat. Get directions, message to book, and follow Shelf on social media.',
 		'https://www.shelf.beauty/og/contact.jpg'
 	);
+
+	await page.goto('/vi/services');
+	await expectSeoUrls(
+		page,
+		'/vi/services',
+		'Bảng giá dịch vụ nail và làm đẹp tại Đà Lạt | Shelf',
+		'Xem dịch vụ và bảng giá nail, nối mi, chăm sóc da, gội đầu tại Shelf Beauty Studio, Đà Lạt.',
+		'https://www.shelf.beauty/og/home.jpg'
+	);
+
+	await page.goto('/en/services');
+	await expectSeoUrls(
+		page,
+		'/en/services',
+		'Nail and beauty service prices in Da Lat | Shelf',
+		'Explore nail, eyelash, skin care, and shampoo services and prices at Shelf Beauty Studio in Da Lat.',
+		'https://www.shelf.beauty/og/home.jpg'
+	);
+
+	const structuredData = await page.locator('script[type="application/ld+json"]').allTextContents();
+	const serviceCatalog = structuredData
+		.map((value) => JSON.parse(value))
+		.find((value) => value['@type'] === 'Service');
+	expect(serviceCatalog.hasOfferCatalog.itemListElement).toHaveLength(7);
+	expect(
+		serviceCatalog.hasOfferCatalog.itemListElement.flatMap(
+			(category: { itemListElement: unknown[] }) => category.itemListElement
+		)
+	).toHaveLength(63);
 });

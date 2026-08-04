@@ -17,6 +17,7 @@
 
 	const navItems = [
 		{ path: '/', label: { vi: 'Trang chủ', en: 'Home' } },
+		{ path: '/services', label: { vi: 'Dịch vụ', en: 'Services' } },
 		{ path: '/reviews', label: { vi: 'Đánh giá', en: 'Reviews' } },
 		{ path: '/contact', label: { vi: 'Liên hệ', en: 'Contact' } }
 	];

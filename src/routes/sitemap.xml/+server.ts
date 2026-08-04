@@ -2,7 +2,7 @@ import { localizedPath, languages } from '$lib/i18n';
 import { toAbsoluteUrl } from '$lib/seo';
 import type { RequestHandler } from './$types';
 
-const pagePaths = ['/', '/reviews', '/contact'];
+const pagePaths = ['/', '/services', '/reviews', '/contact'];
 
 const escapeXml = (value: string) =>
 	value
