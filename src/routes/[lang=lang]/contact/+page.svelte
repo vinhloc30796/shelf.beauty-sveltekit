@@ -16,8 +16,6 @@
 
 	const mapUrl =
 		'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3903.4751651773076!2d108.4492590764347!3d11.941568188287144!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317113791162271f%3A0x6921c643e2be5906!2sshelf%20beauty%20studio!5e0!3m2!1sen!2s!4v1716794660375!5m2!1sen!2s';
-	const directionsUrl =
-		'https://www.google.com/maps/dir/?api=1&destination=shelf+beauty+studio,+Yersin,+Ph%C6%B0%E1%BB%9Dng+10,+Dalat,+Lam+Dong&destination_place_id=ChIJHydiEXkTcTERBlm-4kPGIWk';
 	const copy = {
 		vi: {
 			title: 'Ghé Shelf Beauty Studio tại Đà Lạt',
@@ -81,7 +79,7 @@
 
 		<div class="mt-8 flex flex-col gap-3 sm:flex-row">
 			<a
-				href={directionsUrl}
+				href="/directions"
 				class="inline-flex min-h-12 items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
 				title={text.directionsTitle}
 				referrerpolicy="origin"

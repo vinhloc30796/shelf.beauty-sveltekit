@@ -5,6 +5,9 @@ const messengerBookingUrls = {
 	en: 'https://m.me/shelfbeautystudio?text=Hi%2C+I%E2%80%99d+like+to+book+an+appointment+at+Shelf+Beauty+Studio.'
 } as const;
 
+const directionsUrl =
+	'https://www.google.com/maps/dir/?api=1&destination=shelf+beauty+studio,+Yersin,+Ph%C6%B0%E1%BB%9Dng+10,+Dalat,+Lam+Dong&destination_place_id=ChIJHydiEXkTcTERBlm-4kPGIWk';
+
 const expectSeoUrls = async (
 	page: import('@playwright/test').Page,
 	path: string,
@@ -46,6 +49,56 @@ const expectSeoUrls = async (
 		expectedImage
 	);
 };
+
+test('directions redirects temporarily to Shelf Beauty Studio on Google Maps', async ({
+	request
+}) => {
+	const response = await request.get('/directions', { maxRedirects: 0 });
+
+	expect(response.status()).toBe(302);
+	expect(response.headers().location).toBe(directionsUrl);
+});
+
+test('homepage and contact direction actions open the internal redirect in a new tab', async ({
+	page
+}) => {
+	for (const path of ['/en', '/en/contact']) {
+		await page.goto(path);
+		const link = page.getByRole('link', { name: 'Get directions', exact: true });
+
+		await expect(link).toHaveAttribute('href', '/directions');
+		await expect(link).toHaveAttribute('target', '_blank');
+	}
+});
+
+test('homepage and contact direction conversion payloads omit navigation callbacks', async ({
+	page
+}) => {
+	for (const path of ['/en', '/en/contact']) {
+		await page.goto(path);
+		await page.evaluate(() => {
+			const calls: unknown[][] = [];
+			Object.assign(window, {
+				__gtagCalls: calls,
+				gtag: (...args: unknown[]) => calls.push(args)
+			});
+		});
+		const link = page.getByRole('link', { name: 'Get directions', exact: true });
+
+		await link.evaluate((element) => {
+			element.addEventListener('click', (event) => event.preventDefault(), { once: true });
+			element.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+		});
+
+		const payload = await page.evaluate(() => {
+			const calls = (window as unknown as { __gtagCalls: unknown[][] }).__gtagCalls;
+			return calls.at(-1)?.[2] as Record<string, unknown>;
+		});
+
+		expect(payload.send_to).toMatch(/\/XeK7CPaZ2YUZEJue89oq$/);
+		expect(payload).not.toHaveProperty('event_callback');
+	}
+});
 
 test('legacy public page URLs redirect permanently to Vietnamese URLs', async ({ request }) => {
 	const home = await request.get('/', { maxRedirects: 0 });

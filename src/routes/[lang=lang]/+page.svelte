@@ -21,9 +21,6 @@
 		openTime: { hours?: number | null; minutes?: number | null } | null;
 		closeTime: { hours?: number | null; minutes?: number | null } | null;
 	};
-
-	const directionsUrl =
-		'https://www.google.com/maps/dir/?api=1&destination=shelf+beauty+studio,+Yersin,+Ph%C6%B0%E1%BB%9Dng+10,+Dalat,+Lam+Dong&destination_place_id=ChIJHydiEXkTcTERBlm-4kPGIWk';
 	const copy = {
 		vi: {
 			title: 'Shelf Beauty Studio, chăm sóc sắc đẹp tại Đà Lạt',
@@ -102,6 +99,7 @@
 	path={`/${currentLanguage}`}
 	image={socialImages.home}
 />
+<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 <svelte:head>{@html buildJsonLdScript(localBusinessJsonLd)}</svelte:head>
 
 <section
@@ -132,7 +130,7 @@
 				{text.book}
 			</a>
 			<a
-				href={directionsUrl}
+				href="/directions"
 				class="inline-flex min-h-12 items-center justify-center rounded-md border border-primary/35 bg-background px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-secondary"
 				title={text.directionsTitle}
 				referrerpolicy="origin"
