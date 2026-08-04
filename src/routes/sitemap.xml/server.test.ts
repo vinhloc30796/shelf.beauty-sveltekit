@@ -21,6 +21,7 @@ describe('GET /sitemap.xml', () => {
 		expect(xml).not.toContain('<loc>https://www.shelf.beauty/reviews</loc>');
 		expect(xml).not.toContain('<loc>https://www.shelf.beauty/contact</loc>');
 		expect(xml).not.toContain('<loc>https://www.shelf.beauty/fbmessage</loc>');
+		expect(xml).not.toContain('<loc>https://www.shelf.beauty/directions</loc>');
 		expect(xml).not.toContain('<loc>https://shelf.beauty');
 		expect(xml).toContain('</urlset>');
 	});
