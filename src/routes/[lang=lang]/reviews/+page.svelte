@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
 	import { page } from '$app/stores';
+	import { trackConversion } from '$lib/analytics';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { type Language } from '$lib/i18n';
-	import { socialImages, toAbsoluteUrl } from '$lib/seo';
+	import { socialImages } from '$lib/seo';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
 	import reviewImage from '$lib/images/operations/7.jpg?enhanced';
 	import { formatReviewTimestamp } from '$lib/reviewDates';
@@ -125,28 +126,10 @@
 			isLoadingMore = false;
 		}
 	};
-	const reportConversion = (sendTo: string, url: string) => {
-		if (typeof window !== 'undefined' && 'gtag' in window) {
-			(window as Window & { gtag: (...args: unknown[]) => void }).gtag('event', 'conversion', {
-				send_to: sendTo,
-				event_callback: () => {
-					if (url) {
-						window.location.href = url;
-					}
-				}
-			});
-		}
-		return false;
-	};
-
 	$: currentLanguage = $page.params.lang as Language;
 	$: text = copy[currentLanguage];
 	$: reviews = reviewBatches.flat();
 	$: renderedReviewBatches = buildRenderedReviewBatches(reviewBatches);
-
-	$: gtag_report_conversion_reviews = (url: string) => {
-		return reportConversion(env.PUBLIC_GTAG_ID + '/Ww1qCPSC5bMZEJue89oq', url);
-	};
 </script>
 
 <SeoHead
@@ -278,7 +261,7 @@
 				title={text.googleLinkTitle}
 				referrerpolicy="no-referrer"
 				target="_blank"
-				on:click={() => gtag_report_conversion_reviews(toAbsoluteUrl('/reviews'))}
+				on:click={() => trackConversion(env.PUBLIC_GTAG_ID, 'reviews')}
 			>
 				{text.googleCta}
 			</a>

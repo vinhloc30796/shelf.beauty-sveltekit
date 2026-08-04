@@ -9,6 +9,7 @@ import {
 	socialImages,
 	toAbsoluteUrl
 } from './seo';
+import { getMessengerBookingUrl } from './messenger';
 
 describe('SEO URL helpers', () => {
 	test('resolves the root path to the production origin with a trailing slash', () => {
@@ -120,6 +121,9 @@ describe('LocalBusiness JSON-LD', () => {
 			'https://instagram.com/shelfbeautystudio',
 			'https://tiktok.com/@shelfbeautystudio'
 		]);
+		expect(localBusinessJsonLd.potentialAction.target.urlTemplate).toBe(
+			getMessengerBookingUrl('vi')
+		);
 	});
 
 	test('builds one parseable JSON-LD script tag', () => {
