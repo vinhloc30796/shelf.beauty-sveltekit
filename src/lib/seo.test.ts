@@ -3,6 +3,7 @@ import { describe, expect, test } from 'vitest';
 import {
 	buildHreflangAlternates,
 	buildJsonLdScript,
+	businessPhone,
 	canonicalRedirectUrl,
 	defaultSocialImage,
 	localBusinessJsonLd,
@@ -95,6 +96,10 @@ describe('canonical host redirects', () => {
 
 describe('LocalBusiness JSON-LD', () => {
 	test('describes Shelf as a BeautySalon with verified local business fields', () => {
+		expect(businessPhone).toEqual({
+			display: '0969 016 106',
+			e164: '+84969016106'
+		});
 		expect(localBusinessJsonLd).toMatchObject({
 			'@context': 'https://schema.org',
 			'@type': 'BeautySalon',
@@ -102,6 +107,7 @@ describe('LocalBusiness JSON-LD', () => {
 			name: 'Shelf Beauty Studio',
 			url: 'https://www.shelf.beauty/vi',
 			image: 'https://www.shelf.beauty/og/home.jpg',
+			telephone: '+84969016106',
 			address: {
 				'@type': 'PostalAddress',
 				streetAddress: '35 Yersin',

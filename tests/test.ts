@@ -166,20 +166,41 @@ test('localized reviews render route-language content and Google reviews action'
 test('localized contact renders visit details, map, social links, and directions', async ({
 	page
 }) => {
+	await page.setViewportSize({ width: 375, height: 812 });
 	await page.goto('/vi/contact');
 
 	await expect(page.getByRole('heading', { name: /Ghé Shelf/i })).toBeVisible();
 	await expect(page.getByText('35 Yersin, phường 10, Đà Lạt, Lâm Đồng')).toBeVisible();
+	await expect(page.getByText('Điện thoại', { exact: true })).toBeVisible();
+	await expect(page.getByRole('link', { name: '0969 016 106', exact: true })).toHaveAttribute(
+		'href',
+		'tel:+84969016106'
+	);
 	await expect(page.getByTitle('Bản đồ vị trí Shelf Beauty Studio')).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Tìm đường', exact: true })).toBeVisible();
+	expect(
+		await page.evaluate(
+			() => document.documentElement.scrollWidth > document.documentElement.clientWidth
+		)
+	).toBe(false);
 
 	await page.goto('/en/contact');
 
 	await expect(page.getByRole('heading', { name: /Visit Shelf/i })).toBeVisible();
+	await expect(page.getByText('Phone', { exact: true })).toBeVisible();
+	await expect(page.getByRole('link', { name: '0969 016 106', exact: true })).toHaveAttribute(
+		'href',
+		'tel:+84969016106'
+	);
 	await expect(page.getByRole('link', { name: 'Get directions', exact: true })).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Facebook, shelfbeautystudio' })).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Instagram, shelfbeautystudio' })).toBeVisible();
 	await expect(page.getByRole('link', { name: 'TikTok, shelfbeautystudio' })).toBeVisible();
+	expect(
+		await page.evaluate(
+			() => document.documentElement.scrollWidth > document.documentElement.clientWidth
+		)
+	).toBe(false);
 });
 
 test('localized service menu renders audited services, prices, packages, and booking action', async ({
