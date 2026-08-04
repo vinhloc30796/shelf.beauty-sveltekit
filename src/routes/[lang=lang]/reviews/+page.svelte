@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { type Language } from '$lib/i18n';
-	import { socialImages } from '$lib/seo';
+	import { socialImages, toAbsoluteUrl } from '$lib/seo';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
 	import reviewImage from '$lib/images/operations/7.jpg?enhanced';
 	import { formatReviewTimestamp } from '$lib/reviewDates';
@@ -278,7 +278,7 @@
 				title={text.googleLinkTitle}
 				referrerpolicy="no-referrer"
 				target="_blank"
-				on:click={() => gtag_report_conversion_reviews('https://shelf.beauty/reviews')}
+				on:click={() => gtag_report_conversion_reviews(toAbsoluteUrl('/reviews'))}
 			>
 				{text.googleCta}
 			</a>

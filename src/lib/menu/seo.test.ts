@@ -11,7 +11,7 @@ describe('service menu JSON-LD', () => {
 			'@context': 'https://schema.org',
 			'@type': 'Service',
 			serviceType: 'Dịch vụ nail và làm đẹp',
-			provider: { '@id': 'https://shelf.beauty/#localbusiness' },
+			provider: { '@id': 'https://www.shelf.beauty/#localbusiness' },
 			hasOfferCatalog: {
 				'@type': 'OfferCatalog',
 				name: 'Dịch vụ và bảng giá'

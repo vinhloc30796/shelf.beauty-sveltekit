@@ -31,7 +31,7 @@ describe('GET /api/google-reviews', () => {
 		});
 
 		const response = await GET({
-			url: new URL('https://shelf.beauty/api/google-reviews?pageToken=abc'),
+			url: new URL('https://www.shelf.beauty/api/google-reviews?pageToken=abc'),
 			setHeaders
 		} as never);
 
@@ -54,7 +54,7 @@ describe('GET /api/google-reviews', () => {
 		listGoogleReviews.mockRejectedValue(new GoogleReviewsUpstreamError(429));
 
 		const response = await GET({
-			url: new URL('https://shelf.beauty/api/google-reviews?pageToken=abc'),
+			url: new URL('https://www.shelf.beauty/api/google-reviews?pageToken=abc'),
 			setHeaders
 		} as never);
 

@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { type Language } from '$lib/i18n';
-	import { socialImages } from '$lib/seo';
+	import { socialImages, toAbsoluteUrl } from '$lib/seo';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
 	import studioImage from '$lib/images/operations/10.jpg?enhanced';
 	import Clock from 'lucide-svelte/icons/clock';
@@ -102,7 +102,7 @@
 				title={text.directionsTitle}
 				referrerpolicy="origin"
 				target="_blank"
-				on:click={() => gtag_report_conversion_direction('https://shelf.beauty/directions')}
+				on:click={() => gtag_report_conversion_direction(toAbsoluteUrl('/directions'))}
 			>
 				<MapPin class="mr-2 h-5 w-5" aria-hidden="true" />
 				{text.directions}
