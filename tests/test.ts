@@ -7,7 +7,7 @@ const expectSeoUrls = async (
 	expectedDescription: string,
 	expectedImage: string
 ) => {
-	const absoluteUrl = `https://shelf.beauty${path}`;
+	const absoluteUrl = `https://www.shelf.beauty${path}`;
 	const unprefixedPath = path.replace(/^\/(vi|en)(?=\/|$)/, '') || '/';
 	const viPath = unprefixedPath === '/' ? '/vi' : `/vi${unprefixedPath}`;
 	const enPath = unprefixedPath === '/' ? '/en' : `/en${unprefixedPath}`;
@@ -25,15 +25,15 @@ const expectSeoUrls = async (
 	);
 	await expect(page.locator('link[rel="alternate"][hreflang="vi"]')).toHaveAttribute(
 		'href',
-		`https://shelf.beauty${viPath}`
+		`https://www.shelf.beauty${viPath}`
 	);
 	await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute(
 		'href',
-		`https://shelf.beauty${enPath}`
+		`https://www.shelf.beauty${enPath}`
 	);
 	await expect(page.locator('link[rel="alternate"][hreflang="x-default"]')).toHaveAttribute(
 		'href',
-		`https://shelf.beauty${viPath}`
+		`https://www.shelf.beauty${viPath}`
 	);
 	await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
 		'content',
@@ -174,7 +174,7 @@ test('localized pages render self-canonical SEO metadata and hreflang alternates
 		'/vi',
 		'Shelf Beauty Studio, chăm sóc sắc đẹp tại Đà Lạt',
 		'Shelf Beauty Studio tại Đà Lạt. Đặt lịch làm nail, xem giờ mở cửa, đọc đánh giá, và tìm đường đến studio.',
-		'https://shelf.beauty/og/home.jpg'
+		'https://www.shelf.beauty/og/home.jpg'
 	);
 
 	await page.goto('/en');
@@ -183,7 +183,7 @@ test('localized pages render self-canonical SEO metadata and hreflang alternates
 		'/en',
 		'Shelf Beauty Studio, Da Lat beauty care',
 		'Shelf Beauty Studio in Da Lat. Book nail and beauty care, check opening hours, read guest notes, and get directions.',
-		'https://shelf.beauty/og/home.jpg'
+		'https://www.shelf.beauty/og/home.jpg'
 	);
 
 	await page.goto('/vi/reviews');
@@ -192,7 +192,7 @@ test('localized pages render self-canonical SEO metadata and hreflang alternates
 		'/vi/reviews',
 		'Đánh giá, Shelf Beauty Studio',
 		'Đọc cảm nhận của khách và đánh giá Google của Shelf Beauty Studio tại Đà Lạt.',
-		'https://shelf.beauty/og/reviews.jpg'
+		'https://www.shelf.beauty/og/reviews.jpg'
 	);
 
 	await page.goto('/en/reviews');
@@ -201,7 +201,7 @@ test('localized pages render self-canonical SEO metadata and hreflang alternates
 		'/en/reviews',
 		'Guest notes, Shelf Beauty Studio reviews',
 		'Read guest notes and Google reviews for Shelf Beauty Studio in Da Lat.',
-		'https://shelf.beauty/og/reviews.jpg'
+		'https://www.shelf.beauty/og/reviews.jpg'
 	);
 
 	await page.goto('/vi/contact');
@@ -210,7 +210,7 @@ test('localized pages render self-canonical SEO metadata and hreflang alternates
 		'/vi/contact',
 		'Ghé Shelf Beauty Studio tại Đà Lạt',
 		'Tìm Shelf Beauty Studio tại 35 Yersin, phường 10, Đà Lạt. Tìm đường, nhắn tin đặt lịch, và theo dõi Shelf trên mạng xã hội.',
-		'https://shelf.beauty/og/contact.jpg'
+		'https://www.shelf.beauty/og/contact.jpg'
 	);
 
 	await page.goto('/en/contact');
@@ -219,6 +219,6 @@ test('localized pages render self-canonical SEO metadata and hreflang alternates
 		'/en/contact',
 		'Visit Shelf Beauty Studio in Da Lat',
 		'Find Shelf Beauty Studio at 35 Yersin, phường 10, Da Lat. Get directions, message to book, and follow Shelf on social media.',
-		'https://shelf.beauty/og/contact.jpg'
+		'https://www.shelf.beauty/og/contact.jpg'
 	);
 });

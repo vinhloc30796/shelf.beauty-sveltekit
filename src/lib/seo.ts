@@ -1,19 +1,36 @@
 import { localizedPath, type Language } from './i18n';
 
-export const siteOrigin = 'https://shelf.beauty';
+const apexHostname = 'shelf.beauty';
+const canonicalHostname = 'www.shelf.beauty';
+const firstPartyHostnames = new Set([apexHostname, canonicalHostname, 'localhost', '127.0.0.1']);
+
+export const siteOrigin = `https://${canonicalHostname}`;
 export const siteName = 'Shelf Beauty Studio';
 
 export const toAbsoluteUrl = (path: string) => {
 	if (path.startsWith('http://') || path.startsWith('https://')) {
 		const url = new URL(path);
-		const isLocalAsset = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
-		return isLocalAsset
-			? new URL(`${url.pathname}${url.search}${url.hash}`, siteOrigin).toString()
-			: path;
+		if (!firstPartyHostnames.has(url.hostname)) return path;
+
+		url.protocol = 'https:';
+		url.hostname = canonicalHostname;
+		url.port = '';
+		return url.toString();
 	}
 
 	const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-	return new URL(normalizedPath, siteOrigin).toString();
+	return new URL(`${siteOrigin}${normalizedPath}`).toString();
+};
+
+export const canonicalRedirectUrl = (requestUrl: URL) => {
+	if (requestUrl.hostname !== apexHostname) return null;
+
+	const targetUrl = new URL(requestUrl);
+	targetUrl.protocol = 'https:';
+	targetUrl.hostname = canonicalHostname;
+	targetUrl.port = '';
+	if (targetUrl.pathname === '/') targetUrl.pathname = '/vi';
+	return targetUrl.toString();
 };
 
 export type HreflangAlternate = {
