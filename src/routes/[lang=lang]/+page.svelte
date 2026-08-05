@@ -131,7 +131,9 @@
 		<img
 			src={shelfLogo}
 			alt="Shelf Beauty Studio"
-			class="mb-8 w-64 max-w-full dark:brightness-150"
+			width="1000"
+			height="500"
+			class="mb-8 aspect-[2/1] w-64 max-w-full dark:brightness-150"
 		/>
 		<p class="mb-4 max-w-xl text-base font-semibold text-primary">{text.eyebrow}</p>
 		<h1 class="max-w-3xl text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
