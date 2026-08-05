@@ -128,7 +128,7 @@
 				<h2 class="text-base font-semibold text-foreground">{text.phone}</h2>
 				<a
 					href={`tel:${businessPhone.e164}`}
-					class="mt-2 inline-block text-sm font-medium text-primary hover:underline"
+					class="mt-2 inline-block text-sm font-medium text-primary underline hover:underline dark:text-foreground"
 				>
 					{businessPhone.display}
 				</a>
