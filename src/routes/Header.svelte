@@ -8,12 +8,11 @@
 		localizedPath,
 		type Language
 	} from '$lib/i18n';
-	import darkLogo from '$lib/images/branding/shelf-dark-logo.png';
-	import lightLogo from '$lib/images/branding/shelf-light-logo.png';
 	import Menu from 'lucide-svelte/icons/menu';
 	import Moon from 'svelte-radix/Moon.svelte';
 	import Sun from 'svelte-radix/Sun.svelte';
 	import { toggleMode } from 'mode-watcher';
+	import HeaderLogo from './HeaderLogo.svelte';
 
 	const navItems = [
 		{ path: '/', label: { vi: 'Trang chủ', en: 'Home' } },
@@ -38,10 +37,7 @@
 			class="flex items-center gap-3 rounded-md"
 			aria-label="Shelf Beauty Studio home"
 		>
-			<picture>
-				<img src={darkLogo} alt="" class="h-12 w-12 dark:hidden" />
-				<img src={lightLogo} alt="" class="hidden h-12 w-12 dark:block" />
-			</picture>
+			<HeaderLogo />
 			<span class="hidden text-sm font-semibold tracking-wide text-primary sm:inline">
 				Shelf Beauty Studio
 			</span>
@@ -107,8 +103,7 @@
 				</Sheet.Trigger>
 				<Sheet.Content side="left" class="w-80">
 					<div class="mb-8 flex items-center gap-3">
-						<img src={darkLogo} alt="" class="h-12 w-12 dark:hidden" />
-						<img src={lightLogo} alt="" class="hidden h-12 w-12 dark:block" />
+						<HeaderLogo />
 						<div>
 							<p class="font-semibold text-foreground">Shelf Beauty Studio</p>
 							<p class="text-sm text-muted-foreground">
