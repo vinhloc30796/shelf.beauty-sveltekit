@@ -5,7 +5,7 @@
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { type Language } from '$lib/i18n';
 	import { getMessengerBookingUrl } from '$lib/messenger';
-	import { socialImages } from '$lib/seo';
+	import { businessPhone, socialImages } from '$lib/seo';
 	import shelfLogo from '$lib/images/branding/shelf-dark-landscape.png';
 	import studioImage from '$lib/images/operations/10.jpg?enhanced';
 	import Clock from 'lucide-svelte/icons/clock';
@@ -13,6 +13,7 @@
 	import Instagram from 'lucide-svelte/icons/instagram';
 	import MapPin from 'lucide-svelte/icons/map-pin';
 	import MessageCircle from 'lucide-svelte/icons/message-circle';
+	import Phone from 'lucide-svelte/icons/phone';
 
 	const mapUrl =
 		'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3903.4751651773076!2d108.4492590764347!3d11.941568188287144!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317113791162271f%3A0x6921c643e2be5906!2sshelf%20beauty%20studio!5e0!3m2!1sen!2s!4v1716794660375!5m2!1sen!2s';
@@ -29,6 +30,7 @@
 			book: 'Nhắn tin đặt lịch',
 			bookTitle: 'Đặt hẹn với Shelf Beauty Studio trên Facebook Messenger',
 			address: 'Địa chỉ',
+			phone: 'Điện thoại',
 			beforeVisit: 'Trước khi ghé',
 			beforeVisitBody: 'Nhắn tin để tụi mình xác nhận khung giờ phù hợp, nhất là cuối tuần.',
 			imageAlt: 'Chi tiết một bộ móng tại Shelf Beauty Studio',
@@ -46,6 +48,7 @@
 			book: 'Message to book',
 			bookTitle: 'Book Shelf Beauty Studio on Facebook Messenger',
 			address: 'Address',
+			phone: 'Phone',
 			beforeVisit: 'Before you visit',
 			beforeVisitBody: 'Message us to confirm the best appointment time, especially on weekends.',
 			imageAlt: 'A manicure detail at Shelf Beauty Studio',
@@ -104,13 +107,23 @@
 			</a>
 		</div>
 
-		<div class="mt-8 grid gap-4 sm:grid-cols-2">
+		<div class="mt-8 grid gap-4 sm:grid-cols-3">
 			<div class="surface-panel p-5">
 				<MapPin class="mb-4 h-5 w-5 text-primary" aria-hidden="true" />
 				<h2 class="text-base font-semibold text-foreground">{text.address}</h2>
 				<p class="mt-2 text-sm leading-6 text-muted-foreground">
 					35 Yersin, phường 10, Đà Lạt, Lâm Đồng
 				</p>
+			</div>
+			<div class="surface-panel p-5">
+				<Phone class="mb-4 h-5 w-5 text-primary" aria-hidden="true" />
+				<h2 class="text-base font-semibold text-foreground">{text.phone}</h2>
+				<a
+					href={`tel:${businessPhone.e164}`}
+					class="mt-2 inline-block text-sm font-medium text-primary underline decoration-primary/60 hover:decoration-primary dark:text-foreground"
+				>
+					{businessPhone.display}
+				</a>
 			</div>
 			<div class="surface-panel p-5">
 				<Clock class="mb-4 h-5 w-5 text-primary" aria-hidden="true" />

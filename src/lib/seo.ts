@@ -7,6 +7,10 @@ const firstPartyHostnames = new Set([apexHostname, canonicalHostname, 'localhost
 
 export const siteOrigin = `https://${canonicalHostname}`;
 export const siteName = 'Shelf Beauty Studio';
+export const businessPhone = {
+	display: '0969 016 106',
+	e164: '+84969016106'
+} as const;
 
 export const toAbsoluteUrl = (path: string) => {
 	if (path.startsWith('http://') || path.startsWith('https://')) {
@@ -65,6 +69,7 @@ export const localBusinessJsonLd = {
 	name: siteName,
 	url: toAbsoluteUrl('/vi'),
 	image: socialImages.home,
+	telephone: businessPhone.e164,
 	description:
 		'Shelf Beauty Studio is a nail and beauty care studio in Da Lat, Vietnam, offering detailed nail care, hair washing, and beauty appointments.',
 	address: {

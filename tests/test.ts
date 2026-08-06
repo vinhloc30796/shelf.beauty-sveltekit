@@ -240,20 +240,81 @@ test('localized reviews render route-language content and Google reviews action'
 test('localized contact renders visit details, map, social links, and directions', async ({
 	page
 }) => {
+	await page.setViewportSize({ width: 375, height: 812 });
 	await page.goto('/vi/contact');
 
 	await expect(page.getByRole('heading', { name: /Ghé Shelf/i })).toBeVisible();
 	await expect(page.getByText('35 Yersin, phường 10, Đà Lạt, Lâm Đồng')).toBeVisible();
+	await expect(page.getByText('Điện thoại', { exact: true })).toBeVisible();
+	await expect(page.getByRole('link', { name: '0969 016 106', exact: true })).toHaveAttribute(
+		'href',
+		'tel:+84969016106'
+	);
+	await page.locator('html').evaluate((html) => html.classList.add('dark'));
+	const phoneLink = page.getByRole('link', { name: '0969 016 106', exact: true });
+	const phoneColors = await phoneLink.evaluate((link) => {
+		const card = link.closest('.surface-panel');
+		if (!card) throw new Error('Phone link card was not found');
+
+		const parseRgb = (color: string) =>
+			color
+				.match(/\d+(?:\.\d+)?/g)
+				?.slice(0, 3)
+				.map(Number) ?? [];
+		const relativeLuminance = (color: string) => {
+			const [red, green, blue] = parseRgb(color).map((channel) => {
+				const normalized = channel / 255;
+				return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+			});
+
+			return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+		};
+		const foreground = getComputedStyle(link).color;
+		const background = getComputedStyle(card).backgroundColor;
+		const foregroundLuminance = relativeLuminance(foreground);
+		const backgroundLuminance = relativeLuminance(background);
+
+		return {
+			foreground,
+			background,
+			contrast:
+				(Math.max(foregroundLuminance, backgroundLuminance) + 0.05) /
+				(Math.min(foregroundLuminance, backgroundLuminance) + 0.05)
+		};
+	});
+
+	expect(
+		phoneColors.contrast,
+		`${phoneColors.foreground} on ${phoneColors.background}`
+	).toBeGreaterThanOrEqual(4.5);
+	expect(await phoneLink.evaluate((link) => getComputedStyle(link).textDecorationLine)).toContain(
+		'underline'
+	);
 	await expect(page.getByTitle('Bản đồ vị trí Shelf Beauty Studio')).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Tìm đường', exact: true })).toBeVisible();
+	expect(
+		await page.evaluate(
+			() => document.documentElement.scrollWidth > document.documentElement.clientWidth
+		)
+	).toBe(false);
 
 	await page.goto('/en/contact');
 
 	await expect(page.getByRole('heading', { name: /Visit Shelf/i })).toBeVisible();
+	await expect(page.getByText('Phone', { exact: true })).toBeVisible();
+	await expect(page.getByRole('link', { name: '0969 016 106', exact: true })).toHaveAttribute(
+		'href',
+		'tel:+84969016106'
+	);
 	await expect(page.getByRole('link', { name: 'Get directions', exact: true })).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Facebook, shelfbeautystudio' })).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Instagram, shelfbeautystudio' })).toBeVisible();
 	await expect(page.getByRole('link', { name: 'TikTok, shelfbeautystudio' })).toBeVisible();
+	expect(
+		await page.evaluate(
+			() => document.documentElement.scrollWidth > document.documentElement.clientWidth
+		)
+	).toBe(false);
 });
 
 test('localized service menu renders audited services, prices, packages, and booking action', async ({
