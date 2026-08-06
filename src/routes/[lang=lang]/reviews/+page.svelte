@@ -80,7 +80,7 @@
 		formatReviewTimestamp(review.updateTime ?? review.createTime, lang);
 	const reviewCardClass = (review: PublicGoogleReview, index: number) =>
 		isFeaturedReview(review, index)
-			? 'mb-5 inline-block w-full break-inside-avoid rounded-xl bg-primary p-6 text-primary-foreground'
+			? 'mb-5 inline-block w-full break-inside-avoid rounded-xl bg-primary-surface p-6 text-primary-foreground'
 			: 'mb-5 inline-block w-full break-inside-avoid rounded-xl border border-border/80 bg-card p-5 text-card-foreground transition-colors hover:border-primary/40';
 	const buildRenderedReviewBatches = (batches: PublicGoogleReview[][]) => {
 		let startIndex = 0;
@@ -254,12 +254,12 @@
 		<p class="mt-4 text-center text-sm text-destructive">{text.reviewsUnavailable}</p>
 	{/if}
 	<div class="mt-8 grid">
-		<div class="rounded-xl bg-primary p-6 text-primary-foreground md:mx-auto md:max-w-2xl">
+		<div class="rounded-xl bg-primary-surface p-6 text-primary-foreground md:mx-auto md:max-w-2xl">
 			<p class="text-2xl font-semibold tracking-tight">{text.googleTitle}</p>
 			<p class="mt-4 text-sm leading-6 text-primary-foreground/85">{text.googleBody}</p>
 			<a
 				href="https://www.google.com/maps/place/shelf+beauty+studio/@11.9415682,108.4492591,17z/data=!4m18!1m9!3m8!1s0x317113791162271f:0x6921c643e2be5906!2sshelf+beauty+studio!8m2!3d11.9415682!4d108.451834!9m1!1b1!16s%2Fg%2F11s8wb0ng4!3m7!1s0x317113791162271f:0x6921c643e2be5906!8m2!3d11.9415682!4d108.451834!9m1!1b1!16s%2Fg%2F11s8wb0ng4?entry=ttu"
-				class="mt-6 inline-flex min-h-11 items-center justify-center rounded-md bg-primary-foreground px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary-foreground/90"
+				class="mt-6 inline-flex min-h-11 items-center justify-center rounded-md bg-primary-foreground px-4 py-2 text-sm font-semibold text-primary-surface transition-colors hover:bg-primary-foreground/90"
 				title={text.googleLinkTitle}
 				referrerpolicy="no-referrer"
 				target="_blank"

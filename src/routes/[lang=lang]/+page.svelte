@@ -122,7 +122,7 @@
 		<div class="mt-8 flex flex-col gap-3 sm:flex-row">
 			<a
 				href={bookingUrl}
-				class="inline-flex min-h-12 items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+				class="inline-flex min-h-12 items-center justify-center rounded-md bg-primary-surface px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-surface/90"
 				title={text.bookTitle}
 				referrerpolicy="origin"
 				target="_blank"
