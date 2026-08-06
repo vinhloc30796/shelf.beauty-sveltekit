@@ -160,7 +160,7 @@
 
 <section class="container-shell pb-14 lg:pb-20">
 	<div
-		class="mx-auto flex max-w-5xl flex-col gap-5 rounded-2xl bg-primary p-6 text-primary-foreground sm:flex-row sm:items-center sm:justify-between sm:p-8"
+		class="mx-auto flex max-w-5xl flex-col gap-5 rounded-2xl bg-primary-surface p-6 text-primary-foreground sm:flex-row sm:items-center sm:justify-between sm:p-8"
 	>
 		<div>
 			<h2 class="text-2xl font-semibold tracking-tight">{text.book}</h2>
@@ -170,7 +170,7 @@
 			href={bookingUrl}
 			target="_blank"
 			referrerpolicy="origin"
-			class="inline-flex min-h-12 shrink-0 items-center justify-center rounded-md bg-background px-5 py-3 text-sm font-semibold text-primary transition-colors hover:bg-secondary"
+			class="inline-flex min-h-12 shrink-0 items-center justify-center rounded-md bg-primary-foreground px-5 py-3 text-sm font-semibold text-primary-surface transition-colors hover:bg-primary-foreground/90"
 		>
 			<Calendar class="mr-2 h-5 w-5" aria-hidden="true" />
 			{text.book}

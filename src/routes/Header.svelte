@@ -70,7 +70,7 @@
 						href={alternateLanguagePath(currentPath, option.value)}
 						class={`rounded px-3 py-1.5 text-xs font-semibold transition-colors ${
 							currentLanguage === option.value
-								? 'bg-primary text-primary-foreground'
+								? 'bg-primary-surface text-primary-foreground'
 								: 'text-muted-foreground hover:bg-secondary hover:text-foreground'
 						}`}
 						aria-current={currentLanguage === option.value ? 'page' : undefined}
@@ -117,7 +117,7 @@
 								href={alternateLanguagePath(currentPath, option.value)}
 								class={`flex-1 rounded px-3 py-2 text-sm font-semibold transition-colors ${
 									currentLanguage === option.value
-										? 'bg-primary text-primary-foreground'
+										? 'bg-primary-surface text-primary-foreground'
 										: 'text-muted-foreground hover:bg-secondary hover:text-foreground'
 								}`}
 								aria-current={currentLanguage === option.value ? 'page' : undefined}

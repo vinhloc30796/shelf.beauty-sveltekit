@@ -20,6 +20,7 @@
 		--input: 25 30% 83%;
 
 		--primary: 16 61% 34%;
+		--primary-surface: 16 61% 34%;
 		--primary-foreground: 42 52% 96%;
 
 		--secondary: 43 44% 85%;
@@ -52,7 +53,8 @@
 		--border: 18 25% 24%;
 		--input: 18 25% 24%;
 
-		--primary: 16 49% 52%;
+		--primary: 16 49% 56%;
+		--primary-surface: 16 61% 34%;
 		--primary-foreground: 42 52% 96%;
 
 		--secondary: 18 25% 20%;

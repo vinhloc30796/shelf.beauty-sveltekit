@@ -16,7 +16,7 @@ Based on the 2026-08-04 audit refresh. Progress last updated **2026-08-05**. The
 | 1 | **Complete — 2026-08-05** | Select one primary host and align redirects, `siteOrigin`, canonical, hreflang, sitemap, robots, schema, social images, and tests. | Production forces `www`, while all SEO signals declare the apex host. | 0.5-1 day | Every sitemap URL returns direct `200`; canonical and hreflang hosts match the final URL. |
 | 2 | Open | Replace `/fbmessage` with a server redirect or direct localized Messenger links. Make analytics non-blocking. | The current empty `200` route is indexable and fails when `gtag` is unavailable. | 0.5 day | `/fbmessage` returns a redirect; no localized `/vi/fbmessage` or `/en/fbmessage` links are generated. |
 | 3 | Open | Add intrinsic dimensions/aspect ratio to page logos and serve one optimized header logo per theme. | Reduces observed CLS and unnecessary image transfer. | 0.5-1 day | Repeated mobile runs stay comfortably below CLS `0.1`; only the required theme logo downloads. |
-| 4 | Open | Correct dark-mode contrast and low-opacity text combinations. | Several normal-text combinations measured below WCAG AA `4.5:1`. | 0.5-1 day | Automated and manual contrast checks pass in light and dark themes. |
+| 4 | **Complete — 2026-08-06** | Correct dark-mode contrast and low-opacity text combinations. | Several normal-text combinations measured below WCAG AA `4.5:1`. | 0.5-1 day | Automated and manual contrast checks pass in light and dark themes. |
 | 5 | Open | Publish verified business facts in visible HTML and schema. | Local and AI crawlers need consistent hours, address, contact, price range, and service details. | 1-2 days | Rich Results/Schema validator passes; visible facts match GBP exactly. |
 | 6 | Open | Move or summarize the homepage value proposition and booking CTA above the mobile hero. | The primary intent and action begin below the first mobile viewport. | 0.5 day | At 390x844, business category, H1, and booking action are visible before or alongside the hero. |
 
@@ -79,6 +79,6 @@ For action 5, do not invent a telephone number, postal code, prices, hours, or c
 - [ ] English and Vietnamese booking paths use appropriate language.
 - [ ] Visible business facts match JSON-LD and GBP.
 - [ ] One H1 remains on every indexable route.
-- [ ] Mobile dark-mode contrast passes.
+- [x] Mobile dark-mode contrast passes.
 - [ ] Mobile CLS remains below `0.1`, with a target of `0.05` or better in lab checks.
 - [ ] `pnpm check`, unit tests, production build, and Playwright integration tests pass under Node 24.
