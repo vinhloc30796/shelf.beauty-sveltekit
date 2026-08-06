@@ -1,4 +1,5 @@
 import { localizedPath, type Language } from './i18n';
+import { getMessengerBookingUrl } from './messenger';
 
 const apexHostname = 'shelf.beauty';
 const canonicalHostname = 'www.shelf.beauty';
@@ -95,7 +96,7 @@ export const localBusinessJsonLd = {
 		'@type': 'ReserveAction',
 		target: {
 			'@type': 'EntryPoint',
-			urlTemplate: 'https://m.me/shelfbeautystudio?text=Cho+mình+xin+đặt+hẹn+làm+nail+với+ạ'
+			urlTemplate: getMessengerBookingUrl('vi')
 		}
 	}
 } as const;
