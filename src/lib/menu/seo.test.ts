@@ -19,8 +19,8 @@ describe('service menu JSON-LD', () => {
 		});
 
 		const catalogs = jsonLd.hasOfferCatalog.itemListElement;
-		expect(catalogs).toHaveLength(7);
-		expect(catalogs.flatMap(({ itemListElement }) => itemListElement)).toHaveLength(63);
+		expect(catalogs).toHaveLength(6);
+		expect(catalogs.flatMap(({ itemListElement }) => itemListElement)).toHaveLength(65);
 		expect(catalogs[0]).toMatchObject({ '@type': 'OfferCatalog', name: 'Design móng' });
 	});
 
@@ -35,7 +35,7 @@ describe('service menu JSON-LD', () => {
 			identifier: 'gel-polish',
 			price: 100_000,
 			priceCurrency: 'VND',
-			itemOffered: { '@type': 'Service', name: 'Gel polish' }
+			itemOffered: { '@type': 'Service', name: 'Gel painting' }
 		});
 		expect(offers.find(({ identifier }) => identifier === 'glitter-designs')).not.toHaveProperty(
 			'price'

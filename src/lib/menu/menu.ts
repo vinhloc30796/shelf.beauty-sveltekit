@@ -99,7 +99,7 @@ export const formatMenuPrice = (price: MenuPrice, language: Language) => {
 };
 
 export const serviceMenu = defineServiceMenu({
-	sourceVersion: '2024-10',
+	sourceVersion: '2026-08',
 	currency: 'VND',
 	categories: [
 		{
@@ -119,7 +119,7 @@ export const serviceMenu = defineServiceMenu({
 				},
 				{
 					id: 'raised-pattern-designs',
-					name: { vi: 'Vẽ hoạ tiết, vẽ nổi', en: 'Pattern or raised designs' },
+					name: { vi: 'Vẽ hoạ tiết, vẽ nổi', en: 'Patterns or raised designs' },
 					price: { kind: 'range', min: 10_000, max: 50_000, unit: 'finger' }
 				},
 				{
@@ -149,7 +149,7 @@ export const serviceMenu = defineServiceMenu({
 				},
 				{
 					id: 'ombre-designs',
-					name: { vi: 'Ombre 1/2/3/4 màu', en: 'Ombre designs with 1–4 colors' },
+					name: { vi: 'Ombre 1/2/3/4 màu', en: 'Ombre designs from 1–4 colors' },
 					price: { kind: 'range', min: 15_000, max: 30_000, unit: 'finger' }
 				},
 				{
@@ -169,7 +169,7 @@ export const serviceMenu = defineServiceMenu({
 				},
 				{
 					id: 'small-stones-metals',
-					name: { vi: 'Đá nhỏ, kim loại', en: 'Small stones and metals' },
+					name: { vi: 'Đá nhỏ, kim loại', en: 'Small stones & metals' },
 					price: { kind: 'range', min: 1_000, max: 10_000, unit: 'piece' }
 				},
 				{
@@ -179,12 +179,12 @@ export const serviceMenu = defineServiceMenu({
 				},
 				{
 					id: 'nail-charms',
-					name: { vi: 'Charm nail, phụ kiện', en: 'Nail charms and accessories' },
+					name: { vi: 'Charm nail, phụ kiện', en: 'Other charms & accessories' },
 					price: { kind: 'range', min: 10_000, max: 45_000, unit: 'piece' }
 				},
 				{
 					id: 'hidden-charms-flower-designs',
-					name: { vi: 'Ẩn xà cừ, hoa khô, khổng tước', en: 'Hidden charms and flower designs' },
+					name: { vi: 'Ẩn xà cừ, hoa khô, khổng tước', en: 'Hidden charms & flower designs' },
 					price: { kind: 'range', min: 10_000, max: 30_000, unit: 'finger' }
 				}
 			]
@@ -195,58 +195,66 @@ export const serviceMenu = defineServiceMenu({
 			services: [
 				{
 					id: 'cuticle-cleanup',
-					name: { vi: 'Nhặt da sửa móng', en: 'Cuticle cleaning and nail shaping' },
-					price: { kind: 'fixed', amount: 35_000, unit: 'set' }
+					name: { vi: 'Nhặt da sửa móng', en: 'Cleaning cuticles, fixing nail shapes' },
+					price: { kind: 'fixed', amount: 40_000, unit: 'set' }
 				},
 				{
 					id: 'nail-shape-change',
-					name: { vi: 'Sửa, đổi form móng', en: 'Nail form and shape change' },
+					name: { vi: 'Sửa, đổi form móng', en: 'Fixing or changing nail forms & shapes' },
 					price: { kind: 'fixed', amount: 10_000, unit: 'set' }
 				},
 				{
 					id: 'normal-polish-removal',
-					name: { vi: 'Lau sơn thường', en: 'Normal polish removal' },
+					name: { vi: 'Lau sơn thường', en: 'Removing normal paint' },
 					price: { kind: 'fixed', amount: 10_000, unit: 'set' }
 				},
 				{
 					id: 'gel-polish-removal',
-					name: { vi: 'Phá sơn gel', en: 'Gel polish removal' },
+					name: { vi: 'Phá sơn gel', en: 'Removing gel paint' },
 					price: { kind: 'fixed', amount: 30_000, unit: 'set' }
 				},
 				{
 					id: 'extension-removal',
-					name: { vi: 'Phá đắp gel/bột/móng úp', en: 'Gel, acrylic, or press-on removal' },
+					name: {
+						vi: 'Phá đắp gel/bột/móng úp',
+						en: 'Removing gel-built, acrylic, press-on nails'
+					},
 					price: { kind: 'fixed', amount: 50_000, unit: 'set' }
 				},
 				{
 					id: 'nail-hardening',
-					name: { vi: 'Phủ cứng móng', en: 'Nail varnishing and hardening' },
-					description: { vi: 'Tạo cầu thêm 10.000₫', en: 'Nail apex add-on 10,000₫' },
+					name: { vi: 'Phủ cứng móng', en: 'Nail varnishing & hardening' },
+					description: { vi: 'Tạo cầu +15.000₫', en: 'Nail apex +15,000₫' },
 					price: { kind: 'fixed', amount: 30_000, unit: 'set' }
 				},
 				{
 					id: 'gel-polish',
-					name: { vi: 'Sơn gel', en: 'Gel polish' },
+					name: { vi: 'Sơn gel', en: 'Gel painting' },
 					price: { kind: 'fixed', amount: 100_000, unit: 'set' }
 				},
 				{
 					id: 'jelly-gel-polish',
-					name: { vi: 'Sơn gel thạch', en: 'Jelly gel polish' },
+					name: { vi: 'Sơn gel thạch', en: 'Jelly gel painting' },
 					price: { kind: 'fixed', amount: 120_000, unit: 'set' }
 				},
 				{
 					id: 'effect-gel-polish',
 					name: {
 						vi: 'Sơn gel hiệu ứng mắt mèo, flash,…',
-						en: 'Cat-eye or flash-effect gel polish'
+						en: 'Cateye effect or flash effect painting'
 					},
 					price: { kind: 'fixed', amount: 150_000, unit: 'set' }
 				},
 				{
 					id: 'mixed-color-gel',
-					name: { vi: 'Sơn mix màu', en: 'Multiple gel colors' },
-					description: { vi: 'Từ 2 màu trở lên', en: 'Two colors and above' },
+					name: { vi: 'Sơn mix màu', en: 'Multiple colors' },
+					description: { vi: 'Từ 2 màu trở lên', en: '2 and above' },
 					price: { kind: 'fixed', amount: 10_000, modifier: 'add', unit: 'color' }
+				},
+				{
+					id: 'nail-touch-up',
+					name: { vi: 'Dặm che khuyết điểm', en: 'Nail touch-up to conceal blemishes' },
+					price: { kind: 'fixed', amount: 50_000, unit: 'set' }
 				}
 			]
 		},
@@ -266,28 +274,28 @@ export const serviceMenu = defineServiceMenu({
 				},
 				{
 					id: 'gel-acrylic-extensions',
-					name: { vi: 'Nối móng đắp gel/bột', en: 'Gel-built or acrylic nail extensions' },
-					price: { kind: 'range', min: 270_000, max: 300_000, unit: 'set' }
+					name: { vi: 'Nối móng đắp gel', en: 'Press-on extension with gel-built' },
+					price: { kind: 'range', min: 230_000, max: 270_000, unit: 'set' }
 				},
 				{
 					id: 'gel-acrylic-natural-nails',
-					name: { vi: 'Đắp gel/bột móng thật', en: 'Gel-built or acrylic on natural nails' },
-					price: { kind: 'range', min: 190_000, max: 250_000, unit: 'set' }
+					name: { vi: 'Đắp gel móng thật', en: 'Gel-built nails on real nails' },
+					price: { kind: 'range', min: 150_000, max: 200_000, unit: 'set' }
 				},
 				{
 					id: 'gel-acrylic-fill',
-					name: { vi: 'Fill gel/bột', en: 'Gel-built or acrylic filling' },
-					price: { kind: 'range', min: 100_000, max: 200_000, unit: 'set' }
+					name: { vi: 'Fill gel', en: 'Gel-built filling' },
+					price: { kind: 'range', min: 110_000, max: 180_000, unit: 'set' }
 				},
 				{
 					id: 'ready-made-nailbox',
-					name: { vi: 'Nailbox có sẵn tại tiệm', en: 'Ready-made nailbox at the studio' },
+					name: { vi: 'Nailbox có sẵn tại tiệm', en: 'Nailbox available at the shop' },
 					price: { kind: 'range', min: 100_000, max: 399_000, unit: 'set' }
 				},
 				{
 					id: 'nailbox-application',
-					name: { vi: 'Úp nailbox tại tiệm', en: 'Nailbox application at the studio' },
-					price: { kind: 'fixed', amount: 30_000, unit: 'set' }
+					name: { vi: 'Úp nailbox tại tiệm', en: 'Applying nailbox at the shop' },
+					price: { kind: 'fixed', amount: 50_000, unit: 'set' }
 				}
 			]
 		},
@@ -297,18 +305,18 @@ export const serviceMenu = defineServiceMenu({
 			services: [
 				{
 					id: 'classic-natural-eyelashes',
-					name: { vi: 'Mi Classic tự nhiên', en: 'Natural classic eyelashes' },
-					price: { kind: 'fixed', amount: 220_000 }
+					name: { vi: 'Mi Classic tự nhiên', en: 'Classic eyelashes, natural' },
+					price: { kind: 'fixed', amount: 230_000 }
 				},
 				{
 					id: 'volume-natural-eyelashes',
-					name: { vi: 'Mi Volume tự nhiên', en: 'Natural volume eyelashes' },
-					price: { kind: 'fixed', amount: 250_000 }
+					name: { vi: 'Mi Volume tự nhiên', en: 'Volume eyelashes, natural' },
+					price: { kind: 'fixed', amount: 260_000 }
 				},
 				{
 					id: 'rabbit-fur-eyelashes',
-					name: { vi: 'Mi lông thỏ', en: 'Rabbit-fur eyelashes' },
-					price: { kind: 'fixed', amount: 270_000 }
+					name: { vi: 'Mi lông thỏ', en: 'Rabbit fur eyelashes' },
+					price: { kind: 'fixed', amount: 280_000 }
 				},
 				{
 					id: 'designed-eyelashes',
@@ -317,61 +325,54 @@ export const serviceMenu = defineServiceMenu({
 				},
 				{
 					id: 'mixed-color-eyelashes',
-					name: { vi: 'Mix mi màu', en: 'Mixed-color eyelashes' },
+					name: { vi: 'Mix mi màu', en: 'Mixed colored eyelashes' },
 					price: { kind: 'range', min: 30_000, max: 50_000, modifier: 'add' }
 				},
 				{
 					id: 'eyelash-fills',
 					name: { vi: 'Dặm mi', en: 'Eyelash fills' },
-					price: { kind: 'range', min: 100_000, max: 160_000 }
+					price: { kind: 'range', min: 100_000, max: 170_000 }
 				},
 				{
 					id: 'bottom-eyelashes',
-					name: { vi: 'Mi dưới', en: 'Bottom eyelashes' },
-					price: { kind: 'range', min: 30_000, max: 50_000 }
+					name: { vi: 'Mi dưới', en: 'Bottom eyelash' },
+					price: { kind: 'range', min: 40_000, max: 60_000 }
 				},
 				{
 					id: 'eyelash-removal-serum',
-					name: { vi: 'Tháo xả mi + dưỡng', en: 'Eyelash removal and serum' },
+					name: { vi: 'Tháo xả mi + dưỡng', en: 'Removing eyelashes + serum' },
 					price: { kind: 'range', min: 30_000, max: 50_000 }
 				},
 				{
 					id: 'eyelash-curl-collagen',
-					name: { vi: 'Uốn mi + dưỡng collagen', en: 'Eyelash curling and collagen serum' },
-					price: { kind: 'fixed', amount: 180_000 }
+					name: { vi: 'Uốn mi + dưỡng collagen', en: 'Eyelash curling + collagen serum' },
+					price: { kind: 'fixed', amount: 190_000 }
 				},
 				{
 					id: 'eyelash-curl-keratin',
 					name: {
 						vi: 'Uốn mi + phủ đen + Keratin',
-						en: 'Eyelash curling, black tint, and Keratin'
+						en: 'Eyelash curling + black tinting + Keratin'
 					},
-					price: { kind: 'fixed', amount: 200_000 }
+					price: { kind: 'fixed', amount: 210_000 }
 				},
 				{
 					id: 'mega-volume-eyelashes',
-					name: { vi: 'Mi Mega Volume (dày)', en: 'Mega Volume eyelashes (thick)' },
-					price: { kind: 'fixed', amount: 300_000 }
-				}
-			]
-		},
-		{
-			id: 'skin-care',
-			name: { vi: 'Dịch vụ chăm sóc da', en: 'Skin care services' },
-			services: [
+					name: { vi: 'Mi Mega Volume (dày)', en: 'Mega Volume Eyelashes (thick)' },
+					price: { kind: 'fixed', amount: 350_000 }
+				},
 				{
-					id: 'skin-care-package',
-					name: { vi: 'Chăm sóc da', en: 'Skin care package' },
-					inclusions: [
-						{ vi: 'Tẩy trang', en: 'Makeup cleanse' },
-						{ vi: 'Rửa mặt', en: 'Face wash' },
-						{ vi: 'Tẩy tế bào chết', en: 'Facial scrub' },
-						{ vi: 'Xông hơi và massage mặt nâng cơ', en: 'Steam and face-lift massage' },
-						{ vi: 'Đắp nạ và chiếu ánh sáng', en: 'Facial mask and light treatment' },
-						{ vi: 'Điện di tinh chất', en: 'Essence infusion' },
-						{ vi: 'Kem chống nắng', en: 'Sunscreen' }
-					],
-					price: { kind: 'fixed', amount: 220_000 }
+					id: 'baby-doll-eyelashes',
+					name: { vi: 'Mi em bé', en: 'Baby Doll Eyelashes' },
+					price: { kind: 'fixed', amount: 280_000 }
+				},
+				{
+					id: 'korean-lash-lift-black-tinting',
+					name: {
+						vi: 'Uốn mi Hàn Quốc + phủ đen',
+						en: 'Korean-Style Lash Lift + black tinting'
+					},
+					price: { kind: 'fixed', amount: 260_000 }
 				}
 			]
 		},
@@ -382,21 +383,21 @@ export const serviceMenu = defineServiceMenu({
 				{
 					id: 'normal-shampoo',
 					name: { vi: 'Gội đầu dầu thường', en: 'Normal shampoo' },
-					price: { kind: 'fixed', amount: 55_000 }
+					price: { kind: 'fixed', amount: 65_000 }
 				},
 				{
 					id: 'premium-pair-shampoo',
 					name: { vi: 'Gội đầu dầu cặp', en: 'Premium pair shampoo' },
-					price: { kind: 'fixed', amount: 85_000 }
+					price: { kind: 'fixed', amount: 90_000 }
 				},
 				{
 					id: 'organic-shampoo',
 					name: { vi: 'Gội đầu dầu thuần chay', en: 'Organic shampoo' },
-					price: { kind: 'fixed', amount: 120_000 }
+					price: { kind: 'fixed', amount: 130_000 }
 				},
 				{
 					id: 'hair-extension-shampoo-fee',
-					name: { vi: 'Phụ phí tóc nối', en: 'Hair-extension fee' },
+					name: { vi: '(Phụ phí) Tóc nối', en: 'Extra fee for hair extension' },
 					price: { kind: 'fixed', amount: 10_000, modifier: 'add' }
 				},
 				{
@@ -409,7 +410,7 @@ export const serviceMenu = defineServiceMenu({
 						{ vi: 'Đắp mặt nạ', en: 'Facial mask' },
 						{ vi: 'Gội đầu dầu cặp', en: 'Premium pair shampoo' }
 					],
-					price: { kind: 'fixed', amount: 180_000 }
+					price: { kind: 'fixed', amount: 190_000 }
 				},
 				{
 					id: 'shampoo-package-2',
@@ -478,7 +479,7 @@ export const serviceMenu = defineServiceMenu({
 				{
 					id: 'heel-scrub-cream',
 					name: { vi: 'Chà gót, dưỡng da chân', en: 'Heel scrub and nurturing cream' },
-					price: { kind: 'fixed', amount: 120_000 }
+					price: { kind: 'fixed', amount: 130_000 }
 				},
 				{
 					id: 'feet-package-1',
