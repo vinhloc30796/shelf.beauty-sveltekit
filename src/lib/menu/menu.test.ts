@@ -115,34 +115,57 @@ describe('service menu price formatting', () => {
 	});
 });
 
-describe('October 2024 canonical service menu', () => {
-	test('contains every audited category and service from the source menu', () => {
-		expect(serviceMenu.sourceVersion).toBe('2024-10');
+describe('August 2026 canonical service menu', () => {
+	test('contains every category and service from the August source menu', () => {
+		expect(serviceMenu.sourceVersion).toBe('2026-08');
 		expect(serviceMenu.currency).toBe('VND');
 		expect(serviceMenu.categories.map(({ id, services }) => [id, services.length])).toEqual([
 			['nail-design', 16],
-			['general-nails', 10],
+			['general-nails', 11],
 			['nail-extensions', 7],
-			['eyelashes', 11],
-			['skin-care', 1],
+			['eyelashes', 13],
 			['shampooing', 6],
 			['misc-services', 12]
 		]);
-		expect(serviceMenu.categories.flatMap(({ services }) => services)).toHaveLength(63);
+		expect(serviceMenu.categories.flatMap(({ services }) => services)).toHaveLength(65);
 	});
 
-	test('preserves representative fixed, ranged, additive, variant, and package entries', () => {
+	test('preserves the audited bilingual labels and prices', () => {
 		const services = serviceMenu.categories.flatMap(({ services }) => services);
 
-		expect(services.find(({ id }) => id === 'gel-polish')).toMatchObject({
-			name: { vi: 'Sơn gel', en: 'Gel polish' },
-			price: { kind: 'fixed', amount: 100_000, unit: 'set' }
+		expect(services.find(({ id }) => id === 'cuticle-cleanup')).toMatchObject({
+			name: { vi: 'Nhặt da sửa móng', en: 'Cleaning cuticles, fixing nail shapes' },
+			price: { kind: 'fixed', amount: 40_000, unit: 'set' }
 		});
-		expect(services.find(({ id }) => id === 'glitter-designs')).toMatchObject({
-			price: { kind: 'range', min: 15_000, max: 30_000, unit: 'finger' }
+		expect(services.find(({ id }) => id === 'nail-hardening')).toMatchObject({
+			description: { vi: 'Tạo cầu +15.000₫', en: 'Nail apex +15,000₫' }
 		});
-		expect(services.find(({ id }) => id === 'mixed-color-eyelashes')).toMatchObject({
-			price: { kind: 'range', min: 30_000, max: 50_000, modifier: 'add' }
+		expect(services.find(({ id }) => id === 'nail-touch-up')).toMatchObject({
+			name: { vi: 'Dặm che khuyết điểm', en: 'Nail touch-up to conceal blemishes' },
+			price: { kind: 'fixed', amount: 50_000, unit: 'set' }
+		});
+		expect(services.find(({ id }) => id === 'gel-acrylic-extensions')).toMatchObject({
+			price: { kind: 'range', min: 230_000, max: 270_000, unit: 'set' }
+		});
+		expect(services.find(({ id }) => id === 'baby-doll-eyelashes')).toMatchObject({
+			name: { vi: 'Mi em bé', en: 'Baby Doll Eyelashes' },
+			price: { kind: 'fixed', amount: 280_000 }
+		});
+		expect(services.find(({ id }) => id === 'korean-lash-lift-black-tinting')).toMatchObject({
+			name: {
+				vi: 'Uốn mi Hàn Quốc + phủ đen',
+				en: 'Korean-Style Lash Lift + black tinting'
+			},
+			price: { kind: 'fixed', amount: 260_000 }
+		});
+		expect(services.find(({ id }) => id === 'normal-shampoo')).toMatchObject({
+			price: { kind: 'fixed', amount: 65_000 }
+		});
+		expect(services.find(({ id }) => id === 'heel-scrub-cream')).toMatchObject({
+			price: { kind: 'fixed', amount: 130_000 }
+		});
+		expect(services.find(({ id }) => id === 'shampoo-package-1')).toMatchObject({
+			price: { kind: 'fixed', amount: 190_000 }
 		});
 		expect(services.find(({ id }) => id === 'hand-feet-nurturing-mask')).toMatchObject({
 			price: {
