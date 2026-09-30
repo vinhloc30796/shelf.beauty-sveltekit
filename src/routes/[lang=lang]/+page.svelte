@@ -38,8 +38,6 @@
 			open: 'Đang mở cửa',
 			closed: 'Đang đóng cửa',
 			confirm: 'Nhắn tin để tụi mình xác nhận',
-			offerLabel: 'Ưu đãi hằng tuần',
-			offer: 'Thứ Tư và Thứ Năm, giảm 10% cho một số dịch vụ.',
 			locationLabel: 'Địa điểm',
 			heroAlt: 'Hoa ly hồng phía trước khu làm dịch vụ của Shelf Beauty Studio',
 			detailAlt: 'Khu chờ Shelf Beauty Studio với mẫu nail, hoa và ghế sofa ấm cúng',
@@ -47,7 +45,6 @@
 			hoursSub: 'Cập nhật từ Google Business Profile',
 			loadingHours: 'Đang tải giờ mở cửa...',
 			timeSeparator: 'đến',
-			weeklyOffer: 'Ưu đãi 10%',
 			noHours: 'Nhắn tin trước khi ghé để tụi mình xác nhận khung giờ phù hợp nhất.',
 			hoursError: 'Tạm thời chưa tải được giờ mở cửa. Nhắn tin để tụi mình xác nhận lịch ghé.'
 		},
@@ -67,8 +64,6 @@
 			open: 'Open now',
 			closed: 'Closed right now',
 			confirm: 'Message us to confirm',
-			offerLabel: 'Weekly offer',
-			offer: 'Wednesday and Thursday, enjoy 10% off selected services.',
 			locationLabel: 'Location',
 			heroAlt: 'Pink lilies in the foreground with Shelf Beauty Studio service chairs behind them',
 			detailAlt: 'Shelf Beauty Studio waiting area with nail samples, flowers, and a warm sofa',
@@ -76,7 +71,6 @@
 			hoursSub: 'Updated from Google Business Profile',
 			loadingHours: 'Loading opening hours...',
 			timeSeparator: 'to',
-			weeklyOffer: '10% weekly offer',
 			noHours: 'Message us before visiting so we can confirm the best appointment time.',
 			hoursError: 'Opening hours are temporarily unavailable. Message us to confirm your visit.'
 		}
@@ -144,7 +138,7 @@
 			</a>
 		</div>
 
-		<div class="mt-8 grid gap-3 sm:grid-cols-3">
+		<div class="mt-8 grid gap-3 sm:grid-cols-2">
 			<div class="surface-panel p-4">
 				<p class="text-sm font-semibold text-foreground">{text.statusLabel}</p>
 				{#await data.isOpenPromise}
@@ -162,10 +156,6 @@
 						<p class="mt-2 text-sm text-muted-foreground">{text.confirm}</p>
 					{/if}
 				{/await}
-			</div>
-			<div class="surface-panel p-4">
-				<p class="text-sm font-semibold text-foreground">{text.offerLabel}</p>
-				<p class="mt-2 text-sm text-muted-foreground">{text.offer}</p>
 			</div>
 			<div class="surface-panel p-4">
 				<p class="text-sm font-semibold text-foreground">{text.locationLabel}</p>
@@ -226,13 +216,6 @@
 							>
 								<div class="flex min-w-0 items-center gap-2">
 									<p class="font-medium text-foreground">{period.openDay}</p>
-									{#if period.openDay === 'Thứ Tư (Wed)' || period.openDay === 'Thứ Năm (Thu)'}
-										<span
-											class="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary"
-										>
-											{text.weeklyOffer}
-										</span>
-									{/if}
 								</div>
 								<p class="text-sm text-muted-foreground sm:text-right">
 									{formatTime(period.openTime)}
