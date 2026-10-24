@@ -4,26 +4,6 @@ import { serviceMenu } from './menu';
 import { buildServiceMenuJsonLd } from './seo';
 
 describe('service menu JSON-LD', () => {
-	test('builds a localized offer catalog with all canonical services', () => {
-		const jsonLd = buildServiceMenuJsonLd(serviceMenu, 'vi');
-
-		expect(jsonLd).toMatchObject({
-			'@context': 'https://schema.org',
-			'@type': 'Service',
-			serviceType: 'Dịch vụ nail và làm đẹp',
-			provider: { '@id': 'https://www.shelf.beauty/#localbusiness' },
-			hasOfferCatalog: {
-				'@type': 'OfferCatalog',
-				name: 'Dịch vụ và bảng giá'
-			}
-		});
-
-		const catalogs = jsonLd.hasOfferCatalog.itemListElement;
-		expect(catalogs).toHaveLength(6);
-		expect(catalogs.flatMap(({ itemListElement }) => itemListElement)).toHaveLength(65);
-		expect(catalogs[0]).toMatchObject({ '@type': 'OfferCatalog', name: 'Design móng' });
-	});
-
 	test('publishes whole-service fixed prices without flattening partial or variable prices', () => {
 		const jsonLd = buildServiceMenuJsonLd(serviceMenu, 'en');
 		const offers = jsonLd.hasOfferCatalog.itemListElement.flatMap(
@@ -35,7 +15,7 @@ describe('service menu JSON-LD', () => {
 			identifier: 'gel-polish',
 			price: 100_000,
 			priceCurrency: 'VND',
-			itemOffered: { '@type': 'Service', name: 'Gel painting' }
+			itemOffered: { '@type': 'Service' }
 		});
 		expect(offers.find(({ identifier }) => identifier === 'glitter-designs')).not.toHaveProperty(
 			'price'

@@ -25,6 +25,15 @@ npm run dev
 npm run dev -- --open
 ```
 
+## Homepage promotions
+
+The `/vi` and `/en` homepages advertise these offers through December 31, 2026, inclusive:
+
+- 30% off in-stock Nailbox sets and accessories.
+- 10% off all services every Tuesday and Wednesday, 8:30 AM–12:00 PM.
+
+Both translations live in `src/routes/[lang=lang]/+page.svelte`. The campaign copy is static; update or remove it after December 31, 2026.
+
 ## Building
 
 To create a production version of your app:

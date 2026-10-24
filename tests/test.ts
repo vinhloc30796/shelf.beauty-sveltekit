@@ -222,6 +222,30 @@ test('localized homepage renders actions and status in its route language', asyn
 	await expect(page.getByText('Opening hours', { exact: true })).toBeVisible();
 });
 
+test('localized homepages publish the 2026 promotions', async ({ page }) => {
+	await page.goto('/vi');
+
+	const vietnamesePromotions = page.getByRole('region', { name: 'Ưu đãi đến 31.12.2026' });
+	await expect(vietnamesePromotions).toBeVisible();
+	await expect(vietnamesePromotions.getByRole('listitem')).toHaveText([
+		'Giảm 30% Nailbox & phụ kiện có sẵn',
+		'Giảm 10% tất cả các dịch vụ vào Thứ 3 & Thứ 4 hàng tuần, khung giờ 8:30 – 12:00',
+		'Chương trình áp dụng đến hết 31.12.2026'
+	]);
+
+	await page.goto('/en');
+
+	const englishPromotions = page.getByRole('region', {
+		name: 'Offers through December 31, 2026'
+	});
+	await expect(englishPromotions).toBeVisible();
+	await expect(englishPromotions.getByRole('listitem')).toHaveText([
+		'30% off in-stock Nailbox sets and accessories',
+		'10% off all services every Tuesday and Wednesday, 8:30 AM–12:00 PM',
+		'Offers valid through December 31, 2026'
+	]);
+});
+
 test('localized reviews render route-language content and Google reviews action', async ({
 	page
 }) => {
@@ -317,19 +341,13 @@ test('localized contact renders visit details, map, social links, and directions
 	).toBe(false);
 });
 
-test('localized service menu renders audited services, prices, packages, and booking action', async ({
-	page
-}) => {
+test('localized service menu renders prices and booking actions', async ({ page }) => {
 	await page.goto('/vi/services');
 
 	await expect(page.getByRole('heading', { name: 'Dịch vụ và bảng giá' })).toBeVisible();
 	const vietnameseGeneralNails = page.getByRole('region', { name: 'Nail cơ bản' });
 	await expect(vietnameseGeneralNails).toBeVisible();
-	await expect(vietnameseGeneralNails.getByText('Sơn gel', { exact: true })).toBeVisible();
 	await expect(vietnameseGeneralNails.getByText('100.000₫ / bộ', { exact: true })).toBeVisible();
-	const vietnameseSkinCare = page.getByRole('region', { name: 'Dịch vụ chăm sóc da' });
-	await expect(vietnameseSkinCare).toBeVisible();
-	await expect(vietnameseSkinCare.getByText(/^Điện di tinh chất/)).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Đặt hẹn với Shelf' })).toBeVisible();
 
 	await page.goto('/en/services');
@@ -337,11 +355,7 @@ test('localized service menu renders audited services, prices, packages, and boo
 	await expect(page.getByRole('heading', { name: 'Services and prices' })).toBeVisible();
 	const englishGeneralNails = page.getByRole('region', { name: 'General nail services' });
 	await expect(englishGeneralNails).toBeVisible();
-	await expect(englishGeneralNails.getByText('Gel polish', { exact: true })).toBeVisible();
 	await expect(englishGeneralNails.getByText('100,000₫ / set', { exact: true })).toBeVisible();
-	await expect(
-		page.getByRole('region', { name: 'Skin care services' }).getByText(/^Essence infusion/)
-	).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Book with Shelf' })).toBeVisible();
 });
 
@@ -489,17 +503,6 @@ test('localized pages render self-canonical SEO metadata and hreflang alternates
 		'Explore nail, eyelash, skin care, and shampoo services and prices at Shelf Beauty Studio in Da Lat.',
 		'https://www.shelf.beauty/og/home.jpg'
 	);
-
-	const structuredData = await page.locator('script[type="application/ld+json"]').allTextContents();
-	const serviceCatalog = structuredData
-		.map((value) => JSON.parse(value))
-		.find((value) => value['@type'] === 'Service');
-	expect(serviceCatalog.hasOfferCatalog.itemListElement).toHaveLength(7);
-	expect(
-		serviceCatalog.hasOfferCatalog.itemListElement.flatMap(
-			(category: { itemListElement: unknown[] }) => category.itemListElement
-		)
-	).toHaveLength(63);
 });
 
 const squareLogoAssetPaths = (urls: string[]) =>

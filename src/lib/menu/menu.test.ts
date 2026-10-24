@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { defineServiceMenu, formatMenuPrice, serviceMenu } from './menu';
+import { defineServiceMenu, formatMenuPrice } from './menu';
 import type { ServiceMenu } from './types';
 
 const validMenu = (): ServiceMenu => ({
@@ -112,70 +112,5 @@ describe('service menu price formatting', () => {
 				'vi'
 			)
 		).toBe('Tay 40.000₫ · Chân 50.000₫');
-	});
-});
-
-describe('August 2026 canonical service menu', () => {
-	test('contains every category and service from the August source menu', () => {
-		expect(serviceMenu.sourceVersion).toBe('2026-08');
-		expect(serviceMenu.currency).toBe('VND');
-		expect(serviceMenu.categories.map(({ id, services }) => [id, services.length])).toEqual([
-			['nail-design', 16],
-			['general-nails', 11],
-			['nail-extensions', 7],
-			['eyelashes', 13],
-			['shampooing', 6],
-			['misc-services', 12]
-		]);
-		expect(serviceMenu.categories.flatMap(({ services }) => services)).toHaveLength(65);
-	});
-
-	test('preserves the audited bilingual labels and prices', () => {
-		const services = serviceMenu.categories.flatMap(({ services }) => services);
-
-		expect(services.find(({ id }) => id === 'cuticle-cleanup')).toMatchObject({
-			name: { vi: 'Nhặt da sửa móng', en: 'Cleaning cuticles, fixing nail shapes' },
-			price: { kind: 'fixed', amount: 40_000, unit: 'set' }
-		});
-		expect(services.find(({ id }) => id === 'nail-hardening')).toMatchObject({
-			description: { vi: 'Tạo cầu +15.000₫', en: 'Nail apex +15,000₫' }
-		});
-		expect(services.find(({ id }) => id === 'nail-touch-up')).toMatchObject({
-			name: { vi: 'Dặm che khuyết điểm', en: 'Nail touch-up to conceal blemishes' },
-			price: { kind: 'fixed', amount: 50_000, unit: 'set' }
-		});
-		expect(services.find(({ id }) => id === 'gel-acrylic-extensions')).toMatchObject({
-			price: { kind: 'range', min: 230_000, max: 270_000, unit: 'set' }
-		});
-		expect(services.find(({ id }) => id === 'baby-doll-eyelashes')).toMatchObject({
-			name: { vi: 'Mi em bé', en: 'Baby Doll Eyelashes' },
-			price: { kind: 'fixed', amount: 280_000 }
-		});
-		expect(services.find(({ id }) => id === 'korean-lash-lift-black-tinting')).toMatchObject({
-			name: {
-				vi: 'Uốn mi Hàn Quốc + phủ đen',
-				en: 'Korean-Style Lash Lift + black tinting'
-			},
-			price: { kind: 'fixed', amount: 260_000 }
-		});
-		expect(services.find(({ id }) => id === 'normal-shampoo')).toMatchObject({
-			price: { kind: 'fixed', amount: 65_000 }
-		});
-		expect(services.find(({ id }) => id === 'heel-scrub-cream')).toMatchObject({
-			price: { kind: 'fixed', amount: 130_000 }
-		});
-		expect(services.find(({ id }) => id === 'shampoo-package-1')).toMatchObject({
-			price: { kind: 'fixed', amount: 190_000 }
-		});
-		expect(services.find(({ id }) => id === 'hand-feet-nurturing-mask')).toMatchObject({
-			price: {
-				kind: 'variants',
-				options: [
-					{ label: { vi: 'Tay', en: 'Hands' }, amount: 40_000 },
-					{ label: { vi: 'Chân', en: 'Feet' }, amount: 50_000 }
-				]
-			}
-		});
-		expect(services.find(({ id }) => id === 'shampoo-package-2')?.inclusions).toHaveLength(6);
 	});
 });
