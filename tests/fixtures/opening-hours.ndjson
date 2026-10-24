@@ -1,0 +1,3 @@
+{"type":"data","nodes":[null,{"type":"data","data":[{"isOpenPromise":1,"regularHourPeriodsPromise":3},["Promise",2],1,["Promise",4],2],"uses":{}}]}
+{"type":"chunk","id":1,"data":[true]}
+{"type":"chunk","id":2,"data":[[7,9,11,13,15,17,19],{"hours":2,"minutes":3},8,30,{"hours":5,"minutes":6},19,0,{"openDay":8,"openTime":1,"closeTime":4},"Thứ Hai (Mon)",{"openDay":10,"openTime":1,"closeTime":4},"Thứ Ba (Tue)",{"openDay":12,"openTime":1,"closeTime":4},"Thứ Tư (Wed)",{"openDay":14,"openTime":1,"closeTime":4},"Thứ Năm (Thu)",{"openDay":16,"openTime":1,"closeTime":4},"Thứ Sáu (Fri)",{"openDay":18,"openTime":1,"closeTime":4},"Thứ Bảy (Sat)",{"openDay":20,"openTime":1,"closeTime":4},"Chủ Nhật (Sun)"]}

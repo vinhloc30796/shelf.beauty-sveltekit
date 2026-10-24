@@ -29,6 +29,11 @@
 			eyebrow: 'Chăm sóc nail và làm đẹp tại Đà Lạt',
 			heading: 'Chăm sóc sắc đẹp tại Đà Lạt, ấm áp và tỉ mỉ.',
 			body: 'Shelf là một studio nhỏ gần Quảng trường Lâm Viên, nơi tụi mình chăm từng chi tiết nail, gội đầu và trải nghiệm thư giãn cho khách địa phương lẫn khách ghé Đà Lạt.',
+			promotionHeading: 'Ưu đãi đến 31.12.2026',
+			promotionNailbox: 'Giảm 30% Nailbox & phụ kiện có sẵn',
+			promotionWeekdays:
+				'Giảm 10% tất cả các dịch vụ vào Thứ 3 & Thứ 4 hàng tuần, khung giờ 8:30 – 12:00',
+			promotionExpiry: 'Chương trình áp dụng đến hết 31.12.2026',
 			book: 'Đặt hẹn',
 			bookTitle: 'Đặt hẹn với Shelf Beauty Studio trên Facebook Messenger',
 			directions: 'Tìm đường',
@@ -45,6 +50,7 @@
 			hoursSub: 'Cập nhật từ Google Business Profile',
 			loadingHours: 'Đang tải giờ mở cửa...',
 			timeSeparator: 'đến',
+			weeklyOffer: 'Ưu đãi 10% · 8:30 – 12:00',
 			noHours: 'Nhắn tin trước khi ghé để tụi mình xác nhận khung giờ phù hợp nhất.',
 			hoursError: 'Tạm thời chưa tải được giờ mở cửa. Nhắn tin để tụi mình xác nhận lịch ghé.'
 		},
@@ -55,6 +61,10 @@
 			eyebrow: 'Nail and beauty care in Da Lat',
 			heading: 'Beauty care in Da Lat, made warm and careful.',
 			body: 'Shelf is a small studio near Lam Vien Square for detailed nail care, hair washing, and calm beauty appointments for local clients and Da Lat visitors.',
+			promotionHeading: 'Offers through December 31, 2026',
+			promotionNailbox: '30% off in-stock Nailbox sets and accessories',
+			promotionWeekdays: '10% off all services every Tuesday and Wednesday, 8:30 AM–12:00 PM',
+			promotionExpiry: 'Offers valid through December 31, 2026',
 			book: 'Book appointment',
 			bookTitle: 'Book Shelf Beauty Studio on Facebook Messenger',
 			directions: 'Get directions',
@@ -71,6 +81,7 @@
 			hoursSub: 'Updated from Google Business Profile',
 			loadingHours: 'Loading opening hours...',
 			timeSeparator: 'to',
+			weeklyOffer: '10% off · 8:30 AM–12:00 PM',
 			noHours: 'Message us before visiting so we can confirm the best appointment time.',
 			hoursError: 'Opening hours are temporarily unavailable. Message us to confirm your visit.'
 		}
@@ -137,6 +148,29 @@
 				{text.directions}
 			</a>
 		</div>
+
+		<section
+			aria-labelledby="promotion-heading"
+			class="mt-8 rounded-xl bg-primary-surface p-5 text-primary-foreground sm:p-6"
+		>
+			<h2 id="promotion-heading" class="text-xl font-semibold tracking-tight sm:text-2xl">
+				{text.promotionHeading}
+			</h2>
+			<ul class="mt-4 grid gap-3 text-sm leading-6 sm:text-base">
+				<li class="flex gap-3">
+					<span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>
+					{text.promotionNailbox}
+				</li>
+				<li class="flex gap-3">
+					<span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>
+					{text.promotionWeekdays}
+				</li>
+				<li class="flex gap-3">
+					<span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>
+					{text.promotionExpiry}
+				</li>
+			</ul>
+		</section>
 
 		<div class="mt-8 grid gap-3 sm:grid-cols-2">
 			<div class="surface-panel p-4">
@@ -214,8 +248,15 @@
 							<div
 								class="flex min-h-16 flex-col justify-center gap-2 border-b border-border/70 px-4 py-3 last:border-b-0 sm:flex-row sm:items-center sm:justify-between"
 							>
-								<div class="flex min-w-0 items-center gap-2">
+								<div class="flex min-w-0 flex-wrap items-center gap-2">
 									<p class="font-medium text-foreground">{period.openDay}</p>
+									{#if period.openDay === 'Thứ Ba (Tue)' || period.openDay === 'Thứ Tư (Wed)'}
+										<span
+											class="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary dark:bg-primary-surface dark:text-primary-foreground"
+										>
+											{text.weeklyOffer}
+										</span>
+									{/if}
 								</div>
 								<p class="text-sm text-muted-foreground sm:text-right">
 									{formatTime(period.openTime)}
