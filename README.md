@@ -32,6 +32,8 @@ The `/vi` and `/en` homepages advertise these offers through December 31, 2026, 
 - 30% off in-stock Nailbox sets and accessories.
 - 10% off all services every Tuesday and Wednesday, 8:30 AM–12:00 PM.
 
+Tuesday and Wednesday rows in the opening-hours list also show the 10% promotion and its time window. Regular opening and closing times remain separate and come from Google Business Profile.
+
 Both translations live in `src/routes/[lang=lang]/+page.svelte`. The campaign copy is static; update or remove it after December 31, 2026.
 
 ## Building

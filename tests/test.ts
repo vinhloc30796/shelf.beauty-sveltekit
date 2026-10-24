@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 
 const messengerBookingUrls = {
@@ -244,6 +245,49 @@ test('localized homepages publish the 2026 promotions', async ({ page }) => {
 		'10% off all services every Tuesday and Wednesday, 8:30 AM–12:00 PM',
 		'Offers valid through December 31, 2026'
 	]);
+});
+
+test('opening hours mark only Tuesday and Wednesday with the promotion window in both languages', async ({
+	page
+}) => {
+	// Recorded SvelteKit stream shape, with deterministic hours replacing the Google API response.
+	const openingHours = readFileSync(
+		new URL('./fixtures/opening-hours.ndjson', import.meta.url),
+		'utf8'
+	);
+	const weekdays = [
+		['Thứ Hai (Mon)', false],
+		['Thứ Ba (Tue)', true],
+		['Thứ Tư (Wed)', true],
+		['Thứ Năm (Thu)', false],
+		['Thứ Sáu (Fri)', false],
+		['Thứ Bảy (Sat)', false],
+		['Chủ Nhật (Sun)', false]
+	] as const;
+
+	for (const [language, heading] of [
+		['vi', 'Giờ mở cửa'],
+		['en', 'Opening hours']
+	]) {
+		await page.route(`**/${language}/__data.json*`, (route) =>
+			route.fulfill({ contentType: 'text/sveltekit-data', body: openingHours })
+		);
+		await page.goto(`/${language}/services`);
+		await page.getByRole('link', { name: 'Shelf Beauty Studio home', exact: true }).click();
+
+		const hours = page.locator('section').filter({
+			has: page.getByRole('heading', { name: heading, exact: true })
+		});
+		for (const [weekday, hasPromotion] of weekdays) {
+			const day = hours.getByText(weekday, { exact: true }).locator('..');
+			await expect(day).toBeVisible();
+			if (hasPromotion) {
+				await expect(day.getByText(/10%/)).toContainText(/8:30.*12:00/);
+			} else {
+				await expect(day.getByText(/10%/)).toHaveCount(0);
+			}
+		}
+	}
 });
 
 test('localized reviews render route-language content and Google reviews action', async ({

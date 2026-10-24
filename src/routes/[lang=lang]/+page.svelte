@@ -50,6 +50,7 @@
 			hoursSub: 'Cập nhật từ Google Business Profile',
 			loadingHours: 'Đang tải giờ mở cửa...',
 			timeSeparator: 'đến',
+			weeklyOffer: 'Ưu đãi 10% · 8:30 – 12:00',
 			noHours: 'Nhắn tin trước khi ghé để tụi mình xác nhận khung giờ phù hợp nhất.',
 			hoursError: 'Tạm thời chưa tải được giờ mở cửa. Nhắn tin để tụi mình xác nhận lịch ghé.'
 		},
@@ -80,6 +81,7 @@
 			hoursSub: 'Updated from Google Business Profile',
 			loadingHours: 'Loading opening hours...',
 			timeSeparator: 'to',
+			weeklyOffer: '10% off · 8:30 AM–12:00 PM',
 			noHours: 'Message us before visiting so we can confirm the best appointment time.',
 			hoursError: 'Opening hours are temporarily unavailable. Message us to confirm your visit.'
 		}
@@ -246,8 +248,15 @@
 							<div
 								class="flex min-h-16 flex-col justify-center gap-2 border-b border-border/70 px-4 py-3 last:border-b-0 sm:flex-row sm:items-center sm:justify-between"
 							>
-								<div class="flex min-w-0 items-center gap-2">
+								<div class="flex min-w-0 flex-wrap items-center gap-2">
 									<p class="font-medium text-foreground">{period.openDay}</p>
+									{#if period.openDay === 'Thứ Ba (Tue)' || period.openDay === 'Thứ Tư (Wed)'}
+										<span
+											class="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary dark:bg-primary-surface dark:text-primary-foreground"
+										>
+											{text.weeklyOffer}
+										</span>
+									{/if}
 								</div>
 								<p class="text-sm text-muted-foreground sm:text-right">
 									{formatTime(period.openTime)}
